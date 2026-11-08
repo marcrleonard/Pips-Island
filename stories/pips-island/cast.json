@@ -9,7 +9,8 @@
     "rate": 0.9
    },
    "fish": {
-    "reference_id": "",
+    "reference_id": "029f407da0914eab9469a0edbc23efa8",
+    "voice": "Aubrey (girl, 8, bright and friendly). Boy alternative: Noah a3d56467a193409984ce245f8f371c9a",
     "speed": 1.0
    }
   },
@@ -21,8 +22,9 @@
     "rate": 0.85
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "43ef9f00cf0242c1acc011fdc80a902e",
+    "voice": "Stanley (warm, relaxed man in his eighties)",
+    "speed": 0.92
    }
   },
   "duck": {
@@ -33,8 +35,9 @@
     "rate": 0.95
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "333bdc0a320a4cb3aa90d6ed9320e36e",
+    "voice": "Kaia (bright, playful, expressive young woman, NZ accent)",
+    "speed": 1.05
    }
   },
   "hog": {
@@ -45,8 +48,9 @@
     "rate": 0.88
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "4aedc6f5657240e6b3986568f0788f2e",
+    "voice": "Eilidh (gentle, bright young woman, Scottish accent)",
+    "speed": 0.95
    }
   },
   "crab": {
@@ -57,8 +61,9 @@
     "rate": 0.82
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "88db76d4fab54ed494ce4da746d1027f",
+    "voice": "Thaddeus (raspy old lighthouse keeper, Maine)",
+    "speed": 0.9
    }
   },
   "mole": {
@@ -69,8 +74,9 @@
     "rate": 0.9
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "5beea71587234eb6bc7b05a1ba9017af",
+    "voice": "Lachie (energetic, expressive bush mechanic, Australian accent)",
+    "speed": 1.08
    }
   },
   "mouse": {
@@ -81,7 +87,8 @@
     "rate": 0.92
    },
    "fish": {
-    "reference_id": "",
+    "reference_id": "0c2f0c6fd7a54b5f8e3f3ed571d7c4ac",
+    "voice": "Mabel (playful girl who loves pretend play)",
     "speed": 1.0
    }
   },
@@ -93,8 +100,9 @@
     "rate": 0.88
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "a2b1bd5223d14144bf330c4656c9dd30",
+    "voice": "Molly (gentle girl, 9)",
+    "speed": 0.95
    }
   },
   "puffin": {
@@ -105,7 +113,8 @@
     "rate": 0.92
    },
    "fish": {
-    "reference_id": "",
+    "reference_id": "2091911675124249a73d321664ef94a7",
+    "voice": "Eoin (warm, witty storyteller, Irish accent)",
     "speed": 1.0
    }
   },
@@ -117,10 +126,11 @@
     "rate": 0.85
    },
    "fish": {
-    "reference_id": "",
-    "speed": 1.0
+    "reference_id": "08032f52a3674456acb058484485f70f",
+    "voice": "Dorothy (smooth, warm storyteller in her seventies)",
+    "speed": 0.9
    }
   }
  },
- "about": "Speakers. 'voice' tunes the browser fallback voice. 'fish.reference_id' is the Fish Audio voice model to use for this character (pick or clone one on fish.audio and paste its id). 'description' is acting direction for humans."
+ "about": "Speakers. 'voice' tunes the browser fallback voice. 'fish.reference_id' is the Fish Audio voice model to use for this character (pick or clone one on fish.audio and paste its id). 'description' is acting direction for humans. 'fish.voice' is a note naming the chosen voice; browse others at https://fish.audio/discovery."
 }

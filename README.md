@@ -48,14 +48,18 @@ so you can record a few lines at a time.
 
 **With Fish Audio:**
 
-1. `export FISH_API_KEY=...` (or put it in a `.env` file at the project root; `.env` is git-ignored).
-2. Choose or clone a voice for each character on fish.audio and paste its id into `cast.json` at
-   `speakers.<id>.fish.reference_id`.
-3. `python3 tools/fish_tts.py --dry-run` to preview, then `python3 tools/fish_tts.py`.
+1. Get a key at https://fish.audio/app/developers/get-started/ and add credit at
+   https://fish.audio/app/developers/billing/ (pay as you go). Then `export FISH_API_KEY=...`, or put it in a `.env`
+   file at the project root (`.env` is git-ignored).
+2. Every character already has a voice from Fish's public library in `cast.json`
+   (`speakers.<id>.fish.reference_id`, with a `voice` note naming it). To recast, paste another model id there.
+3. `python3 tools/fish_tts.py --audition` makes one line per character so you can hear the cast, then
+   `python3 tools/fish_tts.py` makes the rest (`--dry-run` previews what would be sent).
 4. `python3 tools/build.py`.
 
-`fish_tts.py` sends `"<direction> <text>"` to `POST https://api.fish.audio/v1/tts` (model `s2.1-pro` by default; S2
-models read free-form cues in square brackets). It remembers what it sent in `audio/voice_hashes.json`, so later runs
+`fish_tts.py` sends `"<direction> <text>"` to `POST https://api.fish.audio/v1/tts` with model `drama-3` by default,
+Fish's model for acted character voices, which reads free-form cues in square brackets. `--model s2.1-pro-free` is
+free for testing; `--model s2.1-pro` is the general-purpose model. It remembers what it sent in `audio/voice_hashes.json`, so later runs
 only regenerate lines whose words, direction or voice changed. Options: `--only owl,pip`, `--ids 'owl.hint.*'`,
 `--force`, `--limit N`.
 

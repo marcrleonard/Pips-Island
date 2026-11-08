@@ -20,14 +20,17 @@ What it does
 Useful options
   --only owl,pip        only these speakers           --ids 'owl.hint.*'   only matching line ids
   --force               regenerate everything selected --dry-run          show what would be sent
-  --limit 5             stop after 5 requests          --model s2.1-pro     Fish model header
+  --limit 5             stop after 5 requests          --model drama-3      Fish model (see MODELS)
   --bitrate 128         mp3 bitrate (64/128/192)       --delay 0.4          seconds between requests
+  --audition            only the first line of each speaker (hear the cast before a full run)
 No third-party packages needed (standard library only).
 """
 import argparse, fnmatch, hashlib, json, os, subprocess, sys, time, urllib.error, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 API = 'https://api.fish.audio/v1/tts'
+# Fish silently falls back to s2.1-pro on an unknown model name, so only allow known ones.
+MODELS = ('drama-3', 's2.1-pro', 's2.1-pro-free', 's2-pro')
 
 def load_env():
     path = os.path.join(ROOT, '.env')
@@ -45,10 +48,12 @@ def main():
     ap.add_argument('--force', action='store_true')
     ap.add_argument('--dry-run', action='store_true')
     ap.add_argument('--limit', type=int, default=0)
-    ap.add_argument('--model', default='s2.1-pro')
+    ap.add_argument('--model', default='drama-3', choices=MODELS,
+                    help='drama-3 (acted, default), s2.1-pro, s2.1-pro-free (free, for testing)')
     ap.add_argument('--bitrate', type=int, default=128)
     ap.add_argument('--latency', default='normal', help='"normal" (best quality) or "balanced"')
     ap.add_argument('--delay', type=float, default=0.4)
+    ap.add_argument('--audition', action='store_true')
     a = ap.parse_args()
     load_env()
     key = os.environ.get('FISH_API_KEY', '')
@@ -61,12 +66,16 @@ def main():
     hashes = json.load(open(hash_path)) if os.path.exists(hash_path) else {}
     only = set(filter(None, a.only.split(',')))
     missing_voice, made, skipped, failed, sent = set(), 0, 0, 0, 0
+    auditioned = set()
 
     for cid, c in script['conversations'].items():
         for l in c['lines']:
             sp = l.get('speaker', c['speaker'])
             if only and sp not in only: continue
             if a.ids and not fnmatch.fnmatch(l['id'], a.ids): continue
+            if a.audition:
+                if sp in auditioned: continue
+                auditioned.add(sp)
             fish = cast.get(sp, {}).get('fish', {})
             ref = fish.get('reference_id', '')
             if not ref: missing_voice.add(sp); continue
