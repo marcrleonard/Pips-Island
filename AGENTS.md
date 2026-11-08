@@ -57,6 +57,8 @@ scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for 
 - Friends can walk: `sendNpc(n, x, y)` then `stepNpc(n, dt)` each frame (pathfinding.js).
 - Voices play through Web Audio (one context unlocked by the first tap), so lines that start without a tap still play
   on iPhone.
+  After Start, every recording downloads in the background (`preloadAllVoices`, four at a time, Pip and Bramble
+  first). They stay compressed in memory and are decoded only when about to play (24 most recent kept).
 - `goTo(scene)` fades between scenes. `updateTrans` positions the player per entry point (in `burrow.js`).
 - Each scene has its own walkable test (`walkable`, `caveWalkable`, `coveWalkable`), update and draw functions.
 

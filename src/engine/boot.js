@@ -8,7 +8,7 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 
-function begin(){ document.getElementById('title').hidden = true; running = true; chime([523,659,784],0.1); }
+function begin(){ document.getElementById('title').hidden = true; running = true; chime([523,659,784],0.1); preloadAllVoices(); }
 const saved = readSave();
 if (saved) {
   document.getElementById('start').textContent = 'Keep playing';

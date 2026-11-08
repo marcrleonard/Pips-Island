@@ -34,16 +34,34 @@ try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } ca
 ['pointerdown','touchend','click','keydown'].forEach(ev => addEventListener(ev, () => {
   try { const a = ac(); if (a.state !== 'running') a.resume(); } catch(e){}
 }, { capture: true, passive: true }));
-const voiceBufs = new Map();
-let voiceSrc = null, voiceTok = 0;
+// Recordings are downloaded once and kept compressed (all of them together are a few MB); each is decoded only
+// when it is about to play, and only the most recent decodes are kept, so phones don't run out of memory.
 const AUDIO_VERSIONS = AUDIO_MANIFEST.versions || {};
-function loadVoice(path){
+const voiceRaw = new Map(), voiceDec = new Map();
+let voiceSrc = null, voiceTok = 0;
+function fetchVoice(path){
   const url = AUDIO_VERSIONS[path] ? `${path}?v=${AUDIO_VERSIONS[path]}` : path;
-  if (!voiceBufs.has(path)) voiceBufs.set(path, fetch(url)
+  if (!voiceRaw.has(path)) voiceRaw.set(path, fetch(url)
     .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
-    .then(b => new Promise((ok, no) => ac().decodeAudioData(b, ok, no)))
-    .catch(e => { voiceBufs.delete(path); throw e; }));
-  return voiceBufs.get(path);
+    .catch(e => { voiceRaw.delete(path); throw e; }));
+  return voiceRaw.get(path);
+}
+function loadVoice(path){
+  if (voiceDec.has(path)) return Promise.resolve(voiceDec.get(path));
+  return fetchVoice(path)
+    .then(b => new Promise((ok, no) => ac().decodeAudioData(b.slice(0), ok, no)))   // decoding consumes its buffer
+    .then(buf => { voiceDec.set(path, buf); if (voiceDec.size > 24) voiceDec.delete(voiceDec.keys().next().value); return buf; });
+}
+// Once the game starts, download every recording in the background, a few at a time, so lines play straight away.
+// Pip and Bramble talk the most, so theirs come first.
+let voicesPreloading = false;
+function preloadAllVoices(){
+  if (voicesPreloading || !AUDIO_FILES.size) return; voicesPreloading = true;
+  const first = p => /\/(pip|owl)\//.test(p) ? 0 : 1;
+  const list = [...AUDIO_FILES].sort((a, b) => first(a) - first(b));
+  let i = 0;
+  const next = () => { if (i < list.length) fetchVoice(list[i++]).catch(() => {}).finally(next); };
+  for (let k = 0; k < 4; k++) next();
 }
 function preloadVoices(lines){ for (const l of lines) if (l.id && AUDIO_FILES.has(lineAudioPath(l))) loadVoice(lineAudioPath(l)).catch(() => {}); }
 function stopVoice(){
