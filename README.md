@@ -16,30 +16,14 @@ works for players who are still learning to read.
 
 ## Three days on the island
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/screenshots/friends.jpg" alt="Pip talking with Hazel Hedgehog outside her stump house"></td>
-    <td width="50%"><img src="docs/screenshots/burrow.jpg" alt="Digby Mole's lantern-lit burrow with glowing crystals"></td>
-  </tr>
-  <tr>
-    <td><b>Day 1 · The island and the Burrow.</b> Bramble the Owl suggests one friend at a time. Find Mama Duck's
-    ducklings, pick berries for Hazel, return Grandpa Crab's shell, collect glowcaps for Digby Mole and learn
-    Fern Mouse's crystal song.</td>
-    <td><b>Under the island.</b> Digby's burrow lights up with lanterns once his glowcaps are home, and he starts
-    digging a tunnel toward the sea.</td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/cove.jpg" alt="Seagrass Cove at low tide, with Pearl the seal pup and tide pools in the rocks"></td>
-    <td><img src="docs/screenshots/isle.jpg" alt="Puffin Isle, with puffins, their burrows and Nana Puff's red door"></td>
-  </tr>
-  <tr>
-    <td><b>Day 2 · Seagrass Cove.</b> Digby's tunnel opens onto a hidden beach. Watch the tide: peek in the tide
-    pools for Pearl the seal pup when the water is low, and gather driftwood for Captain Puff's boat when it washes
-    in.</td>
-    <td><b>Day 3 · Puffin Isle.</b> Sail across with Captain Puff. Catch leaping sand eels for Nana Puff's hungry
-    pufflings, and play hide and seek with little Pebble.</td>
-  </tr>
-</table>
+- **Day 1:** help friends around the island, then light up Digby Mole's burrow.
+- **Day 2:** follow Digby's new tunnel to Seagrass Cove and play with the tide.
+- **Day 3:** sail with Captain Puff to Puffin Isle.
+
+<p align="center">
+  <img src="docs/screenshots/cove.jpg" alt="Seagrass Cove at low tide, with Pearl the seal pup and tide pools" width="49%">
+  <img src="docs/screenshots/isle.jpg" alt="Puffin Isle, with puffins, their burrows and Nana Puff's red door" width="49%">
+</p>
 
 ## What makes it nice
 

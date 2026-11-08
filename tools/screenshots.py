@@ -13,8 +13,6 @@ OUT = os.path.join(ROOT, 'docs', 'screenshots')
 # name: (width, height, setup JS run once the game has started; `d` is the debug hook)
 SHOTS = {
   'island':  (1280, 800,  "d.at('island', 1200, 900);"),
-  'friends': (1280, 800,  "d.zoom(1.25); d.at('island', 770, 1075); S.player.face = -1; d.speak('hog.ask');"),
-  'burrow':  (1280, 800,  "d.day(2); d.zoom(0.62); d.at('cave', 820, 600);"),
   'cove':    (1280, 800,  "d.day(2); S.tideT = 3; d.zoom(0.8); d.at('cove', 980, 760);"),
   'isle':    (1280, 800,  "d.day(3); d.zoom(0.85); d.at('isle', 980, 520); S.boatAt = 'isle';"),
 }
