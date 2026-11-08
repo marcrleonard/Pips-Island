@@ -13,7 +13,9 @@ python3 tools/build.py          # writes dist/pips-island.html (open it in a bro
 python3 tools/watch.py          # rebuild on every save + serve at http://localhost:8000/pips-island.html
 ```
 
-Open the game with `#day2` at the end of the URL to skip straight to Day 2.
+Open the game with `#day2` or `#day3` at the end of the URL to skip straight to that day.
+
+Progress saves automatically in the browser (`localStorage`) as a small JSON document; see AGENTS.md for its shape.
 
 ## Layout
 
@@ -54,7 +56,8 @@ so you can record a few lines at a time.
 2. Every character already has a voice from Fish's public library in `cast.json`
    (`speakers.<id>.fish.reference_id`, with a `voice` note naming it). To recast, paste another model id there.
 3. `python3 tools/fish_tts.py --audition` makes one line per character so you can hear the cast, then
-   `python3 tools/fish_tts.py` makes the rest (`--dry-run` previews what would be sent).
+   `python3 tools/fish_tts.py` makes the rest (`--dry-run` previews what would be sent). New files are leveled
+   to -19 LUFS with ffmpeg, because Fish's raw output is loud enough to sound harsh on phone speakers.
 4. `python3 tools/build.py`.
 
 `fish_tts.py` sends `"<direction> <text>"` to `POST https://api.fish.audio/v1/tts` with model `drama-3` by default,

@@ -3,8 +3,8 @@
 
 // The island's ground is drawn once into a big image (see bakedGround) and stamped each frame.
 const BANK = 22;
-const SEA_RIPPLES = Array.from({length:90}, (_,i) => [(i*397)%W, (i*233)%H]).filter(([x,y]) => !land.some(([cx,cy,r]) => d2(x,y,cx,cy) < r+80));
-function landPath(grow, dy=0){ ctx.beginPath(); land.forEach(([x,y,r]) => { ctx.moveTo(x+r+grow, y+dy); ctx.arc(x, y+dy, r+grow, 0, Math.PI*2); }); }
+const SEA_RIPPLES = Array.from({length:90}, (_,i) => [(i*397)%W, (i*233)%H]).filter(([x,y]) => edgeD(x,y) < -80);
+function landPath(grow, dy=0){ polyPath(grow ? offsetPoly(ISLAND, grow) : ISLAND, 0, dy); }
 function drawGroundStatic(){
   const L = LOOK.light;
   ctx.fillStyle = C.sea; ctx.fillRect(0,0,W,H);
@@ -402,6 +402,12 @@ function marker(x,y,t,kind){
 function npcMarker(n){
   const q = S.quests;
   if (S.ending) return null;
+  if (S.day===3) {
+    if (n.id==='puffin') return allDone() ? 'ready' : q.sail.state==='new' ? (S.hinted.has('puffin') ? 'new' : null) : null;
+    if (n.id==='nana') return q.eels.state==='new' ? (S.hinted.has('nana') ? 'new' : null) : (q.eels.state==='active' && q.eels.have>=4 ? 'ready' : null);
+    if (n.id==='pebble') return q.hide.state==='new' && S.hinted.has('pebble') ? 'new' : null;
+    if (n.id!=='owl') return null;
+  }
   if (S.day===2) {
     if (n.id==='mole') return q.dig.state==='new' ? (S.hinted.has('mole') ? 'new' : null) : null;
     if (n.id==='seal') return q.pools.state==='new' ? (S.hinted.has('seal') ? 'new' : null) : (q.pools.state==='active' && q.pools.seen>=4 ? 'ready' : null);

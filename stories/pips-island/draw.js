@@ -3,9 +3,9 @@ function draw(){
   const t = S.t;
   LOOK = lookFor(S.scene);
   ctx.setTransform(1,0,0,1,0,0);
-  ctx.fillStyle = S.scene==='cave' ? '#241b18' : C.sea; ctx.fillRect(0,0,cvs.width,cvs.height);
+  ctx.fillStyle = S.scene==='cave' ? '#241b18' : (GROUND_EDGE || C.sea); ctx.fillRect(0,0,cvs.width,cvs.height);
   ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,-cam.x*DPR*cam.z,-cam.y*DPR*cam.z);
-  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else drawIsland(t);
+  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else drawIsland(t);
   drawOverlays(t);
 }
 function drawIsland(t){
@@ -77,7 +77,7 @@ function drawPops(){
 function drawTargetRing(){
   if (S.player.goal && !S.ending) { const T=S.player.goal; ctx.strokeStyle='rgba(255,250,240,.8)'; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(T.x,T.y,12,6,0,0,Math.PI*2); ctx.stroke(); }
 }
-const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70 };
+const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44 };
 function drawMarkers(t){
   S.npcs.forEach(n => { if (n.scene!==S.scene) return; const k = npcMarker(n); if (k) marker(n.x, n.y - MARK_Y[n.id], t, k); });
 }
@@ -89,7 +89,21 @@ function drawOverlays(t){
   ctx.fillStyle = vg; ctx.fillRect(0,0,innerWidth,innerHeight);
   drawMap(t);
   drawTideGauge(t);
-  if (S.trans) { ctx.fillStyle = `rgba(20,16,24,${Math.max(0, 1 - Math.abs(S.trans.t-0.4)/0.4)})`; ctx.fillRect(0,0,innerWidth,innerHeight); }
+  if (S.trans) {
+    const T = S.trans, half = T.half || 0.4, a = Math.max(0, Math.min(1, Math.min(T.t, 2*half - T.t)/0.4));
+    ctx.fillStyle = `rgba(20,16,24,${a})`; ctx.fillRect(0,0,innerWidth,innerHeight);
+    if (T.label && a > 0.5) {
+      // a little boat bobbing across the dark while Captain Puff sails
+      ctx.globalAlpha = (a-0.5)*2; ctx.save();
+      const bx = innerWidth/2 - 120 + Math.min(1, T.t/(2*half))*240, by = innerHeight/2 - 20;
+      ctx.translate(-0.0, 0); drawBoatAt(bx, by, S.t, 0.8); ctx.restore();
+      ctx.strokeStyle = 'rgba(140,200,212,.8)'; ctx.lineWidth = 3; ctx.beginPath();
+      for (let x = innerWidth/2 - 160; x <= innerWidth/2 + 160; x += 8) ctx.lineTo(x, by + 12 + Math.sin(x*0.08 + S.t*3)*3); ctx.stroke();
+      ctx.font = '800 24px Grandstander, system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fffaf0'; ctx.fillText(T.label, innerWidth/2, by + 64);
+      ctx.globalAlpha = 1;
+    }
+  }
 
   // sunset wash + fireflies for ending
   if (S.ending) {

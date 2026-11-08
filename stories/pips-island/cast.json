@@ -22,9 +22,9 @@
     "rate": 0.85
    },
    "fish": {
-    "reference_id": "43ef9f00cf0242c1acc011fdc80a902e",
-    "voice": "Stanley (warm, relaxed man in his eighties)",
-    "speed": 0.92
+    "reference_id": "e686ae649ee44f219a108aacba206c1a",
+    "voice": "calm storyteller male (deep, calm, measured). Was Stanley 43ef9f00cf0242c1acc011fdc80a902e, too crunchy",
+    "speed": 0.95
    }
   },
   "duck": {
@@ -129,6 +129,32 @@
     "reference_id": "08032f52a3674456acb058484485f70f",
     "voice": "Dorothy (smooth, warm storyteller in her seventies)",
     "speed": 0.9
+   }
+  },
+  "nana": {
+   "name": "Nana Puff",
+   "description": "A kind old grandma puffin. Calls Pip \"dearie\". Slow and warm.",
+   "voice": {
+    "pitch": 1.1,
+    "rate": 0.82
+   },
+   "fish": {
+    "reference_id": "08032f52a3674456acb058484485f70f",
+    "voice": "Dorothy (smooth, warm storyteller in her seventies)",
+    "speed": 0.9
+   }
+  },
+  "pebble": {
+   "name": "Pebble",
+   "description": "A tiny puffling. Giggly, bouncy, loves hide and seek.",
+   "voice": {
+    "pitch": 1.7,
+    "rate": 0.98
+   },
+   "fish": {
+    "reference_id": "4fcb3a423c61415fb35604eba567d95f",
+    "voice": "Energetic Child (bright, enthusiastic young voice)",
+    "speed": 1.05
    }
   }
  },

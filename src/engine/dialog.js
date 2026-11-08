@@ -23,7 +23,7 @@ const speakerName = id => (CAST.speakers[id] || {}).name ?? id;
 function openDialog(lines, after){
   if (!lines.length) { after && after(); return; }
   S.dialog = { id: lines[0].speaker, lines, i:0, after };
-  clearGoal(); shownItem = undefined;
+  clearGoal(); shownItem = undefined; preloadVoices(lines);
   dlg.hidden = false; chime([520,700],0.08); showLine();
 }
 function advance(){

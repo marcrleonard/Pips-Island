@@ -9,7 +9,7 @@
    "lines": [
     {
      "id": "pip.start",
-     "text": "Good morning, Pip! Let's say hello to Bramble the Owl in the big tree.",
+     "text": "Good morning, island! I'll go and say hello to Bramble the Owl in the big tree.",
      "direction": "[cheerful, bright]"
     }
    ]
@@ -19,7 +19,17 @@
    "lines": [
     {
      "id": "pip.again",
-     "text": "A brand new morning! Let's visit Bramble the Owl.",
+     "text": "A brand new morning! I'll go and visit Bramble the Owl.",
+     "direction": "[cheerful, bright]"
+    }
+   ]
+  },
+  "pip.welcome": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.welcome",
+     "text": "I'm back! Now, where was I?",
      "direction": "[cheerful, bright]"
     }
    ]
@@ -29,7 +39,7 @@
    "lines": [
     {
      "id": "pip.day2.start.1",
-     "text": "Good morning, Pip! A brand new day on the island.",
+     "text": "Good morning, island! A brand new day.",
      "direction": "[cheerful, bright]"
     },
     {
@@ -1615,23 +1625,649 @@
     }
    ]
   },
-  "narrator.end.d1": {
-   "speaker": "narrator",
+  "pip.end.d1": {
+   "speaker": "pip",
    "lines": [
     {
-     "id": "narrator.end.d1",
-     "text": "Goodnight, Pip. See you in the morning!",
-     "direction": "[softly, like a bedtime story]"
+     "id": "pip.end.d1",
+     "text": "What a busy day. Time for bed! Goodnight, island. See you in the morning.",
+     "direction": "[sleepy, happy, softly]"
     }
    ]
   },
-  "narrator.end.d2": {
-   "speaker": "narrator",
+  "pip.end.d2": {
+   "speaker": "pip",
    "lines": [
     {
-     "id": "narrator.end.d2",
-     "text": "Goodnight, Pip. Next time, Puffin Isle!",
-     "direction": "[softly, like a bedtime story]"
+     "id": "pip.end.d2",
+     "text": "Time for bed. Goodnight, island! Next time, I'm sailing to Puffin Isle!",
+     "direction": "[sleepy, happy, softly]"
+    }
+   ]
+  },
+  "pip.day3.start": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.day3.start.1",
+     "text": "Good morning, island! It's boat day!",
+     "direction": "[cheerful, bright]"
+    },
+    {
+     "id": "pip.day3.start.2",
+     "text": "I'd better go and see Bramble first.",
+     "direction": "[excited, happy]"
+    }
+   ]
+  },
+  "pip.wood.all.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.wood.all.early",
+     "text": "Three pieces of driftwood! I wonder who could use them?",
+     "direction": "[curious, happy]"
+    }
+   ]
+  },
+  "pip.pools.all.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pools.all.early",
+     "text": "That's all four tide pools! I wonder who would like to hear about them?",
+     "direction": "[curious, happy]"
+    }
+   ]
+  },
+  "pip.isle.first": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.isle.first",
+     "text": "Puffin Isle! Look at all the puffins!",
+     "direction": "[amazed, delighted]"
+    }
+   ]
+  },
+  "pip.early.eel": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.eel",
+     "text": "A sand eel! It's slippery and silver. I wonder who would like this?",
+     "direction": "[curious, giggly]"
+    }
+   ]
+  },
+  "pip.eels.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.eels.all",
+     "text": "Four sand eels! Let's take them to Nana Puff.",
+     "direction": "[cheerful, bright]"
+    }
+   ]
+  },
+  "pip.eels.all.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.eels.all.early",
+     "text": "Four sand eels! Someone hungry would love these.",
+     "direction": "[curious, happy]"
+    }
+   ]
+  },
+  "pip.end.d3": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.end.d3",
+     "text": "What an adventure! Goodnight, island. Goodnight, Puffin Isle!",
+     "direction": "[sleepy, happy, softly]"
+    }
+   ]
+  },
+  "owl.d3.first": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.d3.first.1",
+     "text": "Hoo! Good morning, Pip. Today is a very special day.",
+     "direction": "[warm, wise]"
+    },
+    {
+     "id": "owl.d3.first.2",
+     "text": "Look out to sea. Can you see Puffin Isle?",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.hint.sail": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.sail",
+     "text": "Captain Puff is waiting in Seagrass Cove. Go through Digby's tunnel and find him on the dock!",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.remind.sail": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.sail",
+     "text": "Captain Puff is waiting on the dock in Seagrass Cove.",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.hint.eels": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.eels",
+     "text": "On Puffin Isle there's a grandma puffin called Nana Puff. I think she needs some help.",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.remind.eels": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.eels",
+     "text": "Nana Puff's pufflings are still hungry.",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.hint.hide": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.hide",
+     "text": "There's a little puffin on Puffin Isle called Pebble. He loves to play!",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.remind.hide": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.hide",
+     "text": "Pebble is still waiting for you to find him.",
+     "direction": "[warm, wise]"
+    }
+   ]
+  },
+  "owl.end.d3": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.end.d3.1",
+     "text": "Hoo hoo! You sailed all the way to Puffin Isle, Pip!",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d3.2",
+     "text": "You fed the pufflings and played hide and seek with Pebble.",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d3.3",
+     "text": "What a brave little otter. Sweet dreams!",
+     "direction": "[softly, warm]"
+    }
+   ]
+  },
+  "puffin.d3.board": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.d3.board.1",
+     "text": "Ahoy, Pip! Our boat is ready.",
+     "direction": "[jolly, excited]"
+    },
+    {
+     "id": "puffin.d3.board.2",
+     "text": "Walk to the end of the dock and hop aboard. Off we go!",
+     "direction": "[jolly, excited]"
+    }
+   ]
+  },
+  "puffin.d3.board.again": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.d3.board.again",
+     "text": "Walk to the end of the dock and hop aboard!",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "puffin.d3.arrive": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.d3.arrive.1",
+     "text": "Land ho! Welcome to Puffin Isle, Pip!",
+     "direction": "[jolly, proud]"
+    },
+    {
+     "id": "puffin.d3.arrive.2",
+     "text": "This is where all the puffins live.",
+     "direction": "[jolly, proud]"
+    }
+   ]
+  },
+  "puffin.hint.eels": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.hint.eels",
+     "text": "My friend Nana Puff lives at the top of the hill, behind the red door. Go and say hello!",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "puffin.hint.hide": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.hint.hide",
+     "text": "Have you met little Pebble? He's up by Nana Puff's door.",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "puffin.remind.eels": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.remind.eels",
+     "text": "Nana Puff is at the top of the hill, by the red door.",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "puffin.remind.hide": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.remind.hide",
+     "text": "Pebble is hiding somewhere. Look carefully for a little wiggle!",
+     "direction": "[jolly, playful]"
+    }
+   ]
+  },
+  "puffin.d3.again": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.d3.again",
+     "text": "Ahoy again, Pip!",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "puffin.d3.home": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.d3.home",
+     "text": "When you want to sail home, hop back in the boat.",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "puffin.end.d3": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.end.d3.1",
+     "text": "Pip, you've helped everyone on Puffin Isle!",
+     "direction": "[jolly, proud]"
+    },
+    {
+     "id": "puffin.end.d3.2",
+     "text": "The sun is going down. Let's sail home for the picnic!",
+     "direction": "[jolly, warm]"
+    }
+   ]
+  },
+  "nana.ask.open": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.ask.open.1",
+     "text": "Hello, dearie! I'm Nana Puff.",
+     "direction": "[warm, gentle]"
+    },
+    {
+     "id": "nana.ask.open.2",
+     "text": "My pufflings are hungry, and my old wings are too tired to go fishing.",
+     "direction": "[warm, gentle]"
+    }
+   ]
+  },
+  "nana.ask.need": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.ask.need",
+     "text": "Could you catch 4 sand eels for them? They jump in the shallow water by the beach.",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.ask.already.1": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.ask.already.1",
+     "text": "You caught one already! Could you find the rest?",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.ask.already.2": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.ask.already.2",
+     "text": "You caught two already! Could you find the rest?",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.ask.already.3": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.ask.already.3",
+     "text": "You caught three already! Could you find the rest?",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.ask.close": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.ask.close",
+     "text": "Look for the ripples, dearie, and wait there. When an eel jumps, catch it!",
+     "direction": "[warm, gentle]"
+    }
+   ]
+  },
+  "nana.progress.0": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.progress.0",
+     "text": "My pufflings are still hungry. Wait by the ripples, and catch an eel when it jumps!",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.progress.1": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.progress.1",
+     "text": "You have one sand eel. Just a few more, dearie!",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.progress.2": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.progress.2",
+     "text": "You have two sand eels. Just a few more, dearie!",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.progress.3": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.progress.3",
+     "text": "You have three sand eels. Just a few more, dearie!",
+     "direction": "[warm, gentle]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "nana.thanks": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.thanks.1",
+     "text": "Four sand eels! Oh, thank you, dearie.",
+     "direction": "[delighted, warm]",
+     "item": {
+      "k": "eel",
+      "n": 4
+     }
+    },
+    {
+     "id": "nana.thanks.2",
+     "text": "Come out, little ones. Breakfast time!",
+     "direction": "[delighted, warm]"
+    }
+   ]
+  },
+  "nana.after": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.after",
+     "text": "Listen to them munching! They'll be big and strong in no time.",
+     "direction": "[warm, gentle]"
+    }
+   ]
+  },
+  "nana.gotell": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.gotell",
+     "text": "Now go and tell Captain Puff, dearie. It's time to sail home.",
+     "direction": "[warm, gentle]"
+    }
+   ]
+  },
+  "pebble.ask": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.ask.1",
+     "text": "Hi! I'm Pebble! Do you want to play hide and seek?",
+     "direction": "[bouncy, excited]"
+    },
+    {
+     "id": "pebble.ask.2",
+     "text": "I'll hide, and you find me. Ready? Close your eyes!",
+     "direction": "[giggly, excited]"
+    }
+   ]
+  },
+  "pebble.found.1": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.found.1",
+     "text": "Hee hee! You found me! Let's play again!",
+     "direction": "[giggly]"
+    }
+   ]
+  },
+  "pebble.found.2": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.found.2",
+     "text": "Found me again! One more time!",
+     "direction": "[giggly]"
+    }
+   ]
+  },
+  "pebble.found.3": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.found.3",
+     "text": "You found me three times! You're the best at hide and seek!",
+     "direction": "[delighted, bouncy]"
+    }
+   ]
+  },
+  "pebble.after": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.after",
+     "text": "That was so much fun! Let's play again next time!",
+     "direction": "[happy, bouncy]"
+    }
+   ]
+  },
+  "pebble.gotell": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.gotell",
+     "text": "Now go and tell Captain Puff. It's time to sail home!",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "duck.d3": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.d3",
+     "text": "Quack! Have a lovely boat trip, Pip! Wave to the puffins for us.",
+     "direction": "[warm, motherly]"
+    }
+   ]
+  },
+  "hog.d3": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.d3",
+     "text": "A boat trip! I packed a blueberry muffin for your journey.",
+     "direction": "[cosy, kind]"
+    }
+   ]
+  },
+  "crab.d3": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.d3",
+     "text": "Click, click! Puffin Isle? Say hello to the sea for me.",
+     "direction": "[gruff, kind]"
+    }
+   ]
+  },
+  "mole.d3": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.d3",
+     "text": "My tunnel goes all the way to the cove now. Have a wonderful trip!",
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "mouse.d3": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.d3",
+     "text": "I'm going to write a song about your adventure, Pip!",
+     "direction": "[dreamy, sweet]"
+    }
+   ]
+  },
+  "seal.d3": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.d3",
+     "text": "Captain Puff's boat is ready! I'll wave to you from the water.",
+     "direction": "[sweet, excited]"
+    }
+   ]
+  },
+  "mouse.song.turn": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.song.turn",
+     "text": "Your turn! Walk to the crystals in the same order.",
+     "direction": "[sweet, encouraging]"
+    }
+   ]
+  },
+  "mouse.song.next": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.song.next",
+     "text": "Yes! You did it! Ready for the next one? Listen!",
+     "direction": "[delighted, sweet]"
+    }
+   ]
+  },
+  "mouse.song.oops": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.song.oops",
+     "text": "Oops! That's okay. Listen again.",
+     "direction": "[gentle, sweet]"
     }
    ]
   }

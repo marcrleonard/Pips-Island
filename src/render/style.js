@@ -48,8 +48,14 @@ function circ(x,y,r,fill){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill
 function ell(x,y,rx,ry,fill){ ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); ctx.fillStyle = shadeable(fill, Math.min(rx,ry)) ? volume(x,y,rx,ry,fill) : fill; ctx.fill(); }
 
 // ---------- shadows ----------
+// A soft ellipse drawn with a radial gradient. (Canvas filter: blur() would be simpler, but WebKit, which every iOS
+// browser uses, ignores it and the shadows come out hard-edged.) The stops follow a blurred-edge falloff.
 function blobSprite(color){ const c = document.createElement('canvas'); c.width = 128; c.height = 64; const x = c.getContext('2d');
-  x.filter = 'blur(7px)'; x.fillStyle = color; x.beginPath(); x.ellipse(64,32,44,16,0,0,Math.PI*2); x.fill(); return c; }
+  const [r, g, b] = [1,3,5].map(i => parseInt(color.slice(i, i+2), 16)), a = k => `rgba(${r},${g},${b},${k})`;
+  x.setTransform(1, 0, 0, 0.44, 64, 32);
+  const gr = x.createRadialGradient(0, 0, 0, 0, 0, 52);
+  [[0,1],[0.55,0.97],[0.7,0.82],[0.8,0.58],[0.9,0.26],[0.96,0.08],[1,0]].forEach(([s, k]) => gr.addColorStop(s, a(k)));
+  x.fillStyle = gr; x.beginPath(); x.arc(0, 0, 52, 0, Math.PI*2); x.fill(); return c; }
 const AO_BLOB = blobSprite('#1a1f17');
 let SUN_BLOB = blobSprite(LOOK_DAY.sun.color);
 // x,y: where the object touches the ground. rx: footprint radius. h: how tall it stands.
@@ -93,12 +99,19 @@ function bake(c2, x, y, box, fn, scale){
   gradeCanvas(c2, c2.canvas, pw, ph);
   return { pw, ph, w, h, dx: x+L-PAD, dy: y+T-PAD };
 }
+// A long cast shadow reaches well past its sprite (down and to the right), so visibility checks include it;
+// otherwise the shadow pops in when the sprite comes on screen.
+function shadowReach(box, opt){
+  if (!opt.shadow) return box;
+  const s = LOOK.sun, rx = opt.shadow, len = (opt.h ?? rx*2.2)*s.len, sy = opt.shy ?? 2;
+  return [Math.min(box[0], -rx*1.3), box[1], Math.max(box[2], s.dx*len + rx*1.3), Math.max(box[3], sy + s.dy*len + rx)];
+}
 function onScreen(x,y,box){ const [L,T,Rr,B]=box; return !(x+Rr < cam.x-30 || x+L > cam.x+cam.vw+30 || y+B < cam.y-30 || y+T > cam.y+cam.vh+30); }
 // Characters and anything animated. With opt.key, the drawn pose is reused until the animation
 // clock ticks (opt.fps times a second, default 15), so a character costs one image stamp most frames.
 const poseCache = new Map();
 function styled(x, y, box, fn, opt = {}){
-  if (!onScreen(x,y,box)) return;
+  if (!onScreen(x,y,shadowReach(box,opt))) return;
   if (opt.shadow) shadow(x, y + (opt.shy ?? 2), opt.shadow, opt.h);
   const scale = renderScale();
   if (!opt.key) { const m = bake(scx, x, y, box, fn, scale); ctx.drawImage(scratch, 0,0,m.pw,m.ph, m.dx,m.dy,m.w,m.h); return; }
@@ -118,7 +131,7 @@ function styled(x, y, box, fn, opt = {}){
 // drawn once and reused: trees, rocks, houses
 const spriteCache = new Map();
 function cached(key, x, y, box, fn, opt = {}){
-  if (!onScreen(x,y,box)) return;
+  if (!onScreen(x,y,shadowReach(box,opt))) return;
   const scale = renderScale(), lk = LOOK === LOOK_CAVE ? 'c' : 'd';
   let c = spriteCache.get(key);
   if (!c || c.scale !== scale || c.lk !== lk) {
@@ -173,10 +186,16 @@ function bakedGround(key, w, h, drawFn, opt = {}){
       x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
     }
     GROUND[key] = gC = { can:c, k };
+    // the colour at the world's corner, so the screen beyond the world's edge matches the baked sea
+    if (!opt.transparent) { const px = x.getImageData(0, 0, 8, 8).data; let r = 0, g = 0, b = 0;
+      for (let i=0;i<px.length;i+=4){ r += px[i]; g += px[i+1]; b += px[i+2]; } const n = px.length/4;
+      gC.edge = `rgb(${Math.round(r/n)},${Math.round(g/n)},${Math.round(b/n)})`; }
   }
   return gC;
 }
+let GROUND_EDGE = null;
 function blitGround(gC, w, h){
+  if (gC.edge) GROUND_EDGE = gC.edge;
   const x0 = Math.max(0, cam.x), y0 = Math.max(0, cam.y), x1 = Math.min(w, cam.x+cam.vw), y1 = Math.min(h, cam.y+cam.vh);
   if (x1 <= x0 || y1 <= y0) return;
   ctx.drawImage(gC.can, x0*gC.k, y0*gC.k, (x1-x0)*gC.k, (y1-y0)*gC.k, x0, y0, x1-x0, y1-y0);
@@ -196,7 +215,7 @@ const NPC_STYLE = {
   hog:   { box:[-36,-44,36,4], shadow:24, h:34 },
   crab:  { box:[-36,-46,36,8], shadow:26, h:30 },
   mole:  { box:[-36,-82,48,6], shadow:24, h:44 },
-  seal:  { box:[-40,-42,40,6], shadow:26, h:30 },
+  seal:  { box:[-46,-40,44,6], shadow:24, h:8 },
   puffin:{ box:[-30,-62,30,6], shadow:16, h:50 },
   mouse: { box:[-28,-50,28,6], shadow:16, h:40 },
   mouseStool: { box:[-40,-50,28,24], shadow:24, shy:20, h:50 },
@@ -206,7 +225,77 @@ function drawNpcStyled(n, t, stool){
   const st = NPC_STYLE[n.id==='mouse' && stool ? 'mouseStool' : n.id];
   const fn = n.id==='duck' ? () => drawDuck(n.x,n.y,1,-1,t,true) : n.id==='hog' ? () => drawHog(n,t) : n.id==='crab' ? () => drawCrab(n,t)
     : n.id==='mole' ? () => drawMole(n,t) : n.id==='mouse' ? () => drawMouse(n,t,stool) : n.id==='seal' ? () => drawSealPup(n,t) : n.id==='puffin' ? () => drawPuffin(n.x,n.y,1,-1,t,true) : () => drawOwl(n,t);
-  styled(n.x, n.y, st.box, fn, { ...st, key:'npc:'+n.id+(stool?':s':''), fps:12 });
+  // a friend on the move bobs a little with each step (Digby draws his own waddle)
+  const walk = n.moving && n.id !== 'mole' ? () => { ctx.save(); ctx.translate(0, -Math.abs(Math.sin(n.walkT))*3); fn(); ctx.restore(); } : fn;
+  styled(n.x, n.y, st.box, walk, { ...st, key:'npc:'+n.id+(stool?':s':''), fps:12 });
 }
-const drawPipStyled = t => styled(S.player.x, S.player.y, [-44,-70,44,8], () => drawOtter(S.player,t), { shadow:22, h:62, key:'pip', fps:24 });
+const drawPipStyled = t => { const k = swimDepth(S.player.x, S.player.y);
+  return k > 0.03 ? drawPipSwim(t, k) : styled(S.player.x, S.player.y, [-44,-70,44,8], () => drawOtter(S.player,t), { shadow:22, h:62, key:'pip', fps:24 }); };
+// Wading and swimming: a waterline crosses Pip and climbs his body as the water gets deeper (k: 0 dry, 1 swimming).
+// Below the line he shows faintly through the water.
+function drawPipSwim(t, k){
+  const P = S.player, sink = k*9, bob = Math.sin(t*2.6)*1.2*k, line = P.y + 2 - k*24;
+  if (P.moving && k > 0.6) {
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    for (let j=1;j<=2;j++){ const back = -P.face*(22 + j*14), spread = 8 + j*6;
+      ctx.beginPath(); ctx.moveTo(P.x + back*0.6, line - 1); ctx.lineTo(P.x + back, line - spread*0.45); ctx.moveTo(P.x + back*0.6, line + 3); ctx.lineTo(P.x + back, line + spread*0.6); ctx.stroke(); }
+  }
+  styled(P.x, P.y, [-44,-70,44,8], () => {
+    ctx.save(); ctx.translate(0, sink + bob); ctx.globalAlpha = 0.28; drawOtter(P, t); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x-60, P.y-130, 120, line - (P.y-130)); ctx.clip();
+    ctx.translate(0, sink + bob); drawOtter(P, t); ctx.restore();
+  }, { key:'pipswim', fps:24 });
+  // the waterline across his body, wobbling a little
+  const w = 15 + k*7;
+  ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.beginPath();
+  for (let x = -w; x <= w; x += 3) { const y = line + Math.sin(x*0.35 + t*5)*1.2; x === -w ? ctx.moveTo(P.x + x, y) : ctx.lineTo(P.x + x, y); }
+  ctx.stroke();
+  if (k > 0.5) { const r2 = (t*0.8) % 1; ctx.strokeStyle = `rgba(255,255,255,${0.45*(1-r2)*(k-0.5)*2})`; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(P.x - w - 4 - r2*14, line + 1); ctx.lineTo(P.x - w - 12 - r2*14, line + 2); ctx.moveTo(P.x + w + 4 + r2*14, line + 1); ctx.lineTo(P.x + w + 12 + r2*14, line + 2); ctx.stroke(); }
+}
 const drawDucklingStyled = (d,t) => styled(d.x, d.y, [-18,-25,18,3], () => drawDuck(d.x,d.y,0.55,d.face||1,t,false), { shadow:10, h:18, key:'duckling:'+S.ducklings.indexOf(d), fps:12 });
+
+// ---------- Smooth shapes ----------
+// Land and rock outlines are smooth closed curves, not unions of circles. smoothPts turns a few control points
+// into a dense polygon (quadratic curve through the midpoints), so drawing and walking use the same outline.
+function smoothPts(pts, steps = 8){
+  const n = pts.length, out = [], mid = (a, b) => [(a[0]+b[0])/2, (a[1]+b[1])/2];
+  for (let i=0;i<n;i++){
+    const p0 = mid(pts[(i-1+n)%n], pts[i]), c = pts[i], p1 = mid(pts[i], pts[(i+1)%n]);
+    for (let k=0;k<steps;k++){ const t = k/steps, u = 1-t; out.push([u*u*p0[0]+2*u*t*c[0]+t*t*p1[0], u*u*p0[1]+2*u*t*c[1]+t*t*p1[1]]); }
+  }
+  return out;
+}
+function polyPath(poly, dx = 0, dy = 0){ ctx.beginPath(); poly.forEach(([x,y],i) => i ? ctx.lineTo(x+dx,y+dy) : ctx.moveTo(x+dx,y+dy)); ctx.closePath(); }
+function inPoly(poly, x, y){
+  let c = false;
+  for (let i=0, j=poly.length-1; i<poly.length; j=i++){ const [xi,yi] = poly[i], [xj,yj] = poly[j];
+    if ((yi > y) !== (yj > y) && x < (xj-xi)*(y-yi)/(yj-yi) + xi) c = !c; }
+  return c;
+}
+function polyEdgeD(poly, x, y){
+  let m = 1e9;
+  for (let i=0, j=poly.length-1; i<poly.length; j=i++){ const [ax,ay] = poly[j], [bx,by] = poly[i], dx = bx-ax, dy = by-ay, l = dx*dx+dy*dy;
+    const t = l ? Math.max(0, Math.min(1, ((x-ax)*dx+(y-ay)*dy)/l)) : 0; m = Math.min(m, Math.hypot(x-ax-dx*t, y-ay-dy*t)); }
+  return m;
+}
+// inside the outline and at least `margin` away from its edge
+const insidePoly = (poly, x, y, margin = 0) => inPoly(poly, x, y) && (!margin || polyEdgeD(poly, x, y) > margin);
+// The same outline pushed out (or in) by g, along each point's normal. Results are cached per poly and g.
+const offsetCache = new Map();
+function offsetPoly(poly, g){
+  const key = g, per = offsetCache.get(poly) || offsetCache.set(poly, new Map()).get(poly);
+  if (per.has(key)) return per.get(key);
+  const n = poly.length; let area = 0;
+  for (let i=0;i<n;i++){ const [x1,y1] = poly[i], [x2,y2] = poly[(i+1)%n]; area += x1*y2 - x2*y1; }
+  const s = area > 0 ? 1 : -1;
+  const out = poly.map((p,i) => { const a = poly[(i-1+n)%n], b = poly[(i+1)%n], dx = b[0]-a[0], dy = b[1]-a[1], l = Math.hypot(dx,dy) || 1;
+    return [p[0] + s*dy/l*g, p[1] - s*dx/l*g]; });
+  per.set(key, out); return out;
+}
+// An angular cut-paper slab: a few jittered corners around a centre.
+function slabPts(R, cx, cy, rx, ry, n = 6){
+  const a0 = R()*Math.PI, out = [];
+  for (let k=0;k<n;k++){ const a = a0 + k/n*Math.PI*2, j = 0.82 + R()*0.3; out.push([cx + Math.cos(a)*rx*j, cy + Math.sin(a)*ry*j]); }
+  return out;
+}

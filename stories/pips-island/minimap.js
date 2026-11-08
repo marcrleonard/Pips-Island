@@ -10,12 +10,13 @@ function drawMap(t){
   if (mapEl.width !== Math.round(w*DPR)) { mapEl.width = Math.round(w*DPR); mapEl.height = Math.round(h*DPR); }
   if (S.scene==='cave') return drawCaveMap(t, w);
   if (S.scene==='cove') return drawCoveMap(t, w);
+  if (S.scene==='isle') return drawIsleMap(t, w);
   const k = w / W;
   mctx.setTransform(DPR*k,0,0,DPR*k,0,0);
   mctx.fillStyle = C.sea; mctx.fillRect(0,0,W,H);
   const c = (x,y,r,f) => { mctx.beginPath(); mctx.arc(x,y,r,0,Math.PI*2); mctx.fillStyle=f; mctx.fill(); };
-  land.forEach(([x,y,r]) => c(x,y,r+46,C.sand));
-  land.forEach(([x,y,r]) => c(x,y,r,C.grass));
+  const poly = (pts, f) => { mctx.beginPath(); pts.forEach(([x,y],i) => i ? mctx.lineTo(x,y) : mctx.moveTo(x,y)); mctx.closePath(); mctx.fillStyle = f; mctx.fill(); };
+  poly(offsetPoly(ISLAND, 46), C.sand); poly(ISLAND, C.grass);
   mctx.beginPath(); mctx.ellipse(pond.x,pond.y,pond.r,pond.r*0.6,0,0,Math.PI*2); mctx.fillStyle=C.pond; mctx.fill();
   mctx.strokeStyle='#e3d3a6'; mctx.lineWidth=34; mctx.lineCap='round';
   for (const [a,cc,b] of PATHS){ mctx.beginPath(); mctx.moveTo(a[0],a[1]); mctx.quadraticCurveTo(cc[0],cc[1],b[0],b[1]); mctx.stroke(); }

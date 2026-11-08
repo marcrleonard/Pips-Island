@@ -19,7 +19,7 @@ function update(dt){
   P.moving = !!(vx||vy);
   if (P.moving) {
     const nx=P.x+vx*speed*dt, ny=P.y+vy*speed*dt;
-    const canWalk = S.scene==='cave' ? caveWalkable : S.scene==='cove' ? coveWalkable : walkable;
+    const canWalk = S.scene==='cave' ? caveWalkable : S.scene==='cove' ? coveWalkable : S.scene==='isle' ? isleWalkable : walkable;
     const step = speed*dt;
     let moved = false;
     if (canWalk(nx,ny)) { P.x=nx; P.y=ny; moved = true; }
@@ -43,14 +43,17 @@ function update(dt){
   if (!S.dialog && !S.ending && !S.trans && !S.show) {
     for (const n of S.npcs) {
       if (n.scene !== S.scene) continue;
-      const d = d2(P.x,P.y,n.x,n.y + (n.perch?78:0));
+      // talkAt: talk from a fixed spot (Mama Duck in the pond is reached from its bank)
+      const at = n.talkAt || { x: n.x, y: n.y + (n.perch?78:0), r: 78 };
+      const d = d2(P.x,P.y,at.x,at.y) - (at.r - 78);
       const auto = !(n.id==='mouse' && S.quests.song.state==='active') || n.tapped;
       if (d < 78 && !n.near && auto) { n.near = true; n.tapped = false; talk(n); break; }
       if (d > 120) n.near = false;
     }
   }
 
-  if (S.day>=2 && S.scene==='island') { const m = S.npcs.find(n => n.id==='duck'); if (m && !S.ending) { const nx = 1450 + Math.sin(S.t*0.35)*42; m.face = nx >= m.x ? 1 : -1; m.x = nx; m.y = 724; } }
+  // Day 2: Mama Duck paddles a slow loop inside the pond and the ducklings follow in a line behind her.
+  if (S.day>=2 && S.scene==='island') { const m = S.npcs.find(n => n.id==='duck'); if (m && !S.ending) Object.assign(m, pondLoop(S.t*0.3)); }
   // ducklings
   let followIdx = 0;
   for (const dk of S.ducklings) {
@@ -68,8 +71,8 @@ function update(dt){
       dk.face = tp.f || P.face;
     }
     if (dk.state==='swim' && S.day>=2) {
-      const m = S.npcs.find(n => n.id==='duck'), i = S.ducklings.indexOf(dk);
-      dk.x = m.x - m.face*(30 + i*24); dk.y = m.y + 4 + Math.sin(S.t*2 + i)*2; dk.face = m.face;
+      const i = S.ducklings.indexOf(dk), at = pondLoop(S.t*0.3 - 0.5 - i*0.38);
+      dk.x = at.x; dk.y = at.y + 4 + Math.sin(S.t*2 + i)*1.5; dk.face = at.face;
     } else if (dk.state==='swim') { dk.a += dt*0.6; const r = 55 + (S.ducklings.indexOf(dk))*14; dk.x = pond.x + Math.cos(dk.a)*r; dk.y = pond.y + Math.sin(dk.a)*r*0.55; dk.face = -Math.sin(dk.a) > 0 ? 1 : -1; }
     if (dk.state==='picnic') { dk.x += (dk.goal[0]-dk.x)*dt*0.9; dk.y += (dk.goal[1]-dk.y)*dt*0.9; }
   }
@@ -89,13 +92,13 @@ function update(dt){
     setTimeout(() => !S.dialog && speak('pip.shell.found'), 600);
   }
 
-  if (S.scene==='cave') updateCave(dt); else if (S.scene==='cove') updateCove(dt); else updateDoor();
+  if (S.scene==='cave') updateCave(dt); else if (S.scene==='cove') updateCove(dt); else if (S.scene==='isle') updateIsle(dt); else updateDoor();
   updateTrans(dt);
 
   // ending walk
   if (S.ending) {
     S.ending = Math.min(1, S.ending + dt/6);
-    for (const n of S.npcs) if (n.goal) { n.x += (n.goal[0]-n.x)*dt*0.8; n.y += (n.goal[1]-n.y)*dt*0.8; }
+    for (const n of S.npcs) if (n.route) stepNpc(n, dt, 120);
   }
 
   // footprints on sand

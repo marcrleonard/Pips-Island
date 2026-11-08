@@ -6,7 +6,11 @@ function renderQuests(){
   if (!S) return;
   const q = S.quests;
   const following = S.ducklings.filter(d => d.state==='follow' || d.state==='swim' || d.state==='picnic').length;
-  const rows = S.day===2 ? [
+  const rows = S.day===3 ? [
+    ['sail', 'Boat trip', q.sail.state==='done' ? 'sailed' : '?', q.sail.state],
+    ['eels', 'Sand eels', `${Math.min(q.eels.have,4)}/4`, q.eels.state],
+    ['hide', 'Hide and seek', `${q.hide.found||0}/3`, q.hide.state],
+  ] : S.day===2 ? [
     ['dig', 'Tunnel', q.dig.state==='done' ? 'open' : '?', q.dig.state],
     ['pools', 'Tide pools', `${q.pools.seen}/4`, q.pools.state],
     ['wood', 'Driftwood', `${Math.min(q.wood.have,3)}/3`, q.wood.state],

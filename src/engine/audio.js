@@ -26,8 +26,31 @@ voiceBtn.addEventListener('click', e => {
 const AUDIO_FILES = new Set(AUDIO_MANIFEST.files || []);
 const AUDIO_EXT = AUDIO_MANIFEST.ext || 'mp3';
 const lineAudioPath = l => `audio/voice/${l.speaker}/${l.id}.${AUDIO_EXT}`;
-let voiceAudio = null;
-function stopVoice(){ try { speechSynthesis.cancel(); } catch(e){} if (voiceAudio) { try { voiceAudio.pause(); } catch(e){} voiceAudio = null; } }
+// Recorded lines play through Web Audio, not <audio> elements. iPhones refuse to start an <audio> element
+// outside a tap (a friend who starts talking as Pip walks up), which used to fall back to the robotic
+// built-in voice; one audio context unlocked by the first tap plays everything after it.
+const ac = () => actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}   // play even with the ringer switch off
+['pointerdown','touchend','click','keydown'].forEach(ev => addEventListener(ev, () => {
+  try { const a = ac(); if (a.state !== 'running') a.resume(); } catch(e){}
+}, { capture: true, passive: true }));
+const voiceBufs = new Map();
+let voiceSrc = null, voiceTok = 0;
+const AUDIO_VERSIONS = AUDIO_MANIFEST.versions || {};
+function loadVoice(path){
+  const url = AUDIO_VERSIONS[path] ? `${path}?v=${AUDIO_VERSIONS[path]}` : path;
+  if (!voiceBufs.has(path)) voiceBufs.set(path, fetch(url)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .then(b => new Promise((ok, no) => ac().decodeAudioData(b, ok, no)))
+    .catch(e => { voiceBufs.delete(path); throw e; }));
+  return voiceBufs.get(path);
+}
+function preloadVoices(lines){ for (const l of lines) if (l.id && AUDIO_FILES.has(lineAudioPath(l))) loadVoice(lineAudioPath(l)).catch(() => {}); }
+function stopVoice(){
+  voiceTok++;
+  try { speechSynthesis.cancel(); } catch(e){}
+  if (voiceSrc) { try { voiceSrc.stop(); } catch(e){} voiceSrc = null; }
+}
 function say(text, who){
   if (!voiceOn) return;
   try {
@@ -41,9 +64,11 @@ function say(text, who){
 function voiceLine(l){
   if (!voiceOn || !l) return;
   stopVoice();
-  if (l.id && AUDIO_FILES.has(lineAudioPath(l))) {
-    try { voiceAudio = new Audio(lineAudioPath(l)); voiceAudio.play().catch(() => say(l.text, l.speaker)); return; } catch(e){}
-  }
-  say(l.text, l.speaker);
+  if (!(l.id && AUDIO_FILES.has(lineAudioPath(l)))) return say(l.text, l.speaker);
+  const tok = voiceTok;
+  loadVoice(lineAudioPath(l)).then(buf => {
+    if (tok !== voiceTok || !voiceOn) return;
+    const a = ac(); if (a.state !== 'running') a.resume();
+    const src = a.createBufferSource(); src.buffer = buf; src.connect(a.destination); src.start(); voiceSrc = src;
+  }).catch(() => { if (tok === voiceTok) say(l.text, l.speaker); });
 }
-

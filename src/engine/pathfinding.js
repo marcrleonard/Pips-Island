@@ -6,7 +6,7 @@ function getGrid(scene){
   const key = scene==='cave' ? 'cave'+digStage() : scene;
   if (grids[key]) return grids[key];
   const [SW,SH] = sceneDims(scene);
-  const fn = scene==='cave' ? caveWalkable : scene==='cove' ? coveWalkable : walkable;
+  const fn = scene==='cave' ? caveWalkable : scene==='cove' ? coveWalkable : scene==='isle' ? isleWalkable : walkable;
   const gw = Math.ceil(SW/GRID), gh = Math.ceil(SH/GRID), ok = new Uint8Array(gw*gh);
   const m = 9; // keep a little clearance so paths don't scrape obstacles
   for (let y=0;y<gh;y++) for (let x=0;x<gw;x++) {
@@ -87,3 +87,21 @@ function setGoal(x, y){
 }
 function clearGoal(){ const P = S.player; P.target = null; P.path = []; P.goal = null; }
 
+
+// Friends walk too: send one along a path, then step it each frame at a steady pace.
+function sendNpc(n, x, y, scene){
+  const path = findPath(scene || n.scene, n.x, n.y, x, y) || [];
+  const end = path[path.length-1];
+  if (!end || d2(end.x, end.y, x, y) > 2) path.push({ x, y });   // finish the last bit (e.g. into a fresh tunnel)
+  n.route = path; n.moving = true;
+}
+function stepNpc(n, dt, speed = 90){
+  const T = n.route && n.route[0];
+  if (!T) { n.route = null; n.moving = false; return true; }
+  const dx = T.x - n.x, dy = T.y - n.y, d = Math.hypot(dx, dy), s = speed*dt;
+  if (Math.abs(dx) > 1) n.face = dx < 0 ? -1 : 1;
+  n.walkT = (n.walkT || 0) + dt*11;
+  if (d <= s) { n.x = T.x; n.y = T.y; n.route.shift(); if (!n.route.length) { n.route = null; n.moving = false; return true; } }
+  else { n.x += dx/d*s; n.y += dy/d*s; }
+  return false;
+}

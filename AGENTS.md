@@ -26,17 +26,36 @@ python3 tools/watch.py      # rebuild on save + serve http://localhost:8000/pips
   what it uses, so keep the order.
 - The build embeds `story.json`, `script.json`, `cast.json` and `audio/manifest.json` as the constants `STORY`,
   `SCRIPT`, `CAST` and `AUDIO_MANIFEST`.
-- `#day2` on the URL starts on Day 2 (testing shortcut, handled in `src/engine/boot.js`).
+- `#day2` or `#day3` on the URL starts on that day (testing shortcut, handled in `src/engine/boot.js`).
 - The published game is a claude.ai artifact made from the bundled file. The audio files are not published with
   it yet, so the artifact uses browser voices.
 
 ## Architecture
 
 **State.** One object `S` (created in `stories/pips-island/state.js` `init()`), holding the player, quests, NPCs,
-scene, day, dialog and effects. `startDay2()` in `cove.js` rewrites it for Day 2. There is no save yet.
+scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for Day 2.
 
-**Scenes.** `S.scene` is `'island'`, `'cave'` (the Burrow) or `'cove'` (Seagrass Cove).
-- World sizes: island `W×H` = 2400×1800, cave `CW×CH` = 1600×1200, cove `VW×VH` = 1800×1200.
+**Saving.** Progress autosaves to `localStorage` (key `pips-island:save`) as one JSON document:
+`{ format:'story-save', version, story, savedAt, day, progress }`.
+- `src/engine/save.js` (engine) stores, reads and versions it. It saves every 2 s and when the tab is hidden, and
+  only writes when something changed. `SAVE_VERSION` bumps go with an upgrade step in `readSave()`.
+- `stories/pips-island/save.js` (story) decides the contents: `saveSnapshot()` returns `null` during busy moments
+  (dialog, fades, light show, Fern's tune), and at the end of a day it saves `progress: null` for the next morning.
+  `restoreSave()` rebuilds a fresh day, then applies quests, flags, collected items and positions.
+- New state that should survive a reload must be added to both functions.
+- The title shows "Keep playing" plus "Start a new game" when a save exists.
+
+**Scenes.** `S.scene` is `'island'`, `'cave'` (the Burrow), `'cove'` (Seagrass Cove) or `'isle'` (Puffin Isle, Day 3).
+- World sizes: island `W×H` = 2400×1800, cave `CW×CH` = 1600×1200, cove `VW×VH` = 1800×1200, isle `IW×IH` = 1800×1300.
+- Day 3 (`stories/pips-island/isle.js`): walking to the end of a dock with the boat there calls `sail(to)`, a longer
+  fade with a sailing card. Captain Puff and the boat travel with Pip (`S.boatAt`). On the isle Captain Puff gives the
+  one-at-a-time hints (`puffin.hint.<quest>`), and his end conversation sails everyone home to the picnic.
+- Shapes: coasts, beaches and rock shelves are smooth outlines (`smoothPts`, `polyPath`, `insidePoly`, `offsetPoly`
+  in `style.js`). The same outline is drawn and used for walking. The main island's outline is traced once from the
+  old layout circles in `island-world.js` (`ISLAND`, `edgeD`).
+- Friends can walk: `sendNpc(n, x, y)` then `stepNpc(n, dt)` each frame (pathfinding.js).
+- Voices play through Web Audio (one context unlocked by the first tap), so lines that start without a tap still play
+  on iPhone.
 - `goTo(scene)` fades between scenes. `updateTrans` positions the player per entry point (in `burrow.js`).
 - Each scene has its own walkable test (`walkable`, `caveWalkable`, `coveWalkable`), update and draw functions.
 
@@ -102,14 +121,17 @@ Headless Chromium plus Playwright works in a sandbox. Expose state for tests by 
 `resize(); init(); requestAnimationFrame(frame);` in a copy of the built file:
 
 ```js
-window.__d = { get S(){ return S; }, goTo, talk, setGoal, digStage, tideH, findPath, caveWalkable, startDay2 };
+window.__d = { get S(){ return S; }, update, autosave, goTo, talk, setGoal, digStage, tideH, findPath, caveWalkable, startDay2,
+               saveNow, readSave, restoreSave, saveSnapshot };
 ```
 
 Then:
 - Click `#start` to begin. Move Pip by setting `S.player.x/y` or calling `setGoal(x, y)`.
-- Advance dialog by clicking `#dialog`. Read `#line` to check text.
+- Advance dialog with a `pointerdown` event on `#dialog` (not `click`). Read `#line` to check text.
 - Set `S.npcs.forEach(n => n.near = true)` to stop characters auto-talking while you inspect.
 - Measure frame time with a 90-frame `requestAnimationFrame` loop.
+- If the page is hidden (background tab, hidden preview pane), `requestAnimationFrame` stops: step the game by calling
+  `update(1/60)` in a loop instead.
 
 Gotcha: walking past an NPC starts a conversation and stops Pip by design. A test that walks across the map should
 move NPCs away or pre-set `near`.
@@ -132,22 +154,37 @@ move NPCs away or pre-set `near`.
   - Fern practises a sea song.
 - **Glowcaps:** they must stand out (big, teal, bobbing, ground ring). Decorative cave plants are amber and pink
   sprigs, never mushrooms.
-- **Tide pools:** cut-paper boulders. The tide is a wavy waterline creeping up the rocks, and Pip swims below it.
+- **No circle-built shapes:** Marc found circle-union coasts and circle outlines confusing. Land, beaches and rocks
+  are smooth or angular outlines; rock shelves are flat angular slabs.
+- **Tide pools:** cut into a slab rock shelf. The tide is a wavy waterline creeping up the rocks.
+- **Pip in water:** no ring. A waterline crosses his body and climbs it as the water deepens (`swimDepth`, 0 to 1),
+  with the submerged part showing faintly. He swims (slower) past halfway, with a wake.
+- **Cove:** the cave floor fades out onto the beach with no rim across it. The lighthouse is on Puffin Isle, not the
+  cove cliff. On Day 3 Captain Puff waits on a rock by the dock and the boat is repainted (blue, striped sail, bunting).
+- **Sand eels:** their ripples show where they are. Pip waits there and catches one in mid-air, near the top of its
+  leap; it zips into his paws.
+- **Pebble:** no giggle pops while hiding (too much of a giveaway); only a small occasional wiggle.
+- **Bramble's voice:** recast from Stanley to "calm storyteller male" because Stanley sounded crunchy.
+- **Tide sign:** shows an arrow (up = coming in, down = going out), matching the tide picture in the dialog.
+- **Pip talks to himself** at the start and end of each day. There is no narrator.
+- **Puffin Isle is visible from the cove** (out at sea, puffins circling) so it's clear the boat is needed. No puffins
+  on the cove cliff.
+- **Day 3:** Bramble hints the boat trip, Captain Puff sails Pip over, Nana Puff wants 4 sand eels (they leap in the
+  shallows), Pebble plays hide and seek 3 times, then Captain Puff sails everyone home for the picnic.
 - **Wording:** "what a kind day" was cut as awkward. Keep the writing plain, warm and short. A 7-year-old hears it.
 
 ## What's next (rough priority)
 
-1. **Voices:** pick Fish Audio voices per character, run `tools/fish_tts.py`, and publish the audio alongside the
-   game, or switch to serving the `dist/` folder.
-2. **Save progress:** at least which day you've reached, in `localStorage` with try/catch.
-3. **Day 3, Puffin Isle:** Captain Puff's boat sails there (already teased in Day 2's ending).
-4. **Evening looks:**
+1. **Publish the voices:** every line is recorded (`tools/fish_tts.py`, levelled to -19 LUFS). Publish the audio
+   alongside the game, or switch to serving the `dist/` folder.
+2. **Day 4:** nothing is teased yet. Day 3's end card says "What an adventure!".
+3. **Evening looks:**
    - dusk grade for each day's picnic ending (a second baked ground with `LOOK_DUSK`, plus the lantern and window
      glows from `tools/art-lab/speed.html`);
    - rain as a weather day.
-5. **Engine extraction:** move NPC homes and positions, scene layouts and HUD rows into story data, so a new story is
+4. **Engine extraction:** move NPC homes and positions, scene layouts and HUD rows into story data, so a new story is
    mostly JSON plus scene art. Consider real ES modules instead of the shared-scope bundle.
-6. **Hand-drawn art:** a hand-drawn Pip as a test. `drawOtter` is the single place to swap in an image or sprite sheet.
+5. **Hand-drawn art:** a hand-drawn Pip as a test. `drawOtter` is the single place to swap in an image or sprite sheet.
 
 ## Live artifacts (claude.ai, owner: Marc)
 

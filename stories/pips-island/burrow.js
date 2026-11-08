@@ -43,9 +43,11 @@ function goTo(scene){ if (!S.trans) S.trans = { to: scene, from: S.scene, t: 0, 
 function updateTrans(dt){
   const T = S.trans; if (!T) return;
   T.t += dt;
-  if (!T.swapped && T.t >= 0.4) {
+  const half = T.half || 0.4;
+  if (!T.swapped && T.t >= half) {
     T.swapped = true; S.scene = T.to; S.trail = []; cam.snap = true;
     const P = S.player;
+    if (T.sail) arriveBy(T); else
     if (T.to==='cave' && T.from==='cove') { P.x = CAVE_LADDER2.x - 34; P.y = CAVE_LADDER2.y + 70; S.ladder2Armed = false; }
     else if (T.to==='cave') { P.x = shaft.x; P.y = shaft.y - 75; S.shaftArmed = false; }
     else if (T.to==='cove') { P.x = 255; P.y = 470; S.coveLadderArmed = false; }
@@ -53,8 +55,9 @@ function updateTrans(dt){
     S.ducklings.forEach(d => { if (d.state==='follow') { d.x = P.x; d.y = P.y; } });
     chime(T.to==='cave' ? [392,330,262] : T.to==='cove' ? [523,659,784,1047] : [523,659,784], 0.12);
   }
-  if (T.t >= 0.8) {
+  if (T.t >= 2*half) {
     S.trans = null;
+    if (T.sail) return arrived(T);
     if (S.scene==='cave' && !S.visitedCave) { S.visitedCave = true; speak('pip.cave.first'); }
     if (S.scene==='cove' && !S.visitedCove) { S.visitedCove = true; speak('pip.cove.first'); }
   }
@@ -73,8 +76,10 @@ function playSequence(){
   sg.playing = true; sg.input = [];
   const seq = SONG_ROUNDS[sg.round];
   seq.forEach((ci,k) => songTimers.push(setTimeout(() => ring(ci), 700 + k*700)));
-  songTimers.push(setTimeout(() => { sg.playing = false; pop(1215, 470, 'Your turn!'); }, 700 + seq.length*700 + 150));
+  songTimers.push(setTimeout(() => { sg.playing = false; fernSays('mouse.song.turn', 'Your turn!'); }, 700 + seq.length*700 + 150));
 }
+// Fern talks during the song game without opening the dialog box: her line plays and floats up as a pop.
+function fernSays(id, text){ pop(1215, 470, text); if (!S.dialog) voiceLine(convo(id)[0]); }
 function touchCrystal(i){
   ring(i);
   const sg = S.quests.song;
@@ -88,15 +93,15 @@ function touchCrystal(i){
         sg.state = 'done';
         songTimers.push(setTimeout(() => { chime([523,659,784,1046,1319],0.12); speak(['mouse.thanks', allDone() ? 'mouse.gotell' : null]); renderQuests(); }, 600));
       } else {
-        pop(1215, 470, 'Yes! Now a longer one');
-        sg.playing = true; songTimers.push(setTimeout(playSequence, 1500));
+        fernSays('mouse.song.next', 'Ready for the next one?');
+        sg.playing = true; songTimers.push(setTimeout(playSequence, 2600));
       }
     }
   } else {
-    pop(1215, 470, 'Oops! Listen again');
+    fernSays('mouse.song.oops', 'Oops! Listen again');
     sg.input = []; sg.playing = true;
     songTimers.push(setTimeout(() => chime([330,262],0.18), 250));
-    songTimers.push(setTimeout(playSequence, 1500));
+    songTimers.push(setTimeout(playSequence, 2400));
   }
 }
 
@@ -106,7 +111,8 @@ function updateCave(dt){
   if (ds > 60) S.shaftArmed = true;
   if (S.shaftArmed && ds < 30 && !S.dialog) goTo('island');
   if (digStage()===2) { const dl = d2(P.x,P.y,CAVE_LADDER2.x,CAVE_LADDER2.y); if (dl > 60) S.ladder2Armed = true; if (S.ladder2Armed && dl < 28 && !S.dialog) goTo('cove'); }
-  S.npcs.forEach(n => { if (n.walk) { const k = Math.min(1, dt*2.2); n.x += (n.walk.x-n.x)*k; n.y += (n.walk.y-n.y)*k; if (d2(n.x,n.y,n.walk.x,n.walk.y) < 5) { n.walk = null; n.digging = true; for (const g in grids) delete grids[g]; } } });
+  // Digby walks to the end of his tunnel, then starts digging
+  S.npcs.forEach(n => { if (n.walk) { if (!n.route) sendNpc(n, n.walk.x, n.walk.y, 'cave'); if (stepNpc(n, dt, 95)) { n.walk = null; n.face = 1; n.digging = true; for (const g in grids) delete grids[g]; } } });
   for (const g of S.glowcaps) {
     if (!g.taken && d2(P.x,P.y,g.x,g.y) < 50 && !S.dialog) {
       g.taken = true; q.glow.have++; chime([1047,1319,1568],0.08); renderQuests();
@@ -206,7 +212,9 @@ function drawMole(n,t){
   const {x,y} = n; shadow(x,y+2,24);
   const lit = S.moleLantern;
   const hop = S.hop > 0 ? -Math.abs(Math.sin(t*9))*8 : 0;
-  ctx.save(); ctx.translate(x, y + Math.sin(t*2)*1 + hop);
+  const step = n.moving ? -Math.abs(Math.sin(n.walkT))*3 : 0;
+  ctx.save(); ctx.translate(x, y + Math.sin(t*2)*1 + hop + step);
+  ctx.scale(n.face || 1, 1); if (n.moving) ctx.rotate(Math.sin(n.walkT)*0.06);
   // lantern pole
   ctx.strokeStyle='#8c6a4d'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-18,-4); ctx.lineTo(-24,-56); ctx.stroke();
   ctx.fillStyle = lit ? '#ffe08a' : '#4a4038'; ctx.beginPath(); ctx.roundRect(-32,-64,16,18,3); ctx.fill();

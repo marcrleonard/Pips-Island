@@ -20,7 +20,10 @@ def serve():
     os.chdir(os.path.join(ROOT, 'dist'))
     # audio files live outside dist; link them in so recorded voices play locally
     if not os.path.exists('audio') and os.path.isdir(os.path.join(ROOT, 'audio')): os.symlink(os.path.join(ROOT, 'audio'), 'audio')
-    http.server.ThreadingHTTPServer(('', 8000), http.server.SimpleHTTPRequestHandler).serve_forever()
+    class NoCache(http.server.SimpleHTTPRequestHandler):
+        # always re-check files, so a phone never keeps an old build or an old recording
+        def end_headers(self): self.send_header('Cache-Control', 'no-cache'); super().end_headers()
+    http.server.ThreadingHTTPServer(('', 8000), NoCache).serve_forever()
 build(); threading.Thread(target=serve, daemon=True).start()
 print('Serving http://localhost:8000/pips-island.html  (Ctrl+C to stop)')
 seen = snapshot()

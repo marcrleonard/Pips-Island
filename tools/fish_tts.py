@@ -23,9 +23,13 @@ Useful options
   --limit 5             stop after 5 requests          --model drama-3      Fish model (see MODELS)
   --bitrate 128         mp3 bitrate (64/128/192)       --delay 0.4          seconds between requests
   --audition            only the first line of each speaker (hear the cast before a full run)
+  --loudness -19        level every new file to this LUFS with ffmpeg (peaks at -3 dBTP); 0 turns it off
+  --relevel             only re-level the existing files (no API calls); run once on files made before leveling
+Fish delivers voices very loud (about -14 LUFS, peaks near 0 dB), which sounds harsh on phone speakers,
+so new files are leveled with ffmpeg if it is installed.
 No third-party packages needed (standard library only).
 """
-import argparse, fnmatch, hashlib, json, os, subprocess, sys, time, urllib.error, urllib.request
+import argparse, fnmatch, hashlib, json, os, shutil, subprocess, sys, time, urllib.error, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 API = 'https://api.fish.audio/v1/tts'
@@ -39,6 +43,16 @@ def load_env():
             line = line.strip()
             if line and not line.startswith('#') and '=' in line:
                 k, v = line.split('=', 1); os.environ.setdefault(k.strip(), v.strip().strip('"\''))
+
+def level(path, lufs, peak=-3):
+    """Re-level an mp3 in place with ffmpeg loudnorm. Returns False if ffmpeg isn't available."""
+    if not lufs or not shutil.which('ffmpeg'): return False
+    tmp = path + '.tmp.mp3'
+    r = subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-i', path,
+                        '-af', f'loudnorm=I={lufs}:TP={peak}:LRA=11', '-ar', '44100', '-b:a', '128k', tmp])
+    if r.returncode == 0: os.replace(tmp, path); return True
+    if os.path.exists(tmp): os.remove(tmp)
+    return False
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -54,7 +68,17 @@ def main():
     ap.add_argument('--latency', default='normal', help='"normal" (best quality) or "balanced"')
     ap.add_argument('--delay', type=float, default=0.4)
     ap.add_argument('--audition', action='store_true')
+    ap.add_argument('--loudness', type=float, default=-19)
+    ap.add_argument('--relevel', action='store_true')
     a = ap.parse_args()
+    if a.loudness and not shutil.which('ffmpeg'): print('ffmpeg not found: files will not be leveled (brew install ffmpeg)')
+    if a.relevel:
+        n = 0
+        for dp, _, fs in os.walk(os.path.join(ROOT, 'audio', 'voice')):
+            for f in fs:
+                if f.endswith('.mp3') and (not a.only or os.path.basename(dp) in a.only.split(',')):
+                    n += level(os.path.join(dp, f), a.loudness or -19)
+        print(f're-leveled {n} files'); return
     load_env()
     key = os.environ.get('FISH_API_KEY', '')
     if not key and not a.dry_run: sys.exit('Set FISH_API_KEY (environment or .env file).')
@@ -95,6 +119,7 @@ def main():
                 try:
                     with urllib.request.urlopen(req, timeout=120) as r: audio = r.read()
                     with open(out, 'wb') as f: f.write(audio)
+                    level(out, a.loudness)
                     hashes[l['id']] = digest; made += 1; print('ok  ', l['id']); break
                 except urllib.error.HTTPError as e:
                     msg = e.read()[:300].decode('utf-8', 'replace')

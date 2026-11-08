@@ -9,15 +9,16 @@ function allDone(){ return dayQuests().every(q => q.state==='done'); }
 function talk(npc){
   const q = S.quests;
   if (S.day===2 && npc.id!=='owl' && talkDay2(npc)) return;
+  if (S.day===3 && npc.id!=='owl' && talkDay3(npc)) return;
   if (npc.id === 'owl') {
-    if (allDone()) return speak(S.day===2 ? 'owl.end.d2' : 'owl.end.d1', startEnding);
+    if (allDone()) return speak(`owl.end.d${S.day}`, startEnding);
     // Bramble drip-feeds: one new friend at a time, or a gentle reminder about one already started.
     const first = !S.metOwl;
     S.metOwl = true;
     const next = friendsToday().find(f => q[f.id].state==='new');
     const busy = friendsToday().find(f => q[f.id].state==='active');
     const ids = [];
-    if (first) ids.push(S.day===1 ? 'owl.d1.first' : 'owl.d2.first');
+    if (first) ids.push(`owl.d${S.day}.first`);
     else ids.push(next ? 'owl.again.next' : 'owl.again.busy');
     if (next) { ids.push('owl.hint.' + next.id); S.hinted.add(next.owner); }
     else if (busy) ids.push('owl.remind.' + busy.id);
@@ -89,20 +90,21 @@ function pop(x,y,text){ S.pops.push({x,y,text,t:0,scene:S.scene}); }
 
 function startEnding(){
   S.ending = 0.001;
-  const spots = { duck:[bigTree.x-120,bigTree.y+110], hog:[bigTree.x+20,bigTree.y+150], crab:[bigTree.x+130,bigTree.y+100], mole:[bigTree.x+200,bigTree.y+40], mouse:[bigTree.x-190,bigTree.y+50] };
+  const spots = { duck:[bigTree.x-120,bigTree.y+110], hog:[bigTree.x+20,bigTree.y+150], crab:[bigTree.x+130,bigTree.y+100], mole:[bigTree.x+200,bigTree.y+40], mouse:[bigTree.x-190,bigTree.y+50], puffin:[bigTree.x+90,bigTree.y+200] };
   S.npcs.forEach(n => { if (n.scene==='cave') { n.scene='island'; n.x = burrow.x; n.y = burrow.y+70; } });
-  S.npcs.forEach(n => { if (spots[n.id]) n.goal = spots[n.id]; });
+  S.npcs.forEach(n => { if (spots[n.id]) { n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'island'); } });
   S.ducklings.forEach((d,i) => { d.state='picnic'; d.goal=[bigTree.x-170+i*30, bigTree.y+160+(i%2)*14]; });
   setGoal(bigTree.x-50, bigTree.y+165);
   chime([392,523,659,784,1046],0.18);
   S.endTimer = setTimeout(() => { S.finished = true; showEndCard(); }, 7000);
 }
 function showEndCard(){
-  const d1 = S.day===1;
+  const more = S.day < LAST_DAY;
   document.getElementById('endText').textContent = STORY.endCards[S.day].text;
-  document.getElementById('wake').hidden = !d1;
-  document.getElementById('again').textContent = d1 ? 'Start over' : 'Play from the start';
-  document.getElementById('again').classList.toggle('ghost', d1);
+  document.getElementById('wake').hidden = !more;
+  document.getElementById('wake').textContent = `Wake up for Day ${S.day+1}`;
+  document.getElementById('again').textContent = more ? 'Start over' : 'Play from the start';
+  document.getElementById('again').classList.toggle('ghost', more);
   document.getElementById('end').hidden = false;
   voiceLine(convo(STORY.endCards[S.day].voice)[0]);
 }

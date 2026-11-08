@@ -8,7 +8,7 @@ Writes:
 Usage:  python3 tools/voice_lines.py [--story pips-island] [--ext mp3]
 Run it after adding or regenerating audio, then rebuild with tools/build.py.
 """
-import argparse, csv, json, os
+import argparse, csv, hashlib, json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ap = argparse.ArgumentParser()
 ap.add_argument('--story', default='pips-island')
@@ -29,7 +29,9 @@ for cid, c in script['conversations'].items():
 os.makedirs(os.path.join(ROOT, 'audio'), exist_ok=True)
 with open(os.path.join(ROOT, 'audio', 'voice_lines.csv'), 'w', newline='', encoding='utf-8') as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
-json.dump({'ext': a.ext, 'files': sorted(present)}, open(os.path.join(ROOT, 'audio', 'manifest.json'), 'w'), indent=1)
+# a short content hash per file, so the game asks for a fresh copy whenever a line is re-recorded (no stale caches)
+versions = {f: hashlib.md5(open(os.path.join(ROOT, f), 'rb').read()).hexdigest()[:8] for f in sorted(present)}
+json.dump({'ext': a.ext, 'files': sorted(present), 'versions': versions}, open(os.path.join(ROOT, 'audio', 'manifest.json'), 'w'), indent=1)
 by = {}
 for r in rows: by.setdefault(r['speaker'], [0, 0]); by[r['speaker']][0] += 1; by[r['speaker']][1] += r['has_audio'] == 'yes'
 print(f"{len(rows)} lines, {len(present)} recorded")
