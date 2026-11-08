@@ -1,0 +1,1639 @@
+{
+ "format": 2,
+ "story": "pips-island",
+ "language": "en",
+ "about": "Every spoken line in the story. Line ids are stable: audio for a line lives at audio/voice/<speaker>/<line id>.<ext>. 'text' is what appears on screen. 'direction' is a voice-acting cue in square brackets, sent to the voice generator in front of the text (Fish Audio S2 style) and never shown. Optional 'voice_text' replaces text+direction for the generator, for inline cues like 'This is [emphasis] really important.' Change words freely; never reuse an id for different words.",
+ "conversations": {
+  "pip.start": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.start",
+     "text": "Good morning, Pip! Let's say hello to Bramble the Owl in the big tree.",
+     "direction": "[cheerful, bright]"
+    }
+   ]
+  },
+  "pip.again": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.again",
+     "text": "A brand new morning! Let's visit Bramble the Owl.",
+     "direction": "[cheerful, bright]"
+    }
+   ]
+  },
+  "pip.day2.start": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.day2.start.1",
+     "text": "Good morning, Pip! A brand new day on the island.",
+     "direction": "[cheerful, bright]"
+    },
+    {
+     "id": "pip.day2.start.2",
+     "text": "I wonder what Bramble has to say today?",
+     "direction": "[cheerful, bright]"
+    }
+   ]
+  },
+  "pip.cave.first": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.cave.first",
+     "text": "Ooh, it's dark down here! Let's find out who lives in these tunnels.",
+     "direction": "[curious, a little nervous]"
+    }
+   ]
+  },
+  "pip.cove.first": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.cove.first.1",
+     "text": "Wow! A sea cave, and a whole new beach!",
+     "direction": "[amazed, delighted]"
+    },
+    {
+     "id": "pip.cove.first.2",
+     "text": "Look at all those tide pools on the rocks.",
+     "direction": "[amazed, delighted]"
+    }
+   ]
+  },
+  "pip.early.duck": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.duck",
+     "text": "A duckling! It looks lost. I wonder where its mama is?",
+     "item": {
+      "k": "duckling"
+     },
+     "direction": "[curious, wondering]"
+    }
+   ]
+  },
+  "pip.early.berry": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.berry",
+     "text": "Juicy blueberries! I bet someone would love these.",
+     "item": {
+      "k": "berry"
+     },
+     "direction": "[curious, wondering]"
+    }
+   ]
+  },
+  "pip.early.glow": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.glow",
+     "text": "A glowing mushroom! Maybe someone in these dark tunnels needs some light.",
+     "item": {
+      "k": "glowcap"
+     },
+     "direction": "[curious, wondering]"
+    }
+   ]
+  },
+  "pip.early.wood": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.wood",
+     "text": "Driftwood! It's nice and smooth. Maybe someone is building something?",
+     "item": {
+      "k": "wood"
+     },
+     "direction": "[curious, wondering]"
+    }
+   ]
+  },
+  "pip.ducks.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.ducks.all",
+     "text": "That's all three ducklings! Let's take them back to Mama Duck at the pond.",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "pip.berries.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.berries.all",
+     "text": "Five blueberries! Hazel Hedgehog will be so happy.",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "pip.shell.found": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.shell.found",
+     "text": "A shiny spiral shell! I bet this is Grandpa Crab's. He lives on the east beach.",
+     "item": {
+      "k": "shell"
+     },
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "pip.glow.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.glow.all",
+     "text": "Four glowcaps! Let's bring them back to Digby Mole.",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "pip.wood.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.wood.all",
+     "text": "Three pieces of driftwood! Let's take them to Captain Puff on the dock.",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "pip.pool.star": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.star",
+     "text": "Ooh, a sea star!",
+     "item": {
+      "k": "star"
+     },
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "pip.pool.star.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.star.early",
+     "text": "Ooh, a sea star! I wonder who else would like to see the tide pools?",
+     "item": {
+      "k": "star"
+     },
+     "direction": "[delighted, then wondering]"
+    }
+   ]
+  },
+  "pip.pool.anemone": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.anemone",
+     "text": "Ooh, a wiggly anemone!",
+     "item": {
+      "k": "anemone"
+     },
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "pip.pool.anemone.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.anemone.early",
+     "text": "Ooh, a wiggly anemone! I wonder who else would like to see the tide pools?",
+     "item": {
+      "k": "anemone"
+     },
+     "direction": "[delighted, then wondering]"
+    }
+   ]
+  },
+  "pip.pool.hermit": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.hermit",
+     "text": "Ooh, a little hermit crab!",
+     "item": {
+      "k": "hermit"
+     },
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "pip.pool.hermit.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.hermit.early",
+     "text": "Ooh, a little hermit crab! I wonder who else would like to see the tide pools?",
+     "item": {
+      "k": "hermit"
+     },
+     "direction": "[delighted, then wondering]"
+    }
+   ]
+  },
+  "pip.pool.fishy": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.fishy",
+     "text": "Ooh, a tiny stripy fish!",
+     "item": {
+      "k": "fishy"
+     },
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "pip.pool.fishy.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pool.fishy.early",
+     "text": "Ooh, a tiny stripy fish! I wonder who else would like to see the tide pools?",
+     "item": {
+      "k": "fishy"
+     },
+     "direction": "[delighted, then wondering]"
+    }
+   ]
+  },
+  "pip.pools.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.pools.all",
+     "text": "That's all four pools. Let's tell Pearl!",
+     "direction": "[excited]"
+    }
+   ]
+  },
+  "owl.d1.first": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.d1.first.1",
+     "text": "Hoo! Good morning, Pip. The whole island is waking up.",
+     "direction": "[warm, unhurried]"
+    },
+    {
+     "id": "owl.d1.first.2",
+     "text": "A few friends could use a hand today.",
+     "direction": "[warm, unhurried]"
+    }
+   ]
+  },
+  "owl.d2.first": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.d2.first.1",
+     "text": "Hoo! Good morning, Pip. Did you sleep well?",
+     "direction": "[warm, unhurried]"
+    },
+    {
+     "id": "owl.d2.first.2",
+     "text": "Some friends have exciting news today.",
+     "direction": "[warm, unhurried]"
+    }
+   ]
+  },
+  "owl.again.next": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.again.next",
+     "text": "Hoo! Ready for another idea, little otter?",
+     "direction": "[warm, a little playful]"
+    }
+   ]
+  },
+  "owl.again.busy": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.again.busy",
+     "text": "Hoo! You're doing so well, Pip.",
+     "direction": "[warm, a little playful]"
+    }
+   ]
+  },
+  "owl.close.first": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.close.first",
+     "text": "If you ever need an idea, come back and see me.",
+     "direction": "[kindly]"
+    }
+   ]
+  },
+  "owl.close.next": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.close.next",
+     "text": "And come back to me any time you need more.",
+     "direction": "[kindly]"
+    }
+   ]
+  },
+  "owl.hint.duck": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.duck",
+     "text": "Mama Duck by the pond looks worried. Why don't you go and see her?",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.duck": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.duck",
+     "text": "Mama Duck is still missing some ducklings. Try the wiggly grass!",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.berry": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.berry",
+     "text": "Hazel Hedgehog is busy in her stump house in the west meadow. I think she needs something.",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.berry": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.berry",
+     "text": "Hazel still needs blueberries for her pie.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.shell": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.shell",
+     "text": "Grandpa Crab is grumbling on the east beach. Maybe you can cheer him up?",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.shell": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.shell",
+     "text": "Grandpa Crab's shell is still out there on a sandy beach.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.glow": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.glow",
+     "text": "Have you seen the little round door in the hill past the pond? Digby Mole lives down there.",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.glow": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.glow",
+     "text": "Digby still needs glowcaps for his lantern.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.song": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.song",
+     "text": "I can hear someone singing, deep in Digby's tunnels. Follow the music to the Echo Cave!",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.song": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.song",
+     "text": "Fern Mouse is still learning her song in the Echo Cave.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.dig": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.dig",
+     "text": "Digby has been digging all night! I heard him shouting something about the sea. Go and see him in the burrow.",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.dig": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.dig",
+     "text": "Digby is waiting for you at the end of his new tunnel.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.pools": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.pools",
+     "text": "Down in the new cove there's a little seal pup. She looks like she wants a friend.",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.pools": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.pools",
+     "text": "Pearl the seal pup still wants to hear about the tide pools.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.hint.wood": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.hint.wood",
+     "text": "Captain Puff is building something on the cove's dock. I think he could use a hand.",
+     "direction": "[warm, gently suggesting]"
+    }
+   ]
+  },
+  "owl.remind.wood": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.remind.wood",
+     "text": "Captain Puff still needs driftwood for his boat.",
+     "direction": "[warm, encouraging]"
+    }
+   ]
+  },
+  "owl.end.d1": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.end.d1.1",
+     "text": "Hoo hoo! You helped everyone today, Pip.",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d1.2",
+     "text": "Look! Your friends are coming to the big tree for a sunset picnic.",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d1.3",
+     "text": "Blueberry pie, a shiny shell, glowing lanterns, a brand new song, and three happy ducklings!",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d1.4",
+     "text": "Everyone is smiling, and it's all thanks to you.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "owl.end.d2": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.end.d2.1",
+     "text": "Hoo hoo! What an adventure, Pip!",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d2.2",
+     "text": "Digby's tunnel, Pearl's tide pools, and Captain Puff's brand new boat!",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d2.3",
+     "text": "Tomorrow, that boat can sail all the way to Puffin Isle.",
+     "direction": "[proud, warm]"
+    },
+    {
+     "id": "owl.end.d2.4",
+     "text": "But tonight... sweet dreams, little otter.",
+     "direction": "[softly, sleepy]"
+    }
+   ]
+  },
+  "duck.gotell": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "hog.gotell": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "crab.gotell": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "mole.gotell": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "mouse.gotell": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "seal.gotell": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "puffin.gotell": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.gotell",
+     "text": "You've done such a great job today, Pip! Go back and tell Bramble at the big tree.",
+     "direction": "[proud, warm]"
+    }
+   ]
+  },
+  "duck.ask.open": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.ask.open.1",
+     "text": "Quack! Oh, Pip, I'm so glad to see you.",
+     "direction": "[relieved, a little breathless]"
+    },
+    {
+     "id": "duck.ask.open.2",
+     "text": "My three ducklings went exploring and now I can't find them.",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[worried]"
+    }
+   ]
+  },
+  "duck.ask.hide": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.ask.hide",
+     "text": "They love to hide in the tall, wiggly grass.",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[hopeful, pleading]"
+    }
+   ]
+  },
+  "duck.ask.already.1": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.ask.already.1",
+     "text": "Oh! You already found one! Can you find the rest?",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[surprised, hopeful]"
+    }
+   ]
+  },
+  "duck.ask.already.2": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.ask.already.2",
+     "text": "Oh! You already found two! Can you find the rest?",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[surprised, hopeful]"
+    }
+   ]
+  },
+  "duck.ask.close": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.ask.close",
+     "text": "Please bring them home to the pond.",
+     "direction": "[hopeful, pleading]"
+    }
+   ]
+  },
+  "duck.progress.0": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.progress.0",
+     "text": "You haven't found my ducklings yet. Try the wiggly grass!",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "duck.progress.1": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.progress.1",
+     "text": "You found one of my ducklings. Keep looking in the wiggly grass!",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "duck.progress.2": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.progress.2",
+     "text": "You found two of my ducklings. Keep looking in the wiggly grass!",
+     "item": {
+      "k": "duckling",
+      "n": 3
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "duck.thanks": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.thanks.1",
+     "text": "Quack! My little ones! You found all three!",
+     "direction": "[overjoyed]"
+    },
+    {
+     "id": "duck.thanks.2",
+     "text": "Thank you, Pip. Into the pond you go, ducklings.",
+     "direction": "[overjoyed]"
+    }
+   ]
+  },
+  "duck.after": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.after",
+     "text": "The ducklings are learning to paddle. Splish, splash!",
+     "direction": "[content, happy]"
+    }
+   ]
+  },
+  "duck.d2": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.d2.1",
+     "text": "Quack! Look, Pip! The ducklings had a big swimming lesson this morning.",
+     "direction": "[cheerful]"
+    },
+    {
+     "id": "duck.d2.2",
+     "text": "They've grown so much overnight. Soon they'll paddle all the way around the pond!",
+     "direction": "[cheerful]"
+    }
+   ]
+  },
+  "hog.ask": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.ask.1",
+     "text": "Hello, Pip. I want to bake a blueberry pie.",
+     "direction": "[hopeful]"
+    },
+    {
+     "id": "hog.ask.2",
+     "text": "But my legs are so tiny, and the bushes are so far.",
+     "direction": "[a little sad]"
+    },
+    {
+     "id": "hog.ask.3",
+     "text": "Could you pick 5 blueberries for me?",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[hopeful]"
+    },
+    {
+     "id": "hog.ask.4",
+     "text": "Look for green bushes with little blue dots.",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "hog.progress.0": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.progress.0",
+     "text": "You don't have any blueberries yet. I need five. You can do it!",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "hog.progress.1": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.progress.1",
+     "text": "You have one blueberry. I need five. You can do it!",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "hog.progress.2": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.progress.2",
+     "text": "You have two blueberries. I need five. You can do it!",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "hog.progress.3": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.progress.3",
+     "text": "You have three blueberries. I need five. You can do it!",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "hog.progress.4": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.progress.4",
+     "text": "You have four blueberries. I need five. You can do it!",
+     "item": {
+      "k": "berry",
+      "n": 5
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "hog.thanks": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.thanks.1",
+     "text": "Five juicy blueberries! That's exactly enough.",
+     "direction": "[delighted]"
+    },
+    {
+     "id": "hog.thanks.2",
+     "text": "Now I can bake a pie for everyone. Thank you, Pip!",
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "hog.after": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.after",
+     "text": "My pie is in the oven. It smells like summer!",
+     "direction": "[content, happy]"
+    }
+   ]
+  },
+  "hog.d2": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.d2.1",
+     "text": "Good morning, Pip! I'm having a picnic breakfast.",
+     "direction": "[cheerful]"
+    },
+    {
+     "id": "hog.d2.2",
+     "text": "I saved the very last slice of blueberry pie for you. Yum!",
+     "item": {
+      "k": "berry"
+     },
+     "direction": "[cheerful]"
+    }
+   ]
+  },
+  "crab.ask": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.ask.1",
+     "text": "Hmm? Oh, hello there, Pip.",
+     "direction": "[grumbly, then kind]"
+    },
+    {
+     "id": "crab.ask.2",
+     "text": "Last night a big wave took my shiny spiral shell.",
+     "item": {
+      "k": "shell"
+     },
+     "direction": "[sad, grumbly]"
+    },
+    {
+     "id": "crab.ask.3",
+     "text": "Shells wash up on the sand. I think it went far, far to the west.",
+     "item": {
+      "k": "shell"
+     },
+     "direction": "[hopeful]"
+    },
+    {
+     "id": "crab.ask.4",
+     "text": "Could you look for a sparkle on the beach?",
+     "item": {
+      "k": "shell"
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "crab.progress": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.progress",
+     "text": "Walk west along the sand. Look for a sparkle!",
+     "item": {
+      "k": "shell"
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "crab.thanks": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.thanks.1",
+     "text": "Is that... my shiny spiral shell?",
+     "direction": "[disbelieving]"
+    },
+    {
+     "id": "crab.thanks.2",
+     "text": "It is! Thank you, young otter. You have sharp eyes.",
+     "direction": "[overjoyed]"
+    }
+   ]
+  },
+  "crab.after": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.after",
+     "text": "Click, click. My shell sparkles in the sun. Lovely.",
+     "direction": "[content, happy]"
+    }
+   ]
+  },
+  "crab.d2": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.d2.1",
+     "text": "Click, click! I polished my shell until it sparkled.",
+     "item": {
+      "k": "shell"
+     },
+     "direction": "[cheerful]"
+    },
+    {
+     "id": "crab.d2.2",
+     "text": "I hear there's a brand new cove past Digby's tunnel. Maybe I have cousins there!",
+     "direction": "[cheerful]"
+    }
+   ]
+  },
+  "mole.ask": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.ask.1",
+     "text": "Oh! Who's there? Is that an otter?",
+     "direction": "[startled]"
+    },
+    {
+     "id": "mole.ask.2",
+     "text": "I'm Digby. I dig all the tunnels under the island.",
+     "direction": "[friendly, proud]"
+    },
+    {
+     "id": "mole.ask.3",
+     "text": "My lantern went out, and now it's too dark to dig.",
+     "item": {
+      "k": "lantern"
+     },
+     "direction": "[sad]"
+    },
+    {
+     "id": "mole.ask.4",
+     "text": "Glowcaps are little mushrooms that glow. Could you find 4 for me?",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[hopeful]"
+    },
+    {
+     "id": "mole.ask.5",
+     "text": "Try the tunnels to the west. Look for a soft blue light.",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "mole.progress.0": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.progress.0",
+     "text": "You haven't found any glowcaps yet. I need four. Follow the blue glow!",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "mole.progress.1": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.progress.1",
+     "text": "You have one glowcap. I need four. Follow the blue glow!",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "mole.progress.2": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.progress.2",
+     "text": "You have two glowcaps. I need four. Follow the blue glow!",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "mole.progress.3": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.progress.3",
+     "text": "You have three glowcaps. I need four. Follow the blue glow!",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "mole.thanks": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.thanks.1",
+     "text": "Four glowcaps! Look how they shine.",
+     "item": {
+      "k": "glowcap",
+      "n": 4
+     },
+     "direction": "[overjoyed]"
+    },
+    {
+     "id": "mole.thanks.2",
+     "text": "Let's light up the whole burrow. Watch this!",
+     "direction": "[excited, mischievous]"
+    }
+   ]
+  },
+  "mole.gift": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.gift.1",
+     "text": "Hooray! Look at my burrow glow!",
+     "direction": "[overjoyed]"
+    },
+    {
+     "id": "mole.gift.2",
+     "text": "And now there's one more thing...",
+     "direction": "[secretive, excited]"
+    },
+    {
+     "id": "mole.gift.3",
+     "text": "This little lantern is for you, Pip. Now you'll never be in the dark!",
+     "item": {
+      "k": "lantern"
+     },
+     "direction": "[warm, generous]"
+    },
+    {
+     "id": "mole.gift.4",
+     "text": "Now that I can see, I'm going to dig a brand new tunnel. I can smell the sea!",
+     "direction": "[excited, determined]"
+    }
+   ]
+  },
+  "mole.digging": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.digging",
+     "text": "Dig, dig, dig! I can smell the sea. I'll keep digging all night!",
+     "direction": "[busy, cheerful]"
+    }
+   ]
+  },
+  "mole.after": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.after",
+     "text": "Mind the roots, little otter. Happy exploring!",
+     "direction": "[content, happy]"
+    }
+   ]
+  },
+  "mole.d2": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.d2.1",
+     "text": "Pip! Pip! Now that I can see, I dug all night long!",
+     "direction": "[bursting with excitement]"
+    },
+    {
+     "id": "mole.d2.2",
+     "text": "I followed the smell of the sea... and my tunnel came out in a sea cave!",
+     "direction": "[amazed, telling a big story]"
+    },
+    {
+     "id": "mole.d2.3",
+     "text": "Climb the ladder at the end of my tunnel. Go and explore!",
+     "direction": "[bursting with excitement]"
+    }
+   ]
+  },
+  "mole.d2.after": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.d2.after",
+     "text": "Climb my ladder up to the sea cave. Say hello to the seals for me!",
+     "direction": "[bursting with excitement]"
+    }
+   ]
+  },
+  "mouse.ask": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.ask.1",
+     "text": "Oh, hello! I'm Fern. I'm making up a song for the picnic.",
+     "direction": "[sing-song, cheerful]"
+    },
+    {
+     "id": "mouse.ask.2",
+     "text": "These crystals sing when you touch them.",
+     "item": {
+      "k": "crystal"
+     },
+     "direction": "[sing-song]"
+    },
+    {
+     "id": "mouse.ask.3",
+     "text": "Listen to my tune. Then walk to the crystals in the same order!",
+     "item": {
+      "k": "crystal"
+     },
+     "direction": "[sing-song]"
+    }
+   ]
+  },
+  "mouse.again": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.again",
+     "text": "Let's listen one more time!",
+     "item": {
+      "k": "crystal"
+     },
+     "direction": "[sing-song]"
+    }
+   ]
+  },
+  "mouse.thanks": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.thanks.1",
+     "text": "You did it! That's my whole song!",
+     "direction": "[thrilled, sing-song]"
+    },
+    {
+     "id": "mouse.thanks.2",
+     "text": "I'll play it at the picnic tonight. Thank you, Pip!",
+     "direction": "[thrilled, sing-song]"
+    }
+   ]
+  },
+  "mouse.after": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.after",
+     "text": "La la la! I'll play my song at the picnic.",
+     "direction": "[sing-song]"
+    }
+   ]
+  },
+  "mouse.d2": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.d2",
+     "text": "La la la... I'm writing a second verse. This one is all about the sea!",
+     "item": {
+      "k": "crystal"
+     },
+     "direction": "[sing-song]"
+    }
+   ]
+  },
+  "seal.ask.open": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.ask.open.1",
+     "text": "Hello! I'm Pearl. I'm a baby seal.",
+     "direction": "[shy]"
+    },
+    {
+     "id": "seal.ask.open.2",
+     "text": "I want to see the tide pool animals, but my flippers are too slow on the rocks.",
+     "direction": "[shy, a little sad]"
+    }
+   ]
+  },
+  "seal.ask.pools": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.ask.pools",
+     "text": "When the tide is low, can you peek in the 4 tide pools?",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "seal.ask.already.1": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.ask.already.1",
+     "text": "You already peeked in one! Can you look in the rest?",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "seal.ask.already.2": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.ask.already.2",
+     "text": "You already peeked in two! Can you look in the rest?",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "seal.ask.already.3": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.ask.already.3",
+     "text": "You already peeked in three! Can you look in the rest?",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "seal.ask.close": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.ask.close",
+     "text": "The water hides them when the tide comes in. Watch the tide sign!",
+     "item": {
+      "k": "tide"
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "seal.progress.0": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.progress.0",
+     "text": "You haven't peeked in the pools yet. Wait for low tide to see in!",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "seal.progress.1": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.progress.1",
+     "text": "You've peeked in one of the four pools. Wait for low tide to see in!",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "seal.progress.2": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.progress.2",
+     "text": "You've peeked in two of the four pools. Wait for low tide to see in!",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "seal.progress.3": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.progress.3",
+     "text": "You've peeked in three of the four pools. Wait for low tide to see in!",
+     "item": {
+      "k": "star",
+      "n": 4
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "seal.thanks": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.thanks.1",
+     "text": "You saw all four? A sea star, a wiggly anemone, a hermit crab and a stripy fish!",
+     "direction": "[gasping, amazed]"
+    },
+    {
+     "id": "seal.thanks.2",
+     "text": "Thank you, Pip. You're the best explorer in the whole sea!",
+     "direction": "[overjoyed]"
+    }
+   ]
+  },
+  "seal.after": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.after",
+     "text": "A sea star, an anemone, a hermit crab and a stripy fish. I'll dream about them tonight!",
+     "direction": "[content, happy]"
+    }
+   ]
+  },
+  "puffin.ask.open": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.ask.open.1",
+     "text": "Ahoy, Pip! I'm Captain Puff.",
+     "direction": "[jolly, booming]"
+    },
+    {
+     "id": "puffin.ask.open.2",
+     "text": "I'm building a little boat so we can sail to Puffin Isle.",
+     "direction": "[jolly, booming]"
+    }
+   ]
+  },
+  "puffin.ask.need": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.ask.need",
+     "text": "I need 3 pieces of driftwood.",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "puffin.ask.already.1": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.ask.already.1",
+     "text": "You found one driftwood already! I need three.",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "puffin.ask.already.2": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.ask.already.2",
+     "text": "You found two driftwood already! I need three.",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "puffin.ask.close": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.ask.close",
+     "text": "The high tide brings them in. When the water goes back out, look along the sand!",
+     "item": {
+      "k": "tide"
+     },
+     "direction": "[hopeful]"
+    }
+   ]
+  },
+  "puffin.progress.0": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.progress.0",
+     "text": "You haven't found any driftwood yet. I need three. Watch for the high tide!",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "puffin.progress.1": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.progress.1",
+     "text": "You have one driftwood. I need three. Watch for the high tide!",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "puffin.progress.2": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.progress.2",
+     "text": "You have two driftwood. I need three. Watch for the high tide!",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[encouraging]"
+    }
+   ]
+  },
+  "puffin.thanks": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.thanks.1",
+     "text": "Three fine pieces of driftwood! Stand back...",
+     "item": {
+      "k": "wood",
+      "n": 3
+     },
+     "direction": "[proud, dramatic]"
+    },
+    {
+     "id": "puffin.thanks.2",
+     "text": "Tap, tap, tap... there! Our very own boat!",
+     "direction": "[triumphant]"
+    }
+   ]
+  },
+  "puffin.after": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.after",
+     "text": "She floats like a feather! Tomorrow we sail to Puffin Isle.",
+     "direction": "[content, happy]"
+    }
+   ]
+  },
+  "narrator.end.d1": {
+   "speaker": "narrator",
+   "lines": [
+    {
+     "id": "narrator.end.d1",
+     "text": "Goodnight, Pip. See you in the morning!",
+     "direction": "[softly, like a bedtime story]"
+    }
+   ]
+  },
+  "narrator.end.d2": {
+   "speaker": "narrator",
+   "lines": [
+    {
+     "id": "narrator.end.d2",
+     "text": "Goodnight, Pip. Next time, Puffin Isle!",
+     "direction": "[softly, like a bedtime story]"
+    }
+   ]
+  }
+ }
+}

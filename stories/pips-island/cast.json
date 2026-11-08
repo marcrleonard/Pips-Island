@@ -1,0 +1,126 @@
+{
+ "format": 1,
+ "speakers": {
+  "pip": {
+   "name": "Pip",
+   "description": "A curious little otter, about seven in spirit. Bright, wondering, thinks out loud.",
+   "voice": {
+    "pitch": 1.4,
+    "rate": 0.9
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "owl": {
+   "name": "Bramble the Owl",
+   "description": "Warm, wise, unhurried. Gentle \"hoo\" sounds. The island's grandparent.",
+   "voice": {
+    "pitch": 0.8,
+    "rate": 0.85
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "duck": {
+   "name": "Mama Duck",
+   "description": "Fussy, loving, a little breathless. Quacky.",
+   "voice": {
+    "pitch": 1.35,
+    "rate": 0.95
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "hog": {
+   "name": "Hazel Hedgehog",
+   "description": "Sweet, small, homey baker. Soft and cheerful.",
+   "voice": {
+    "pitch": 1.2,
+    "rate": 0.88
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "crab": {
+   "name": "Grandpa Crab",
+   "description": "Creaky, grumbly-kind grandpa. Says \"click, click\".",
+   "voice": {
+    "pitch": 0.7,
+    "rate": 0.82
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "mole": {
+   "name": "Digby Mole",
+   "description": "Excitable, earthy, a bit near-sighted. Talks fast when happy.",
+   "voice": {
+    "pitch": 0.75,
+    "rate": 0.9
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "mouse": {
+   "name": "Fern Mouse",
+   "description": "Tiny, musical, sing-song. Hums between words.",
+   "voice": {
+    "pitch": 1.55,
+    "rate": 0.92
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "seal": {
+   "name": "Pearl",
+   "description": "A baby seal pup. Shy, then delighted. Very young.",
+   "voice": {
+    "pitch": 1.6,
+    "rate": 0.88
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "puffin": {
+   "name": "Captain Puff",
+   "description": "Jolly sea captain puffin. Says \"ahoy\". Proud of his boat.",
+   "voice": {
+    "pitch": 1.0,
+    "rate": 0.92
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  },
+  "narrator": {
+   "name": "",
+   "description": "Gentle bedtime-story narrator.",
+   "voice": {
+    "pitch": 1.05,
+    "rate": 0.85
+   },
+   "fish": {
+    "reference_id": "",
+    "speed": 1.0
+   }
+  }
+ },
+ "about": "Speakers. 'voice' tunes the browser fallback voice. 'fish.reference_id' is the Fish Audio voice model to use for this character (pick or clone one on fish.audio and paste its id). 'description' is acting direction for humans."
+}

@@ -1,0 +1,168 @@
+<title>Pip's Island</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Andika:wght@400;700&display=swap">
+<style>
+/* Layout: full-bleed canvas world; quest leaves pinned top-left, read-aloud top-right, storybook dialog card along the bottom. Single daylight look by choice. */
+:root {
+  --sea: #8cc8d4;
+  --sand: #f2e2b8;
+  --meadow: #a8cf7f;
+  --moss: #6f9e55;
+  --ink: #34433a;
+  --paper: #fffaf0;
+  --berry: #5a6fb8;
+  --sun: #f4b85a;
+  --display: "Grandstander", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
+  --read: "Andika", "Verdana", system-ui, sans-serif;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body {
+  background: var(--sea); color: var(--ink); overflow: hidden;
+  font-family: var(--read); -webkit-user-select: none; user-select: none;
+  touch-action: none;
+}
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+
+.hud {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px));
+  left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; pointer-events: none;
+}
+.quests { display: flex; flex-wrap: wrap; gap: 8px; }
+.quest {
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px;
+  background: var(--paper); border-radius: 999px; font: 700 15px/1 var(--read);
+  box-shadow: 0 2px 0 rgba(52,67,58,.18); transition: opacity .3s;
+}
+.quest.locked { opacity: .55; }
+@media (max-width: 560px) { .quest .label { display: none; } .quest { padding-right: 10px; } }
+.quest.done { background: #e4f1d3; }
+.quest .dot { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--sand); }
+.quest.done .dot { background: var(--meadow); }
+.quest .n { font-variant-numeric: tabular-nums; }
+.voice {
+  pointer-events: auto; border: 0; cursor: pointer; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--paper); color: var(--ink); display: grid; place-items: center; flex: none;
+  box-shadow: 0 2px 0 rgba(52,67,58,.18);
+}
+.hud-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex: none; }
+#map {
+  pointer-events: auto; cursor: pointer; display: block; width: 120px; height: 90px; border-radius: 16px;
+  border: 4px solid var(--paper); box-shadow: 0 2px 0 rgba(52,67,58,.18); background: var(--sea);
+  transition: width .25s, height .25s;
+}
+#map.big { width: min(260px, 60vw); height: calc(min(260px, 60vw) * .75); }
+#map:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.voice:focus-visible, .btn:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.voice.off svg .waves { opacity: 0; }
+.voice.off svg .slash { opacity: 1; }
+.voice svg .slash { opacity: 0; }
+
+.dialog {
+  position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  margin: 0 auto; max-width: 640px; background: var(--paper); border-radius: 22px;
+  padding: 16px 20px 14px; box-shadow: 0 4px 0 rgba(52,67,58,.2), 0 10px 30px rgba(52,67,58,.15);
+  cursor: pointer; animation: rise .25s ease-out;
+}
+@keyframes rise { from { transform: translateY(20px); opacity: 0; } }
+.dialog .who { font: 800 18px/1 var(--display); letter-spacing: .02em; color: var(--moss); margin-bottom: 8px; }
+.dialog .line { font: 400 clamp(19px, 4.6vw, 23px)/1.45 var(--read); max-width: 60ch; }
+.dialog { display: flex; gap: 16px; align-items: center; }
+.dialog .body { flex: 1; min-width: 0; }
+.dialog .item {
+  flex: none; width: 84px; height: 84px; border-radius: 20px; background: var(--sand);
+  display: grid; place-items: center; position: relative; animation: pop .35s ease-out;
+}
+.dialog .item svg { width: 64px; height: 64px; }
+.dialog .item .count {
+  position: absolute; right: -6px; bottom: -6px; min-width: 30px; height: 30px; padding: 0 6px; border-radius: 999px;
+  background: var(--moss); color: var(--paper); font: 800 17px/30px var(--display); text-align: center;
+}
+@keyframes pop { from { transform: scale(.6); opacity: 0; } }
+.dialog .more {
+  margin-top: 10px; display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+  font: 700 13px/1 var(--read); text-transform: uppercase; letter-spacing: .08em;
+}
+.dialog .more span { opacity: .55; }
+.dialog .arrow { flex: none; animation: nudge 1s ease-in-out infinite; }
+.dialog .arrow .check, .dialog.last .arrow .chev { display: none; }
+.dialog.last .arrow .check { display: inline; }
+.dialog.last .arrow { animation: none; }
+@keyframes nudge { 50% { transform: translateX(4px); } }
+@media (max-width: 420px) { .dialog .item { width: 64px; height: 64px; border-radius: 16px; } .dialog .item svg { width: 48px; height: 48px; } .dialog { gap: 12px; } }
+@media (prefers-reduced-motion: reduce) { .dialog .arrow, .dialog .item { animation: none; } }
+
+.card {
+  position: fixed; inset: 0; display: grid; place-items: center; padding-block: 24px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(140,200,212,.55); backdrop-filter: blur(3px);
+}
+.card .inner {
+  background: var(--paper); border-radius: 28px; padding: 28px 28px 24px; max-width: 420px; text-align: center;
+  box-shadow: 0 6px 0 rgba(52,67,58,.2);
+}
+.card h1 { font: 800 clamp(40px, 11vw, 60px)/1 var(--display); margin: 0 0 6px; color: var(--moss); text-wrap: balance; }
+.card p { font: 400 19px/1.5 var(--read); margin: 0 0 18px; }
+.card .tip { font-size: 15px; opacity: .7; margin: 14px 0 0; }
+.btn {
+  border: 0; cursor: pointer; font: 800 22px/1 var(--display); padding: 14px 30px; border-radius: 999px;
+  background: var(--sun); color: var(--ink); box-shadow: 0 4px 0 #c98e36;
+}
+.btn.ghost { background: transparent; box-shadow: none; font-size: 18px; padding: 10px 18px; text-decoration: underline; text-underline-offset: 4px; }
+.end-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c98e36; }
+@media (prefers-reduced-motion: reduce) { .dialog { animation: none; } }
+</style>
+
+<canvas id="game" aria-label="Pip's Island game world"></canvas>
+
+<div class="hud">
+  <div class="quests" id="quests"></div>
+  <div class="hud-right">
+  <button class="voice" id="voice" aria-label="Read aloud on" title="Read aloud">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/>
+      <g class="waves"><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></g>
+      <path class="slash" d="M16 9l6 6M22 9l-6 6"/>
+    </svg>
+  </button>
+  <canvas id="map" tabindex="0" role="button" aria-label="Island map, tap to make bigger"></canvas>
+  </div>
+</div>
+
+<div class="dialog" id="dialog" hidden>
+  <div class="item" id="item" hidden></div>
+  <div class="body">
+    <div class="who" id="who"></div>
+    <div class="line" id="line"></div>
+    <div class="more"><span id="moreText">Tap to continue</span>
+      <svg class="arrow" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#f4b85a"/><path class="chev" d="M10 7l5 5-5 5" fill="none" stroke="#34433a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path class="check" d="M7.5 12.5l3 3 6-7" fill="none" stroke="#34433a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="title">
+  <div class="inner">
+    <h1>Pip's Island</h1>
+    <p>Pip the little otter wakes up on a sunny island. Friends need help today!</p>
+    <button class="btn" id="start">Let's go</button>
+    <p class="tip">Tap where you want Pip to walk. Arrow keys work too.</p>
+  </div>
+</div>
+
+<div class="card" id="end" hidden>
+  <div class="inner">
+    <h1>Goodnight, Pip</h1>
+    <p id="endText"></p>
+    <div class="end-actions">
+      <button class="btn" id="wake">Wake up for Day 2</button>
+      <button class="btn" id="again">Play again</button>
+    </div>
+  </div>
+</div>
+
+<!--SCRIPTS-->
