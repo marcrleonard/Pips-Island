@@ -1,10 +1,54 @@
-# Pip's Island
+<h1 align="center">Pip's Island</h1>
 
-A gentle exploration game for a 7-year-old, in the spirit of *Puffin Rock* and *Brambletown*. Pip the otter
-wanders an island, meets animal friends and helps with small quests over two days. There are no fail states
-and no timers. Lines are read aloud.
+<p align="center"><b>A cozy little island adventure about a curious otter and the friends he helps.</b></p>
 
-It runs in any modern browser from a single HTML file, drawn with plain Canvas 2D (no libraries, no images).
+<p align="center">
+  <a href="https://marcrleonard.github.io/Pips-Island/"><b>▶ Play it in your browser</b></a>
+  &nbsp;·&nbsp; works on phones, tablets and computers
+</p>
+
+<p align="center"><img src="docs/screenshots/island.jpg" alt="Pip the otter under Bramble the Owl's big tree, with the pond and Mama Duck nearby" width="820"></p>
+
+Pip the otter wakes up on a sunny island where every friend has something small they need: lost ducklings,
+blueberries for a pie, a shell that went missing. Wander, explore, chat, and help out. There's nothing to lose,
+no timers and no way to fail, just a gentle, cozy world to poke around in. Every line is read aloud, so the game
+works for players who are still learning to read.
+
+## Three days on the island
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/friends.jpg" alt="Pip talking with Hazel Hedgehog outside her stump house"></td>
+    <td width="50%"><img src="docs/screenshots/burrow.jpg" alt="Digby Mole's lantern-lit burrow with glowing crystals"></td>
+  </tr>
+  <tr>
+    <td><b>Day 1 · The island and the Burrow.</b> Bramble the Owl suggests one friend at a time. Find Mama Duck's
+    ducklings, pick berries for Hazel, return Grandpa Crab's shell, collect glowcaps for Digby Mole and learn
+    Fern Mouse's crystal song.</td>
+    <td><b>Under the island.</b> Digby's burrow lights up with lanterns once his glowcaps are home, and he starts
+    digging a tunnel toward the sea.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/cove.jpg" alt="Seagrass Cove at low tide, with Pearl the seal pup and tide pools in the rocks"></td>
+    <td><img src="docs/screenshots/isle.jpg" alt="Puffin Isle, with puffins, their burrows and Nana Puff's red door"></td>
+  </tr>
+  <tr>
+    <td><b>Day 2 · Seagrass Cove.</b> Digby's tunnel opens onto a hidden beach. Watch the tide: peek in the tide
+    pools for Pearl the seal pup when the water is low, and gather driftwood for Captain Puff's boat when it washes
+    in.</td>
+    <td><b>Day 3 · Puffin Isle.</b> Sail across with Captain Puff. Catch leaping sand eels for Nana Puff's hungry
+    pufflings, and play hide and seek with little Pebble.</td>
+  </tr>
+</table>
+
+## What makes it nice
+
+- **Cozy by design.** No fail states, no timers, no scores. Friends point you to the next thing one gentle hint at a time.
+- **Fully voiced.** Every character has their own voice, and every line is recorded.
+- **Tap to walk.** Pip finds his own way around trees, ponds and rocks. Arrow keys and WASD work too.
+- **Picks up where you left off.** Progress saves automatically in the browser.
+- **Painted in code.** No image files: soft, lit, cut-paper shapes drawn with Canvas 2D, running at 60 fps on phones.
+- **One file.** The whole game builds into a single HTML page, so it's easy to host or share.
 
 ## Quick start
 
