@@ -28,7 +28,7 @@ python3 tools/watch.py      # rebuild on save + serve http://localhost:8000/pips
   `SCRIPT`, `CAST` and `AUDIO_MANIFEST`.
 - `#day2` or `#day3` on the URL starts on that day (testing shortcut, handled in `src/engine/boot.js`).
 - The game is published to GitHub Pages on every push to `main` (`.github/workflows/pages.yml`), with the recorded
-  voices: http://io.marcrleonard.com/Pips-Island/. The older claude.ai artifact has no audio files, so it uses
+  voices: https://marcrleonard.github.io/Pips-Island/. The older claude.ai artifact has no audio files, so it uses
   browser voices.
 
 ## Architecture

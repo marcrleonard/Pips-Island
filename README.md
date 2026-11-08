@@ -91,4 +91,4 @@ direction plus a color-grading LUT.
 ## Hosting
 
 Every push to `main` builds the game and publishes it with its voice files to GitHub Pages
-(`.github/workflows/pages.yml`): http://io.marcrleonard.com/Pips-Island/
+(`.github/workflows/pages.yml`): https://marcrleonard.github.io/Pips-Island/
