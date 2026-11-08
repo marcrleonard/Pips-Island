@@ -87,3 +87,8 @@ as-is. The JavaScript is plain functions over a small state object (`S`), so the
 `stories/pips-island/quests.js` translates almost line for line. On the art side, each `cached(...)` sprite is a static
 texture, `styled(...)` is an animated sprite, `bakedGround` is a static background or tile map, and `LOOK` is a light
 direction plus a color-grading LUT.
+
+## Hosting
+
+Every push to `main` builds the game and publishes it with its voice files to GitHub Pages
+(`.github/workflows/pages.yml`): http://io.marcrleonard.com/Pips-Island/
