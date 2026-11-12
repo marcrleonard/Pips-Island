@@ -47,7 +47,7 @@ function updateDeep(dt){
       pl.taken = true; q.pearls.have++; chime([1047,1319,1568],0.08); renderQuests();
       earlyFind('pearls','crab','pip.early.pearl');
       pop(pl.x, pl.y-36, `${q.pearls.have} pearl${q.pearls.have===1?'':'s'}`);
-      if (q.pearls.have===3 && q.pearls.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.pearls.state==='new' ? 'pip.pearls.all.early' : 'pip.pearls.all'); }, 600);
+      if (q.pearls.have===3 && q.pearls.state!=='done') setTimeout(() => { if (!S.dialog && q.pearls.state!=='done') speak(q.pearls.state==='new' ? 'pip.pearls.all.early' : 'pip.pearls.all'); }, 600);
     }
   }
   // glow-jellies drift on slow loops; catch by swimming into one
@@ -59,7 +59,7 @@ function updateDeep(dt){
       j.caught = true; q.jellies.have++; chime([784,1047,1319],0.08); renderQuests();
       earlyFind('jellies','seal','pip.early.jelly');
       pop(j.px, j.py-30, `${q.jellies.have} glow-jell${q.jellies.have===1?'y':'ies'}`);
-      if (q.jellies.have===4 && q.jellies.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.jellies.state==='new' ? 'pip.jellies.all.early' : 'pip.jellies.all'); }, 600);
+      if (q.jellies.have===4 && q.jellies.state!=='done') setTimeout(() => { if (!S.dialog && q.jellies.state!=='done') speak(q.jellies.state==='new' ? 'pip.jellies.all.early' : 'pip.jellies.all'); }, 600);
     }
   }
   // anemone lanterns: swim close to light one; lighting all three brightens the trench
@@ -68,7 +68,7 @@ function updateDeep(dt){
       an.lit = true; q.anemones.have++; chime([523,784,1047],0.1); renderQuests();
       earlyFind('anemones','puffin','pip.early.anem');
       pop(an.x, an.y-44, `${q.anemones.have} sea lantern${q.anemones.have===1?'':'s'}`);
-      if (q.anemones.have===3 && q.anemones.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.anemones.state==='new' ? 'pip.anems.all.early' : 'pip.anems.all'); }, 600);
+      if (q.anemones.have===3 && q.anemones.state!=='done') setTimeout(() => { if (!S.dialog && q.anemones.state!=='done') speak(q.anemones.state==='new' ? 'pip.anems.all.early' : 'pip.anems.all'); }, 600);
     }
   }
   if (!S.ending) S.npcs.forEach(n => { if (n.scene==='deep' && n.route) stepNpc(n, dt, 70); });
@@ -387,4 +387,39 @@ function startDay5(quiet){
   for (const k in grids) delete grids[k];
   clearGround(); renderQuests(); running = true;
   if (!quiet) setTimeout(() => speak('pip.day5.start'), 400);
+}
+
+// ---- Way-finding for days whose new place is a trip away (Day 4 up the North Path, Day 5 down to the dive spot) ----
+// A soft beacon floats over the next doorway on the route until Pip arrives; off screen, an arrow at the edge points to it.
+function guideTarget(){
+  if (S.ending || S.trans) return null;
+  if (S.day === 4 && !S.visitedHighland) return S.scene === 'island' ? { x: NORTH_PATH.x, y: NORTH_PATH.y } : null;
+  if (S.day !== 5 || S.visitedDeep) return null;
+  if (S.scene === 'island') return { x: burrow.x, y: burrow.y + 60 };
+  if (S.scene === 'cave') return digStage() === 2 ? CAVE_LADDER2 : null;
+  if (S.scene === 'cove') return DIVE_SPOT;
+  return null;
+}
+function drawGuide(t){
+  const T = guideTarget(); if (!T || S.dialog) return;
+  const z = cam.z, sx = (T.x - cam.x) * z, sy = (T.y - cam.y) * z, m = 46;
+  const inView = sx > m && sx < innerWidth - m && sy > 120 && sy < innerHeight - m;
+  ctx.save();
+  if (inView) {   // a bobbing glow and a downward chevron over the spot
+    const by = sy - 70 - Math.sin(t*3)*6, pulse = 0.5 + 0.5*Math.sin(t*3);
+    const g = ctx.createRadialGradient(sx, by, 2, sx, by, 34); g.addColorStop(0, `rgba(255,236,160,${0.55+0.3*pulse})`); g.addColorStop(1, 'rgba(255,236,160,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, by, 34, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fffaf0'; ctx.beginPath(); ctx.arc(sx, by, 17, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#e0904a'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(sx-7, by-4); ctx.lineTo(sx, by+4); ctx.lineTo(sx+7, by-4); ctx.stroke();
+  } else {        // an arrow at the screen edge, pointing the way
+    const cx = innerWidth/2, cy = innerHeight/2, a = Math.atan2(sy - cy, sx - cx);
+    const k = Math.min((innerWidth/2 - m) / Math.abs(Math.cos(a) || 1e-6), (innerHeight/2 - m - 40) / Math.abs(Math.sin(a) || 1e-6));
+    const ax = cx + Math.cos(a)*k, ay = cy + Math.sin(a)*k + (Math.sin(a) < 0 ? 30 : 0), nud = Math.sin(t*4)*4;
+    ctx.translate(ax + Math.cos(a)*nud, ay + Math.sin(a)*nud); ctx.rotate(a);
+    ctx.fillStyle = 'rgba(52,67,58,.25)'; ctx.beginPath(); ctx.arc(1, 3, 22, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fffaf0'; ctx.beginPath(); ctx.arc(0, 0, 22, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#e0904a'; ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(-6, -10); ctx.lineTo(-2, 0); ctx.lineTo(-6, 10); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
 }

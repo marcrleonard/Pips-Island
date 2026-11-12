@@ -22,7 +22,7 @@ const CROWN = smoothPts([[330,300],[470,212],[700,196],[930,206],[1130,258],[130
 const GORGE = { y0: 1010, y1: 1170 };
 // the walkable bridge span reaches a little past the gorge at both ends, so it connects cleanly to the crown
 // above and the landing below (the drawn bridge still sags across the gorge itself)
-const BRIDGE = { x0: 770, x1: 940, y0: GORGE.y0 - 40, y1: GORGE.y1 + 40 };
+const BRIDGE = { x0: 812, x1: 898, y0: GORGE.y0 - 40, y1: GORGE.y1 + 40 };
 // The waterfall pours off a rock lip on the crown's east side, down past the gorge and into the clouds.
 const FALL = { x: 1240, w: 64, lip: 980, y1: 2060 };
 const fallX = y => FALL.x + 10 * ((y - FALL.lip) / (FALL.y1 - FALL.lip));   // drifts gently right as it falls
@@ -48,10 +48,10 @@ const H_PLANKS = [[884,1958],[786,1620],[702,1300]];      // bridge planks, alon
 const SEED_SPOTS = [[560,560],[980,520],[760,760],[1140,680]];  // where thistle seeds drift on the crown
 const CAIRN = { x: 1160, y: 452 };
 // rocky outcrops that frame the path and wall the slope (off-path; decoration)
-const H_ROCKS = [[585,2150,44],[1010,1960,48],[560,2330,30],[392,1560,38],[998,1452,42],[600,1150,34],
-  [1050,1070,40],[468,760,34],[1138,740,30],[300,1240,34],[1120,1560,38]];
+const H_ROCKS = [[585,2150,44],[1010,1960,48],[560,2330,30],[392,1560,38],[998,1452,42],[600,1214,34],
+  [1050,1236,40],[468,760,34],[1138,740,30],[300,1240,34],[1120,1560,38]];
 // pines dotted over the grassy slope, framing the trail — kept well clear of the waterfall channel
-const H_PINES = [[300,2280,1.1],[460,2120,0.95],[250,1900,1],[560,1720,0.9],[300,1500,0.95],[380,1120,0.9],
+const H_PINES = [[300,2280,1.1],[460,2120,0.95],[250,1900,1],[560,1720,0.9],[300,1500,0.95],[380,1250,0.9],
   [300,900,0.8],[1080,2200,1],[1360,2000,0.9],[1110,1760,0.95],[1380,1500,0.85],[1050,1300,0.9],
   [1400,900,0.8],[1000,820,0.8],[640,2060,0.85]];
 const H_THRIFT = [[420,620,1],[560,700,0.8],[700,560,0.9],[960,640,0.9],[1100,560,0.8],[840,860,1],
@@ -65,17 +65,23 @@ const inGorge = (x,y) => y > GORGE.y0 && y < GORGE.y1;
 const onBridge = (x,y) => x > BRIDGE.x0+8 && x < BRIDGE.x1-8 && y > BRIDGE.y0 && y < BRIDGE.y1;
 const onTrailPath = (x,y) => { for (let i=0;i<TRAIL.length-1;i++) if (segD(x,y,TRAIL[i][0],TRAIL[i][1],TRAIL[i+1][0],TRAIL[i+1][1]) < TRAIL_W) return true; return false; };
 const inClearing = (x,y) => H_CLEARINGS.some(([cx,cy,r]) => d2(x,y,cx,cy) < r);
+// Burrow-mound nooks beside the path (drawn in the foliage bake, solid to walk into)
+const H_NOOKS = [[1080,1690,0.9],[560,2150,1.05]];
+// Only things that look solid block you: rocks, pines, the cairn, the burrow mounds. Open grass is walkable —
+// the path is a guide, not a wall.
 function highlandBlocked(x,y){
   if (d2(x,y,CAIRN.x,CAIRN.y) < 30) return true;
-  for (const [rx,ry,r] of H_ROCKS) if (d2(x,y,rx,ry) < r*0.7) return true;
+  for (const [rx,ry,r] of H_ROCKS) if (d2(x,y,rx,ry) < r*0.75) return true;
+  for (const [px,py,s] of H_PINES) if (d2(x,y,px,py) < 18*s) return true;
+  for (const [nx,ny,s] of H_NOOKS) if (d2(x,y,nx,ny) < 40*s) return true;
   return false;
 }
 function highlandWalkable(x,y){
   if (S.bridge && onBridge(x,y)) return true;
-  if (inGorge(x,y)) return false;
-  if (insidePoly(CROWN, x, y, 16)) return !highlandBlocked(x,y);   // the open meadow on top
-  if (inClearing(x,y) || onTrailPath(x,y)) return !highlandBlocked(x,y);
-  return false;
+  if (inGorge(x,y)) return false;                                     // the gorge: only the bridge crosses it
+  if (!insidePoly(MOUNTAIN, x, y, 16)) return false;                  // the mountain's edge (clouds beyond)
+  if (y > FALL.lip - 20 && y < FALL.y1 && Math.abs(x - fallX(y)) < FALL.w/2 + 12) return false;   // the waterfall
+  return !highlandBlocked(x,y);
 }
 
 // lower mist clears as the trail lanterns are lit (0 lanterns -> thick, 3 -> clear)
@@ -94,7 +100,7 @@ function updateHighland(dt){
       for (const k in grids) delete grids[k];
       earlyFind('trail','juniper','pip.early.trail');
       pop(L.x, L.y-48, `${q.trail.lit} lantern${q.trail.lit===1?'':'s'} lit`);
-      if (q.trail.lit===3 && q.trail.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.trail.state==='new' ? 'pip.trail.all.early' : 'pip.trail.all'); }, 600);
+      if (q.trail.lit===3 && q.trail.state!=='done') setTimeout(() => { if (!S.dialog && q.trail.state!=='done') speak(q.trail.state==='new' ? 'pip.trail.all.early' : 'pip.trail.all'); }, 600);
     }
   }
   // pick up bridge planks
@@ -103,7 +109,7 @@ function updateHighland(dt){
       pk.taken = true; q.bridge.have++; chime([660,880],0.09); renderQuests();
       earlyFind('bridge','pine','pip.early.plank');
       pop(pk.x, pk.y-40, `${q.bridge.have} plank${q.bridge.have===1?'':'s'}`);
-      if (q.bridge.have===3 && q.bridge.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.bridge.state==='new' ? 'pip.plank.all.early' : 'pip.plank.all'); }, 600);
+      if (q.bridge.have===3 && q.bridge.state!=='done') setTimeout(() => { if (!S.dialog && q.bridge.state!=='done') speak(q.bridge.state==='new' ? 'pip.plank.all.early' : 'pip.plank.all'); }, 600);
     }
   }
   // thistle seeds drift on the wind; catch one by being near it
@@ -116,7 +122,7 @@ function updateHighland(dt){
       sd.caught = true; q.seeds.have++; chime([988,1319,1568],0.08); renderQuests();
       earlyFind('seeds','lark','pip.early.seed');
       pop(sd.px, sd.py-24, `${q.seeds.have} seed${q.seeds.have===1?'':'s'}`);
-      if (q.seeds.have===4 && q.seeds.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.seeds.state==='new' ? 'pip.seeds.all.early' : 'pip.seeds.all'); }, 600);
+      if (q.seeds.have===4 && q.seeds.state!=='done') setTimeout(() => { if (!S.dialog && q.seeds.state!=='done') speak(q.seeds.state==='new' ? 'pip.seeds.all.early' : 'pip.seeds.all'); }, 600);
     }
   }
   // friends that have somewhere to be amble there (the ending walk is driven by update.js's ending loop instead,
@@ -222,7 +228,7 @@ function drawHighlandFoliage(){
     PLANT_FNS[pl.type](pl.x, pl.y, s, c);
   }
   // a couple of burrow nooks tucked beside the path
-  for (const [x,y,s] of [[1004,1452,0.9],[560,2150,1.05]]) if (!onTrailPath(x,y)) hNook(x,y,s);
+  for (const [x,y,s] of H_NOOKS) hNook(x,y,s);
 }
 // The slope as overlapping rolling-hill bands that recede into haze (Old Man's Journey): each is a flat green
 // plane with a lit crest and a soft shadow where the hill in front of it tucks over — far ones paler and cooler,
@@ -255,7 +261,9 @@ function drawHighlandStatic(){
   ctx.save(); polyPath(MOUNTAIN); ctx.clip();
   const Rr = rng(31);
   // darker grass patches
-  for (let i=0;i<70;i++){ const x=Rr()*HW, y=300+Rr()*2150; ctx.fillStyle = Rr()<0.5?'rgba(120,160,86,.4)':'rgba(150,175,100,.32)'; ctx.beginPath(); ctx.ellipse(x,y,50+Rr()*80,28+Rr()*44,Rr()*3,0,Math.PI*2); ctx.fill(); }
+  for (let i=0;i<70;i++){ const x=Rr()*HW, y=300+Rr()*2150, c = Rr()<0.5?'120,160,86':'150,175,100', rx=50+Rr()*80, ry=28+Rr()*44, rot=Rr()*3;
+    ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.scale(1, ry/rx); const pg = ctx.createRadialGradient(0,0,rx*0.2,0,0,rx);
+    pg.addColorStop(0,`rgba(${c},.3)`); pg.addColorStop(1,`rgba(${c},0)`); ctx.fillStyle=pg; ctx.beginPath(); ctx.arc(0,0,rx,0,Math.PI*2); ctx.fill(); ctx.restore(); }
   // fine grass blades over the whole slope
   ctx.lineCap='round';
   for (let i=0;i<7000;i++){ const x=Rr()*HW, y=240+Rr()*2240, l=5+Rr()*7, tt=Rr()*2-1;
@@ -309,17 +317,33 @@ function drawHighlandStatic(){
   // lush, layered overgrowth filling the slope and crowding the path's edges
   drawHighlandFoliage();
 
-  // the gorge: a dark chasm with a rocky rim
-  ctx.save(); ctx.beginPath(); ctx.rect(0,GORGE.y0-4,HW,GORGE.y1-GORGE.y0+8); ctx.clip();
-  polyPath(MOUNTAIN); ctx.fillStyle='#3a322b'; ctx.fill();
-  const gg = ctx.createLinearGradient(0,GORGE.y0,0,GORGE.y1); gg.addColorStop(0,'#5a4e44'); gg.addColorStop(0.5,'#241d18'); gg.addColorStop(1,'#4a4038');
-  ctx.fillStyle=gg; polyPath(MOUNTAIN); ctx.fill();
+  // the gorge, seen from the south: the far wall's lit rock face drops into misty blue depth; the near edge is a
+  // grassy lip hanging over it. Both edges wobble a little (inside the blocked band, so Pip never stands over air).
+  const gx0 = 150, gx1 = 1560, Rgz = rng(808);
+  const farE = [], nearE = [];
+  for (let x=gx0; x<=gx1; x+=24){ farE.push([x, GORGE.y0 + 4 + Math.sin(x*0.021)*3 + Rgz()*3]); nearE.push([x, GORGE.y1 - 6 - Math.sin(x*0.017+1)*3 - Rgz()*3]); }
+  const band = (top, bot, fill) => { ctx.beginPath(); top.forEach(([x,y],i)=> i?ctx.lineTo(x,y):ctx.moveTo(x,y)); [...bot].reverse().forEach(([x,y])=>ctx.lineTo(x,y)); ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); };
+  ctx.save(); polyPath(MOUNTAIN); ctx.clip();
+  const gg = ctx.createLinearGradient(0,GORGE.y0,0,GORGE.y1); gg.addColorStop(0,'#9a8c7b'); gg.addColorStop(0.36,'#6e665d'); gg.addColorStop(0.6,'#7f97a0'); gg.addColorStop(1,'#b4c8cc');
+  band(farE, nearE, gg);
+  // rock strata on the far wall, catching the light
+  for (let k=0;k<4;k++){ const yy = 16 + k*14; ctx.strokeStyle = `rgba(255,240,214,${0.22-k*0.045})`; ctx.lineWidth = 2;
+    ctx.beginPath(); farE.forEach(([x,y],i)=>{ const v = y + yy + Math.sin(x*0.05+k*2)*3; i?ctx.lineTo(x,v):ctx.moveTo(x,v); }); ctx.stroke(); }
+  for (let i=0;i<40;i++){ const x = gx0 + Rgz()*(gx1-gx0), y = GORGE.y0 + 14 + Rgz()*44;
+    ctx.fillStyle = `rgba(40,34,30,${0.15+Rgz()*0.15})`; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+3,y+18+Rgz()*14); ctx.lineTo(x+6,y); ctx.fill(); }
+  // soft mist pooled in the depths
+  for (let i=0;i<14;i++){ const x = gx0 + Rgz()*(gx1-gx0), y = GORGE.y0 + 92 + Rgz()*36, w = 70 + Rgz()*90;
+    ctx.save(); ctx.translate(x,y); ctx.scale(1,0.22); const mg = ctx.createRadialGradient(0,0,2,0,0,w);
+    mg.addColorStop(0,'rgba(240,246,246,.75)'); mg.addColorStop(1,'rgba(226,236,238,0)'); ctx.fillStyle=mg; ctx.beginPath(); ctx.arc(0,0,w,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+  // the near lip: a grassy overhang with a shadow beneath it and grass hanging over the edge
+  ctx.strokeStyle='rgba(30,36,40,.35)'; ctx.lineWidth=10; ctx.beginPath(); nearE.forEach(([x,y],i)=> i?ctx.lineTo(x,y-4):ctx.moveTo(x,y-4)); ctx.stroke();
+  band(nearE, nearE.map(([x,y]) => [x, y+14]), '#5f8a45');
+  ctx.strokeStyle='#86b064'; ctx.lineWidth=2.6; ctx.beginPath(); nearE.forEach(([x,y],i)=> i?ctx.lineTo(x,y+1):ctx.moveTo(x,y+1)); ctx.stroke();
+  ctx.strokeStyle='#6f9e55'; ctx.lineWidth=2.2; ctx.lineCap='round';
+  for (const [x,y] of nearE) for (let j=0;j<3;j++){ const bx = x + j*8 - 8; ctx.beginPath(); ctx.moveTo(bx, y+2); ctx.quadraticCurveTo(bx+2, y-6, bx+4+Rgz()*3, y-8-Rgz()*6); ctx.stroke(); }
+  // the far rim: a lit grassy edge on top of the wall
+  ctx.strokeStyle = lit(C.grass,0.5); ctx.lineWidth=4; ctx.beginPath(); farE.forEach(([x,y],i)=> i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke();
   ctx.restore();
-  // rims (lit top edge, shaded bottom edge)
-  ctx.strokeStyle='rgba(60,52,44,.5)'; ctx.lineWidth=8;
-  ctx.beginPath(); ctx.moveTo(190,GORGE.y1); ctx.lineTo(1520,GORGE.y1); ctx.stroke();
-  ctx.strokeStyle = lit('#9a9184',0.5); ctx.lineWidth=6;
-  ctx.beginPath(); ctx.moveTo(190,GORGE.y0); ctx.lineTo(1520,GORGE.y0); ctx.stroke();
 
   // the waterfall: a shaded rock channel the water pours down, with a grassy rock lip at the top (water is live)
   const w = FALL.w;
@@ -365,29 +389,31 @@ function drawWaterfallLive(t){
   }
   ctx.restore();
 }
+// The rope bridge runs the way the path does: north-south across the gorge. Planks lie across it, ropes run
+// down both sides, and a post stands at each corner. Its walkable strip (onBridge) is exactly the drawn deck.
 function drawBridgeHighland(t){
-  const ax=BRIDGE.x0, bx=BRIDGE.x1, mid=(GORGE.y0+GORGE.y1)/2, sag=30;
-  const drop = S.bridgeDrop > 0 ? Math.sin(S.bridgeDrop*14)*3*(S.bridgeDrop) : 0;
+  const x0 = BRIDGE.x0, x1 = BRIDGE.x1, top = GORGE.y0 - 14, bot = GORGE.y1 + 14, mid = (x0+x1)/2;
+  const post = (px,py) => { ell(px, py+3, 7, 3, 'rgba(30,24,20,.35)'); ctx.fillStyle='#5e4636'; ctx.beginPath(); ctx.roundRect(px-4, py-30, 8, 32, 3); ctx.fill(); circ(px, py-30, 5, '#6e4f3a'); };
   if (!S.bridge) {
-    // undropped: coiled rope on the near rim, posts standing
-    ctx.strokeStyle='#5e4636'; ctx.lineWidth=8; ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(ax,GORGE.y1-6); ctx.lineTo(ax,GORGE.y1-54); ctx.moveTo(bx,GORGE.y0+6); ctx.lineTo(bx,GORGE.y0-48); ctx.stroke();
-    ctx.strokeStyle='#8a6a4d'; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(ax+8,GORGE.y1-18,10,0,Math.PI*2); ctx.arc(ax+8,GORGE.y1-18,16,0,Math.PI*2); ctx.stroke();
+    // not yet: the four posts stand on the rims; the rope lies coiled on the near (south) side
+    for (const px of [x0, x1]) { post(px, top+6); post(px, bot+6); }
+    ctx.strokeStyle='#8a6a4d'; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(x1+18, bot+18, 9, 0, Math.PI*2); ctx.arc(x1+18, bot+18, 15, 0, Math.PI*2); ctx.stroke();
     return;
   }
-  ctx.save(); ctx.translate(0, drop);
-  // ropes
-  ctx.strokeStyle='#6e4630'; ctx.lineWidth=4;
-  for (const off of [-18,18]){ ctx.beginPath(); for (let i=0;i<=22;i++){ const u=i/22, x=ax+(bx-ax)*u, y=GORGE.y0-4 + (mid-(GORGE.y0-4))*0 + Math.sin(u*Math.PI)*sag + (GORGE.y1-GORGE.y0)*0.1; const yy = GORGE.y0 + 4 + Math.sin(u*Math.PI)*sag; i?ctx.lineTo(x,yy+off):ctx.moveTo(x,yy+off); } ctx.stroke(); }
-  // planks
-  ctx.strokeStyle='#b89a72'; ctx.lineWidth=16; ctx.lineCap='round';
-  for (let i=1;i<22;i++){ const u=i/22, x=ax+(bx-ax)*u, yy=GORGE.y0+4+Math.sin(u*Math.PI)*sag; ctx.beginPath(); ctx.moveTo(x,yy-16); ctx.lineTo(x,yy+16); ctx.stroke(); }
-  ctx.strokeStyle='#9a7c56'; ctx.lineWidth=2;
-  for (let i=1;i<22;i++){ const u=i/22, x=ax+(bx-ax)*u, yy=GORGE.y0+4+Math.sin(u*Math.PI)*sag; ctx.beginPath(); ctx.moveTo(x,yy-10); ctx.lineTo(x,yy+10); ctx.stroke(); }
+  const bounce = S.bridgeDrop > 0 ? Math.sin(S.bridgeDrop*14)*0.03*S.bridgeDrop : 0;
+  ctx.save(); ctx.translate(mid, (top+bot)/2); ctx.scale(1, 1+bounce); ctx.translate(-mid, -(top+bot)/2);
+  // shadow of the deck on the chasm far below
+  ctx.fillStyle='rgba(0,0,0,.25)'; ctx.fillRect(x0+10, top+20, x1-x0, bot-top-14);
+  // planks across, with a slight sag toward the middle (narrower and darker at the low point)
+  for (let y=top+6; y<bot-2; y+=13){ const u=(y-top)/(bot-top), sag=Math.sin(u*Math.PI), inset=sag*4;
+    ctx.fillStyle = mixHex('#c4a57c', '#9c7e58', sag*0.5); ctx.beginPath(); ctx.roundRect(x0+4+inset, y, x1-x0-8-inset*2, 10, 3); ctx.fill();
+    ctx.fillStyle='rgba(90,66,44,.35)'; ctx.fillRect(x0+4+inset, y+8, x1-x0-8-inset*2, 2); }
+  // side ropes, bowing in a touch at the middle
+  ctx.strokeStyle='#6e4630'; ctx.lineWidth=3.5; ctx.lineCap='round';
+  for (const side of [-1,1]){ const ex = side<0 ? x0 : x1; ctx.beginPath();
+    for (let i=0;i<=16;i++){ const u=i/16, y=top+(bot-top)*u, x=ex - side*Math.sin(u*Math.PI)*4; i?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.stroke(); }
   ctx.restore();
-  // posts
-  ctx.strokeStyle='#5e4636'; ctx.lineWidth=8; ctx.lineCap='round';
-  ctx.beginPath(); ctx.moveTo(ax,GORGE.y1-6); ctx.lineTo(ax,GORGE.y1-54); ctx.moveTo(bx,GORGE.y0+6); ctx.lineTo(bx,GORGE.y0-48); ctx.stroke();
+  for (const px of [x0, x1]) { post(px, top+6); post(px, bot+6); }
 }
 function drawHLantern(L,t){
   const on = L.lit;
@@ -567,8 +593,9 @@ function drawHighland(t){
     ctx.save();
     const R = rng(55);
     for (let i=0;i<26;i++){ const x=R()*HW, y=1300+R()*1100, w=140+R()*220, h=w*0.26;
-      const g = ctx.createRadialGradient(x+Math.sin(t*0.3+i)*20,y,4,x,y,w); g.addColorStop(0,`rgba(234,241,239,${(0.3+R()*0.3)*m})`); g.addColorStop(1,'rgba(234,241,239,0)');
-      ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(x,y,w,h,0,0,Math.PI*2); ctx.fill(); }
+      const al = (0.3+R()*0.3)*m; ctx.save(); ctx.translate(x + Math.sin(t*0.3+i)*20, y); ctx.scale(1, h/w);
+      const g = ctx.createRadialGradient(0,0,4,0,0,w); g.addColorStop(0,`rgba(234,241,239,${al})`); g.addColorStop(1,'rgba(234,241,239,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,w,0,Math.PI*2); ctx.fill(); ctx.restore(); }
     // a soft veil over the very bottom
     const vg = ctx.createLinearGradient(0,1900,0,HH); vg.addColorStop(0,'rgba(226,236,234,0)'); vg.addColorStop(1,`rgba(226,236,234,${0.5*m})`);
     ctx.fillStyle=vg; ctx.fillRect(0,1900,HW,HH-1900);
@@ -665,40 +692,61 @@ function updateNorthPath(){
   S.northArmed = false; pop(NORTH_PATH.x, NORTH_PATH.y-46, 'Too misty to climb');
   if (!S.dialog && !S.northWondered) { S.northWondered = true; setTimeout(() => { if (!S.dialog) speak('pip.north.locked'); }, 350); }
 }
-function drawNorthPathIsland(t){
+// The trailhead on the island: a path that narrows as it climbs north between two grassy mounds, a signpost
+// beside it, and beyond the gap either a wall of mist (Days 1-3) or the far misty peak (Day 4 on).
+const NP_MOUNDS = [[-82,-20],[82,-20]];                 // offsets from NORTH_PATH
+const NP_SIGN = { dx: 52, dy: 70 };
+function drawNorthPathGround(){
+  const {x,y} = NORTH_PATH;
+  cached('np-ground', x, y, [-70,-70,70,150], () => {
+    const C0 = [[x-4,y+130],[x+8,y+70],[x-2,y+10],[x+2,y-52]], W0 = [34,27,19,12];
+    const edge = (side,g) => catmullRom(C0.map(([px,py],i) => [px+side*(W0[i]+g), py]), 6);
+    const band = (g,col) => { const pts = [...edge(-1,g), ...edge(1,g).reverse()]; ctx.fillStyle=col; ctx.beginPath(); pts.forEach(([px,py],i)=> i?ctx.lineTo(px,py):ctx.moveTo(px,py)); ctx.closePath(); ctx.fill(); };
+    band(6, 'rgba(60,50,40,.22)'); band(0, '#c8ad7e'); band(-7, '#d6c08f');
+    const R = rng(77); for (let i=0;i<14;i++){ const u=R(), py=y+130-u*180, px=x+(R()-0.5)*(34-u*20); ell(px, py, 2.2, 1.7, R()>0.5?'#b4a68e':'#9c9078'); }
+    for (const [px,py] of [[x-44,y+110],[x+40,y+96],[x-34,y+40],[x+30,y+20]]) hTuft(px,py);
+  });
+}
+function drawNorthMounds(t){
   const {x,y} = NORTH_PATH, open = S.day >= 4;
-  // a short worn path leading off the top of the island into the mist
-  ctx.lineJoin='round'; ctx.lineCap='round';
-  ctx.strokeStyle = lit(C.grass,-0.7); ctx.lineWidth=34; ctx.beginPath(); ctx.moveTo(x, y+70); ctx.quadraticCurveTo(x+6, y+10, x, y-70); ctx.stroke();
-  ctx.strokeStyle = '#d8c08a'; ctx.lineWidth=26; ctx.beginPath(); ctx.moveTo(x, y+70); ctx.quadraticCurveTo(x+6, y+10, x, y-70); ctx.stroke();
-  // a little signpost pointing up the path
-  const sx = x+34, sy = y+6;
-  ctx.save();
-  ell(sx, sy+4, 10, 4, 'rgba(52,67,58,.2)');
-  ctx.strokeStyle='#8c6a4d'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx, sy-40); ctx.stroke();
-  ctx.save(); ctx.translate(sx, sy-40);
-  ctx.fillStyle='#c9a77d'; ctx.beginPath(); ctx.moveTo(-4,-10); ctx.lineTo(30,-10); ctx.lineTo(38,-2); ctx.lineTo(30,6); ctx.lineTo(-4,6); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='#5e4636'; ctx.font='800 11px Grandstander, system-ui, sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('HIGH PATH', -1, -2);
-  ctx.restore(); ctx.restore();
-  // the mist bank that walls the path off until Day 4 (soft cloud puffs along the north edge)
-  if (!open) {
-    const R = rng(123);
-    ctx.save();
-    for (let i=0;i<16;i++){ const cx = x - 150 + R()*300, cy = y - 110 + Math.sin(t*0.4+i)*6 + R()*40, w = 40 + R()*60;
-      const g = ctx.createRadialGradient(cx,cy,4,cx,cy,w); g.addColorStop(0,`rgba(244,248,247,${0.72+R()*0.2})`); g.addColorStop(1,'rgba(244,248,247,0)');
-      ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(cx,cy,w,w*0.7,0,0,Math.PI*2); ctx.fill(); }
+  if (open) {   // the far heights, seen through the gap
+    ctx.fillStyle='rgba(150,172,176,.6)'; ctx.beginPath(); ctx.moveTo(x-80,y-36); ctx.quadraticCurveTo(x-30,y-120,x+6,y-150); ctx.quadraticCurveTo(x+44,y-118,x+86,y-36); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(236,244,242,.7)'; ctx.beginPath(); ctx.moveTo(x-14,y-132); ctx.quadraticCurveTo(x+6,y-152,x+24,y-128); ctx.quadraticCurveTo(x+6,y-136,x-14,y-132); ctx.fill();
+  }
+  cached('np-mounds', x, y, [-160,-100,160,30], () => {
+    for (const [dx,dy] of NP_MOUNDS){ const s = dx<0 ? -1 : 1, mx=x+dx, my=y+dy;
+      ell(mx, my+10, 70, 24, 'rgba(40,58,34,.22)');
+      ell(mx, my-8, 64, 40, '#6f9e55'); ell(mx-s*10, my-20, 44, 26, '#86b664'); ell(mx-s*16, my-30, 20, 10, '#9cc874');
+      ctx.strokeStyle='#5f9150'; ctx.lineWidth=3; ctx.lineCap='round';
+      for (let i=-3;i<=3;i++){ const bx=mx+i*14; ctx.beginPath(); ctx.moveTo(bx, my-40+Math.abs(i)*4); ctx.lineTo(bx+2, my-54+Math.abs(i)*4); ctx.stroke(); } }
+  });
+  if (!open) {  // a bank of mist fills the gap until the north wind clears it
+    const R = rng(123); ctx.save();
+    for (let i=0;i<12;i++){ const cx = x - 90 + R()*180, cy = y - 70 + Math.sin(t*0.4+i)*5 + R()*36, w = 40 + R()*46;
+      const g = ctx.createRadialGradient(cx,cy,4,cx,cy,w); g.addColorStop(0,`rgba(244,248,247,${0.78+R()*0.18})`); g.addColorStop(1,'rgba(244,248,247,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(cx,cy,w,w*0.6,0,0,Math.PI*2); ctx.fill(); }
     ctx.restore();
-  } else {
-    // open: a faint sparkle and a hint of the heights beyond
-    sparkle(x+2, y-78, t*0.5);
   }
 }
+function drawNorthSign(){
+  const sx = NORTH_PATH.x + NP_SIGN.dx, sy = NORTH_PATH.y + NP_SIGN.dy;
+  cached('np-sign', sx, sy, [-14,-66,58,8], () => {
+    ctx.fillStyle='#7d5d42'; ctx.beginPath(); ctx.roundRect(sx-3, sy-48, 7, 50, 3); ctx.fill();
+    ctx.save(); ctx.translate(sx, sy-46); ctx.rotate(-0.08);
+    ctx.fillStyle='#c9a77d'; ctx.beginPath(); ctx.moveTo(-8,-11); ctx.lineTo(40,-11); ctx.lineTo(50,-1); ctx.lineTo(40,9); ctx.lineTo(-8,9); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#a5845e'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#5e4636'; ctx.font='800 10px Grandstander, system-ui, sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('HIGH PATH', -4, -1);
+    ctx.restore();
+  }, { shadow: 8, h: 50 });
+}
+// Solid parts of the trailhead (the island's walkable test uses this)
+const northPathBlocked = (x,y) => NP_MOUNDS.some(([dx,dy]) => d2(x,y,NORTH_PATH.x+dx,NORTH_PATH.y+dy-6) < 52) || d2(x,y,NORTH_PATH.x+NP_SIGN.dx,NORTH_PATH.y+NP_SIGN.dy) < 12;
 
 // ---------- Day 4 setup ----------
 function startDay4(quiet){
   startDay3(true);
   Object.values(S.quests).forEach(q => { q.state = 'done'; });
-  S.day = 4;
+  S.day = 4; S.visitedHighland = false;
   S.quests.trail = { state:'new', lit:0 };
   S.quests.bridge = { state:'new', have:0 };
   S.quests.seeds = { state:'new', have:0 };
