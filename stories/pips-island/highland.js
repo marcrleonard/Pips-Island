@@ -207,6 +207,26 @@ function drawHighlandFoliage(){
   // a few burrow nooks tucked beside the path
   for (const [x,y,s] of [[612,1150,1],[1000,1452,0.9],[560,2150,1.05],[988,860,0.85]]) if (!onTrailPath(x,y)) hNook(x,y,s);
 }
+// The slope as overlapping rolling-hill bands that recede into haze (Old Man's Journey): each is a flat green
+// plane with a lit crest and a soft shadow where the hill in front of it tucks over — far ones paler and cooler,
+// near ones richer and warmer. Gives the terrain real stacked depth instead of one flat plane.
+function drawHighlandHills(){
+  const R = rng(441), N = 7;
+  const crests = Array.from({length:N}, (_,i) => ({ cy: 1030 + i*238, amp: 26+R()*34, ph: R()*6.28, freq: 0.0034+R()*0.0024, amp2: 10+R()*16, ph2: R()*6.28 }));
+  const crestY = (w,x) => w.cy + Math.sin(x*w.freq+w.ph)*w.amp + Math.sin(x*w.freq*2.4+w.ph2)*w.amp2;
+  const trace = (w,dy=0) => { for (let x=-60;x<=HW+60;x+=22){ const y=crestY(w,x)+dy; x<-40?ctx.moveTo(x,y):ctx.lineTo(x,y); } };
+  ctx.save(); polyPath(MOUNTAIN); ctx.clip();
+  for (let i=0;i<N;i++){
+    const w=crests[i], depth=i/(N-1);
+    let c = mixHex('#a9cb8c','#5f8a45', depth);
+    c = depth<0.5 ? mixHex(c,'#cfe0d6',(0.5-depth)*0.6) : mixHex(c,'#41603a',(depth-0.5)*0.5);
+    ctx.fillStyle=c; ctx.beginPath(); ctx.moveTo(-60,HH+60); trace(w); ctx.lineTo(HW+60,HH+60); ctx.closePath(); ctx.fill();
+    ctx.lineCap='round';
+    ctx.strokeStyle='rgba(38,56,32,.14)'; ctx.lineWidth=28; ctx.beginPath(); trace(w,20); ctx.stroke();   // shade under the crest
+    ctx.strokeStyle=lit(c,0.7); ctx.lineWidth=3.5; ctx.beginPath(); trace(w); ctx.stroke();                 // lit crest rim
+  }
+  ctx.restore();
+}
 function drawHighlandStatic(){
   drawHighlandSky();
   const L = LOOK.light;
@@ -214,14 +234,9 @@ function drawHighlandStatic(){
   ctx.fillStyle = '#b7a98e'; polyPath(offsetPoly(MOUNTAIN, 16), 0, 10); ctx.fill();
   for (let i=10; i>0; i-=2) { ctx.fillStyle = mixHex('#8fb268','#5f8a45', i/10); polyPath(offsetPoly(MOUNTAIN, 2), 0, i); ctx.fill(); }
   ctx.fillStyle = C.grass; polyPath(MOUNTAIN); ctx.fill();
+  drawHighlandHills();                         // overlapping rolling-hill bands (depth)
   ctx.save(); polyPath(MOUNTAIN); ctx.clip();
   const Rr = rng(31);
-  // rolling light + shade across the hillside, so it reads as a rounded slope, not a flat plane
-  for (let i=0;i<48;i++){ const x=Rr()*HW, y=200+Rr()*2300, r=180+Rr()*260;
-    const a = ctx.createRadialGradient(x+L.x*r*0.4, y+L.y*r*0.4, 0, x, y, r);
-    a.addColorStop(0,'rgba(255,246,200,.18)'); a.addColorStop(1,'rgba(255,246,200,0)'); ctx.fillStyle=a; ctx.fillRect(x-r,y-r,2*r,2*r);
-    const b = ctx.createRadialGradient(x-L.x*r*0.5, y-L.y*r*0.5, 0, x-L.x*r*0.3, y-L.y*r*0.3, r*0.85);
-    b.addColorStop(0,'rgba(50,70,46,.12)'); b.addColorStop(1,'rgba(50,70,46,0)'); ctx.fillStyle=b; ctx.fillRect(x-r*1.5,y-r*1.5,3*r,3*r); }
   // darker grass patches
   for (let i=0;i<70;i++){ const x=Rr()*HW, y=300+Rr()*2150; ctx.fillStyle = Rr()<0.5?'rgba(120,160,86,.4)':'rgba(150,175,100,.32)'; ctx.beginPath(); ctx.ellipse(x,y,50+Rr()*80,28+Rr()*44,Rr()*3,0,Math.PI*2); ctx.fill(); }
   // fine grass blades over the whole slope
