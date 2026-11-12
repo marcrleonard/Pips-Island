@@ -9,55 +9,63 @@
 //   * Lark the skylark   — catch 4 thistle seeds drifting on the wind up on the crown (quest 'seeds').
 // ---------- Puffin... no: the Highlands ----------
 const HW = 1700, HH = 2600;
-// One tall mountain the player walks over (like the island's grass). A gorge near the top splits it; the only
-// way across is the rope bridge. Props block locally.
+// A tall grassy mountain. Unlike the open island, you can only walk the path (carved through grass and rock)
+// plus the clearings along it and the crown meadow on top — the slope's grass and rock wall you in, so the
+// terrain shows where you can and can't go. A gorge near the top is crossed only by the rope bridge.
 const MOUNTAIN = smoothPts([
   [250,260],[430,210],[640,190],[860,195],[1070,220],[1250,280],[1360,440],[1430,700],
   [1470,1000],[1500,1360],[1520,1760],[1480,2120],[1360,2360],[1120,2470],[850,2500],
   [580,2470],[360,2360],[240,2120],[200,1760],[190,1360],[210,1000],[220,640],[220,420]]);
-// Grassy crown cap (the meadow at the top). Its top edge reaches the mountain's summit, so above the grass
-// is open sky, not rock — you really are on top, above the clouds.
+// Grassy crown cap (the open meadow at the top). Its top edge reaches the summit, so above the grass is sky.
 const CROWN = smoothPts([[330,300],[470,212],[700,196],[930,206],[1130,258],[1300,470],[1335,700],[1285,900],
   [1080,992],[820,1002],[560,986],[360,900],[295,680],[300,470]]);
-// The gorge: a chasm band that cuts the mountain in two. Below it is the climb, above it the crown.
 const GORGE = { y0: 1010, y1: 1170 };
-// The rope bridge across the gorge (walkable only once dropped).
-const BRIDGE = { x0: 770, x1: 940, y0: GORGE.y0 - 6, y1: GORGE.y1 + 6 };
-// Where the waterfall spills off the crown's east ledge, down past the gorge and into the clouds.
-const FALL = { x: 1230, y0: 980, y1: 2050 };
-// The trail winds gently up the slope with two hairpin landings, running straight through the gorge (where
-// the bridge is). Lower amplitude + rounded turns so it reads as a worn path, not a zig-zag ribbon.
+// the walkable bridge span reaches a little past the gorge at both ends, so it connects cleanly to the crown
+// above and the landing below (the drawn bridge still sags across the gorge itself)
+const BRIDGE = { x0: 770, x1: 940, y0: GORGE.y0 - 40, y1: GORGE.y1 + 40 };
+// The waterfall pours off a rock lip on the crown's east side, down past the gorge and into the clouds.
+const FALL = { x: 1240, w: 64, lip: 980, y1: 2060 };
+const fallX = y => FALL.x + 10 * ((y - FALL.lip) / (FALL.y1 - FALL.lip));   // drifts gently right as it falls
+// The trail winds gently up the slope with two hairpin landings, straight through the gorge (the bridge).
 const TRAIL = [[855,2400],[812,2288],[735,2168],[720,2030],[792,1910],[888,1788],[905,1662],[832,1556],
   [712,1452],[690,1332],[772,1240],[850,1150],[855,1040],[855,930],[812,812],[732,694],[712,576],[762,468]];
+const TRAIL_W = 58;                                      // how wide the walkable path is
 const TRAIL_LANDINGS = [[905,1662],[690,1332]];          // the two hairpin turns (flat dirt landings)
+// Walkable clearings: the trailhead you arrive at, the two hairpin landings, and the bridge's south landing.
+const H_CLEARINGS = [[855,2330,128],[905,1662,76],[690,1332,76],[855,1216,98]];
 const H_LANTERNS = [[905,1662],[690,1332],[735,2030]];   // the three trail lanterns (two on the hairpins)
-const H_PLANKS = [[430,1640],[1140,1520],[600,1360]];     // bridge planks scattered on the lower ledges
+const H_PLANKS = [[836,1552],[708,1452],[772,1240]];     // bridge planks, along the path as you climb
 const SEED_SPOTS = [[560,560],[980,520],[760,760],[1140,680]];  // where thistle seeds drift on the crown
-const CAIRN = { x: 1180, y: 470 };
-const H_ROCKS = [[400,1500,34],[1180,1900,40],[520,2180,30],[1250,760,28],[380,760,30],[1080,1300,26]];
-const H_PINES = [[320,2300,1.1],[520,2160,0.95],[300,1980,1],[1120,2160,1.05],[1250,1980,0.9],[260,1740,0.95],
-  [1180,1700,1],[330,1520,0.85],[1240,1420,0.9],[300,1240,0.8],[1200,1120,0.85],[360,1040,0.8],[1240,980,0.8]];
+const CAIRN = { x: 1160, y: 452 };
+// rocky outcrops that frame the path and wall the slope (off-path; decoration)
+const H_ROCKS = [[585,2150,44],[1010,1960,48],[560,2330,30],[392,1560,38],[998,1452,42],[600,1150,34],
+  [1050,1070,40],[468,760,34],[1138,740,30],[300,1240,34],[1120,1560,38]];
+// pines dotted over the grassy slope, framing the trail — kept well clear of the waterfall channel
+const H_PINES = [[300,2280,1.1],[460,2120,0.95],[250,1900,1],[560,1720,0.9],[300,1500,0.95],[380,1120,0.9],
+  [300,900,0.8],[1080,2200,1],[1360,2000,0.9],[1110,1760,0.95],[1380,1500,0.85],[1050,1300,0.9],
+  [1400,900,0.8],[1000,820,0.8],[640,2060,0.85]];
 const H_THRIFT = [[420,620,1],[560,700,0.8],[700,560,0.9],[960,640,0.9],[1100,560,0.8],[840,860,1],
   [1180,820,0.8],[500,860,0.9],[1000,880,0.8],[680,400,0.8],[920,400,0.8]];
 const HILL_ENTRY = { x: 855, y: 2360 };   // where Pip arrives when he climbs up
 const HILL_EXIT = { x: 855, y: 2460 };    // walk to the base of the trail to climb back down to the island
-const WILLOW_SPOT = { x: 740, y: 2250 };
+const WILLOW_SPOT = { x: 792, y: 2318 };
 const PICNIC = { x: 760, y: 560 };        // the crown picnic at the end of the day
 
 const inGorge = (x,y) => y > GORGE.y0 && y < GORGE.y1;
 const onBridge = (x,y) => x > BRIDGE.x0+8 && x < BRIDGE.x1-8 && y > BRIDGE.y0 && y < BRIDGE.y1;
+const onTrailPath = (x,y) => { for (let i=0;i<TRAIL.length-1;i++) if (segD(x,y,TRAIL[i][0],TRAIL[i][1],TRAIL[i+1][0],TRAIL[i+1][1]) < TRAIL_W) return true; return false; };
+const inClearing = (x,y) => H_CLEARINGS.some(([cx,cy,r]) => d2(x,y,cx,cy) < r);
 function highlandBlocked(x,y){
-  if (d2(x,y,CAIRN.x,CAIRN.y) < 34) return true;
-  if (d2(x,y,WILLOW_SPOT.x,WILLOW_SPOT.y) < 10) return false;
-  for (const [rx,ry,r] of H_ROCKS) if (d2(x,y,rx,ry) < r*0.8) return true;
-  for (const [px,py,s] of H_PINES) if (d2(x,y,px,py) < 20*s) return true;
+  if (d2(x,y,CAIRN.x,CAIRN.y) < 30) return true;
+  for (const [rx,ry,r] of H_ROCKS) if (d2(x,y,rx,ry) < r*0.7) return true;
   return false;
 }
 function highlandWalkable(x,y){
   if (S.bridge && onBridge(x,y)) return true;
   if (inGorge(x,y)) return false;
-  if (!insidePoly(MOUNTAIN, x, y, 14)) return false;
-  return !highlandBlocked(x,y);
+  if (insidePoly(CROWN, x, y, 16)) return !highlandBlocked(x,y);   // the open meadow on top
+  if (inClearing(x,y) || onTrailPath(x,y)) return !highlandBlocked(x,y);
+  return false;
 }
 
 // lower mist clears as the trail lanterns are lit (0 lanterns -> thick, 3 -> clear)
@@ -142,28 +150,40 @@ function drawHighlandSky(){
   for (let i=0;i<40;i++){ const x=R()*HW, y=2180+R()*420, w=100+R()*200, h=w*(0.32+R()*0.16);
     ctx.fillStyle = `rgba(${248},${250},${248},${0.6+R()*0.4})`; ctx.beginPath(); ctx.ellipse(x,y,w,h,0,0,Math.PI*2); ctx.fill(); }
 }
+// little roadside greenery, baked along the path edges
+function hTuft(x,y){ ctx.strokeStyle='#6f9e55'; ctx.lineWidth=2.4; ctx.lineCap='round';
+  for (let i=-2;i<=2;i++){ ctx.beginPath(); ctx.moveTo(x+i*3,y); ctx.lineTo(x+i*4,y-11-Math.abs(i)); ctx.stroke(); }
+  ctx.strokeStyle='#86b064'; for (let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(x+i*4,y); ctx.lineTo(x+i*5,y-8); ctx.stroke(); } }
+function hFern(x,y){ ctx.strokeStyle=rng(Math.round(x+y))()>0.5?'#5f9150':'#6f9e55'; ctx.lineWidth=2.2; ctx.lineCap='round';
+  for (let i=-2;i<=2;i++){ ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x+i*7,y-11,x+i*13,y-8+Math.abs(i)*2); ctx.stroke(); } }
+function hBloom(x,y){ const c=['#f6c6d0','#ffe08a','#d9c8f2','#fff6e8'][Math.floor(rng(Math.round(x*3+y))()*4)];
+  ctx.strokeStyle='#6f9e55'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y-9); ctx.stroke();
+  for (let k=0;k<5;k++){ const a=k/5*Math.PI*2; circ(x+Math.cos(a)*3,y-9+Math.sin(a)*3,2.2,c); } circ(x,y-9,1.4,'#f4b85a'); }
 function drawHighlandStatic(){
   drawHighlandSky();
   const L = LOOK.light;
-  // the mountain: a rock massif with a soft sandy foot where it meets the clouds
+  // the mountain is a grassy alpine slope (not bare rock): a sandy/rocky foot, then grass with rocky outcrops
   ctx.fillStyle = '#b7a98e'; polyPath(offsetPoly(MOUNTAIN, 16), 0, 10); ctx.fill();
-  ctx.fillStyle = '#9a9184'; polyPath(MOUNTAIN); ctx.fill();
+  for (let i=10; i>0; i-=2) { ctx.fillStyle = mixHex('#8fb268','#5f8a45', i/10); polyPath(offsetPoly(MOUNTAIN, 2), 0, i); ctx.fill(); }
+  ctx.fillStyle = C.grass; polyPath(MOUNTAIN); ctx.fill();
   ctx.save(); polyPath(MOUNTAIN); ctx.clip();
-  // rolling light on the rock
   const Rr = rng(31);
-  for (let i=0;i<40;i++){ const x=Rr()*HW, y=200+Rr()*2300, r=160+Rr()*240;
-    const a = ctx.createRadialGradient(x+L.x*r*0.35, y+L.y*r*0.35, 0, x, y, r);
-    a.addColorStop(0,'rgba(255,244,200,.12)'); a.addColorStop(1,'rgba(255,244,200,0)'); ctx.fillStyle=a; ctx.fillRect(x-r,y-r,2*r,2*r); }
-  // cut-paper facets
-  const tones = ['#a29989','#968d80','#8b8276','#9a9184','#7e766a'];
-  for (let i=0;i<120;i++){ const cx=Rr()*HW, cy=300+Rr()*2000, w=80+Rr()*120, h=52+Rr()*70;
-    ctx.fillStyle = tones[i%tones.length]; ctx.beginPath();
-    ctx.moveTo(cx-w*0.5,cy+h*0.2); ctx.lineTo(cx-w*0.1,cy-h*0.5); ctx.lineTo(cx+w*0.5,cy-h*0.1); ctx.lineTo(cx+w*0.2,cy+h*0.5); ctx.closePath(); ctx.fill(); }
-  // ledge shelves: soft horizontal shadow bands so it reads as climbable tiers
-  ctx.strokeStyle='rgba(60,52,44,.22)'; ctx.lineWidth=22; ctx.lineCap='round';
-  [1360,1700,2040].forEach(y => { ctx.beginPath(); for (let x=240;x<1480;x+=48) ctx.lineTo(x, y+Math.sin(x*0.01+y)*20); ctx.stroke(); });
-  // moss (sparse, soft — just enough to warm the rock)
-  for (let i=0;i<26;i++){ const x=240+Rr()*1220, y=1000+Rr()*1400; ctx.fillStyle = Rr()>0.5?'rgba(120,160,86,.3)':'rgba(150,175,100,.26)'; ctx.beginPath(); ctx.ellipse(x,y,44+Rr()*50,20+Rr()*18,0,0,Math.PI*2); ctx.fill(); }
+  // rolling light + shade across the hillside, so it reads as a rounded slope, not a flat plane
+  for (let i=0;i<48;i++){ const x=Rr()*HW, y=200+Rr()*2300, r=180+Rr()*260;
+    const a = ctx.createRadialGradient(x+L.x*r*0.4, y+L.y*r*0.4, 0, x, y, r);
+    a.addColorStop(0,'rgba(255,246,200,.18)'); a.addColorStop(1,'rgba(255,246,200,0)'); ctx.fillStyle=a; ctx.fillRect(x-r,y-r,2*r,2*r);
+    const b = ctx.createRadialGradient(x-L.x*r*0.5, y-L.y*r*0.5, 0, x-L.x*r*0.3, y-L.y*r*0.3, r*0.85);
+    b.addColorStop(0,'rgba(50,70,46,.12)'); b.addColorStop(1,'rgba(50,70,46,0)'); ctx.fillStyle=b; ctx.fillRect(x-r*1.5,y-r*1.5,3*r,3*r); }
+  // darker grass patches
+  for (let i=0;i<70;i++){ const x=Rr()*HW, y=300+Rr()*2150; ctx.fillStyle = Rr()<0.5?'rgba(120,160,86,.4)':'rgba(150,175,100,.32)'; ctx.beginPath(); ctx.ellipse(x,y,50+Rr()*80,28+Rr()*44,Rr()*3,0,Math.PI*2); ctx.fill(); }
+  // fine grass blades over the whole slope
+  ctx.lineCap='round';
+  for (let i=0;i<7000;i++){ const x=Rr()*HW, y=240+Rr()*2240, l=5+Rr()*7, tt=Rr()*2-1;
+    ctx.strokeStyle = lit(C.grass, tt*0.4); ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+(Rr()-0.5)*4, y-l); ctx.stroke(); }
+  // bare rocky scree showing through here and there (greys), especially on the steeper flanks
+  const rtones = ['#9a9184','#8b8276','#a7a090','#7e766a'];
+  for (let i=0;i<34;i++){ const x=Rr()*HW, y=400+Rr()*2000; if (x>200 && x<1500 && !(x<360||x>1360) && Rr()<0.6) continue;
+    ctx.fillStyle = rtones[i%4]; ctx.beginPath(); ctx.moveTo(x-30,y+8); ctx.lineTo(x-8,y-18); ctx.lineTo(x+22,y-6); ctx.lineTo(x+12,y+16); ctx.closePath(); ctx.fill(); }
   ctx.restore();
 
   // the grassy crown
@@ -197,8 +217,18 @@ function drawHighlandStatic(){
   const Rt = rng(3140);
   for (let i=0;i<TRAIL.length-1;i++){ const a=TRAIL[i], bq=TRAIL[i+1];
     for (let t=0;t<1;t+=0.07){ if (Rt()>0.42) continue;
-      const x=a[0]+(bq[0]-a[0])*t, y=a[1]+(bq[1]-a[1])*t, ox=(Rt()-0.5)*32, oy=(Rt()-0.5)*18;
+      const x=a[0]+(bq[0]-a[0])*t, y=a[1]+(bq[1]-a[1])*t, ox=(Rt()-0.5)*24, oy=(Rt()-0.5)*14;
       ell(x+ox, y+oy, 2.4+Rt()*3, 1.8+Rt()*2, Rt()>0.5?'#b4a68e':'#9c9078'); } }
+  // line both edges of the path with grass tufts, stones, ferns and the odd flower, so the way reads clearly
+  const Rf = rng(515);
+  for (let i=0;i<TRAIL.length-1;i++){ const a=TRAIL[i], bq=TRAIL[i+1];
+    const dx=bq[0]-a[0], dy=bq[1]-a[1], len=Math.hypot(dx,dy)||1, nx=-dy/len, ny=dx/len;
+    for (let t=0;t<1;t+=0.1){ for (const side of [-1,1]){ if (Rf()>0.72) continue;
+      const off = TRAIL_W - 6 + Rf()*18, x=a[0]+dx*t+nx*off*side, y=a[1]+dy*t+ny*off*side, k=Rf();
+      if (inGorge(x,y)) continue;
+      if (k<0.52) hTuft(x,y); else if (k<0.74) ell(x,y,3+Rf()*3,2.2+Rf()*2,Rf()>0.5?'#b0a890':'#9a927e'); else if (k<0.9) hFern(x,y); else hBloom(x,y); } } }
+  // a few tufts around the clearings too
+  for (const [cx,cy,r] of H_CLEARINGS){ for (let a=0;a<Math.PI*2;a+=0.5){ if (Rf()>0.6) continue; const x=cx+Math.cos(a)*(r*0.7+Rf()*16), y=cy+Math.sin(a)*(r*0.5+Rf()*12); if (inGorge(x,y)) continue; Rf()<0.6?hTuft(x,y):hFern(x,y); } }
 
   // the gorge: a dark chasm with a rocky rim
   ctx.save(); ctx.beginPath(); ctx.rect(0,GORGE.y0-4,HW,GORGE.y1-GORGE.y0+8); ctx.clip();
@@ -212,20 +242,48 @@ function drawHighlandStatic(){
   ctx.strokeStyle = lit('#9a9184',0.5); ctx.lineWidth=6;
   ctx.beginPath(); ctx.moveTo(190,GORGE.y0); ctx.lineTo(1520,GORGE.y0); ctx.stroke();
 
-  // the waterfall's rock channel (water drawn live)
-  ctx.strokeStyle='#5f564b'; ctx.lineWidth=70; ctx.lineCap='round';
-  ctx.beginPath(); ctx.moveTo(FALL.x,FALL.y0); ctx.quadraticCurveTo(FALL.x+20,(FALL.y0+FALL.y1)/2,FALL.x+36,FALL.y1); ctx.stroke();
+  // the waterfall: a shaded rock channel the water pours down, with a grassy rock lip at the top (water is live)
+  const w = FALL.w;
+  ctx.fillStyle = '#4f473d'; ctx.beginPath();
+  ctx.moveTo(fallX(FALL.lip)-w/2-7, FALL.lip);
+  for (let y=FALL.lip; y<=FALL.y1; y+=20) ctx.lineTo(fallX(y)-w/2-7, y);
+  for (let y=FALL.y1; y>=FALL.lip; y-=20) ctx.lineTo(fallX(y)+w/2+7, y);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#5f564b'; ctx.lineWidth=5; ctx.beginPath();
+  for (let y=FALL.lip; y<=FALL.y1; y+=20) ctx.lineTo(fallX(y)-w/2-7, y); ctx.stroke();
+  // the rock lip + a grassy brow where the stream goes over
+  ell(FALL.x, FALL.lip+4, w/2+20, 15, '#8b8276');
+  ctx.fillStyle=C.grass; ctx.beginPath(); ctx.ellipse(FALL.x, FALL.lip-6, w/2+24, 15, 0, Math.PI, 0); ctx.fill();
+  ctx.strokeStyle='#86b064'; ctx.lineWidth=2.5; for (let i=-2;i<=2;i++){ const bx=FALL.x+i*16; ctx.beginPath(); ctx.moveTo(bx,FALL.lip-8); ctx.lineTo(bx+2,FALL.lip-20); ctx.stroke(); }
 }
 function drawHThrift(){}   // (thrift baked into ground; kept for clarity)
 function drawWaterfallLive(t){
-  const x0=FALL.x, y0=FALL.y0, y1=FALL.y1;
-  ctx.save(); ctx.lineCap='round';
-  ctx.strokeStyle='rgba(150,195,205,.6)'; ctx.lineWidth=58;
-  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.quadraticCurveTo(x0+20,(y0+y1)/2,x0+36,y1); ctx.stroke();
-  ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=3;
-  for (let s=-2;s<=2;s++){ ctx.beginPath(); for (let y=y0;y<y1;y+=18){ const u=(y-y0)/(y1-y0), x=x0+20*u*u+s*11+Math.sin(y*0.05+s+t*3)*3; y===y0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.stroke(); }
-  // spray where it meets the gorge and where it vanishes into the clouds
-  for (const sy of [GORGE.y0, y1]) { const g = ctx.createRadialGradient(x0+(sy>1500?30:4),sy,4,x0+(sy>1500?30:4),sy,80); g.addColorStop(0,'rgba(255,255,255,.85)'); g.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(x0+(sy>1500?30:4),sy,80,34,0,0,Math.PI*2); ctx.fill(); }
+  const w = FALL.w, lip = FALL.lip, y1 = FALL.y1;
+  ctx.save();
+  // the falling column of water
+  ctx.beginPath(); ctx.moveTo(fallX(lip)-w/2, lip);
+  for (let y=lip; y<=y1; y+=16) ctx.lineTo(fallX(y)-w/2, y);
+  for (let y=y1; y>=lip; y-=16) ctx.lineTo(fallX(y)+w/2, y);
+  ctx.closePath();
+  const wg = ctx.createLinearGradient(0,lip,0,y1); wg.addColorStop(0,'rgba(232,248,251,.92)'); wg.addColorStop(0.5,'rgba(188,224,234,.82)'); wg.addColorStop(1,'rgba(214,238,244,.86)');
+  ctx.fillStyle = wg; ctx.fill();
+  // the lip curl where water tips over
+  ctx.fillStyle='rgba(255,255,255,.9)'; ctx.beginPath(); ctx.ellipse(FALL.x, lip, w/2+3, 9, 0, 0, Math.PI*2); ctx.fill();
+  // falling streaks that stream downward
+  ctx.save(); ctx.beginPath(); ctx.moveTo(fallX(lip)-w/2, lip);
+  for (let y=lip; y<=y1; y+=16) ctx.lineTo(fallX(y)-w/2, y);
+  for (let y=y1; y>=lip; y-=16) ctx.lineTo(fallX(y)+w/2, y); ctx.closePath(); ctx.clip();
+  ctx.lineCap='round'; ctx.lineWidth=2.6;
+  for (let s=-3;s<=3;s++){ ctx.beginPath(); for (let y=lip;y<y1;y+=12){ const x=fallX(y)+s*(w/8)+Math.sin(y*0.05+s)*2; y===lip?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+    const o=((s*40 + t*620)%80+80)%80; ctx.strokeStyle=`rgba(255,255,255,${o<46?0.7:0.22})`; ctx.stroke(); }
+  ctx.restore();
+  // foam + mist where it crashes through the gorge and where it dissolves into the clouds
+  for (const sy of [GORGE.y1+8, y1]){ const cx = fallX(sy);
+    ctx.save(); ctx.globalCompositeOperation='lighter';
+    const g = ctx.createRadialGradient(cx,sy,4,cx,sy,96); g.addColorStop(0,'rgba(255,255,255,.9)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(cx,sy,96,40,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    for (let i=0;i<6;i++){ const k=(t*0.8+i/6)%1; circ(cx-34+i*14+Math.sin(t*2+i)*4, sy-k*30, 4+k*7, `rgba(255,255,255,${0.55*(1-k)})`); }
+  }
   ctx.restore();
 }
 function drawBridgeHighland(t){
@@ -576,8 +634,8 @@ function startDay4(quiet){
   S.seeds = SEED_SPOTS.map(([x,y],i) => ({ x, y, i, a:i*1.7, sp:0.5+i*0.12, rx:70+i*14, ry:40+(i%2)*20, px:x, py:y, caught:false }));
   // the new friends live on the highland
   S.npcs.push({ id:'willow', name:'Willow', x:WILLOW_SPOT.x, y:WILLOW_SPOT.y, near:false, scene:'highland' });
-  S.npcs.push({ id:'juniper', name:'Juniper', x:600, y:1900, near:false, scene:'highland' });
-  S.npcs.push({ id:'pine', name:'Pine', x:900, y:1180, near:false, scene:'highland' });
+  S.npcs.push({ id:'juniper', name:'Juniper', x:778, y:1952, near:false, scene:'highland' });
+  S.npcs.push({ id:'pine', name:'Pine', x:855, y:1238, near:false, scene:'highland' });
   S.npcs.push({ id:'lark', name:'Lark', x:900, y:600, near:false, scene:'highland', gliding:true });
   for (const k in grids) delete grids[k];
   clearGround(); renderQuests(); running = true;
