@@ -159,6 +159,54 @@ function hFern(x,y){ ctx.strokeStyle=rng(Math.round(x+y))()>0.5?'#5f9150':'#6f9e
 function hBloom(x,y){ const c=['#f6c6d0','#ffe08a','#d9c8f2','#fff6e8'][Math.floor(rng(Math.round(x*3+y))()*4)];
   ctx.strokeStyle='#6f9e55'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y-9); ctx.stroke();
   for (let k=0;k<5;k++){ const a=k/5*Math.PI*2; circ(x+Math.cos(a)*3,y-9+Math.sin(a)*3,2.2,c); } circ(x,y-9,1.4,'#f4b85a'); }
+
+// ---- lush, varied "cut-paper" plants, layered for depth (Puffin Rock-style overgrowth) ----
+const H_GREENS = ['#5f8a4c','#6f9e55','#7fae5f','#4f7a5c','#6a9e78','#7aa860','#55836a'];
+function plFan(x,y,s,c){ for (let i=-3;i<=3;i++){ ctx.save(); ctx.translate(x,y); ctx.rotate(i*0.23); ctx.fillStyle = i%2?c:lit(c,0.12);
+  ctx.beginPath(); ctx.moveTo(-3.5*s,0); ctx.quadraticCurveTo(-2*s,-28*s,0,-47*s); ctx.quadraticCurveTo(2*s,-28*s,3.5*s,0); ctx.closePath(); ctx.fill(); ctx.restore(); } }
+function plBush(x,y,s,c){ for (const [dx,dy,r] of [[-13,-7,15],[13,-7,15],[0,-18,18],[-5,-12,11],[9,-14,10]]) ell(x+dx*s,y+dy*s,r*s,r*0.9*s,c); ell(x-6*s,-18*s+y,9*s,6*s,lit(c,0.3)); }
+function plBloom(x,y,s,c){ ctx.strokeStyle=lit(c,-0.3); ctx.lineWidth=1.8*s; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x+2*s,y-24*s,x,y-44*s); ctx.stroke();
+  const hx=x, hy=y-48*s; circ(hx,hy,8*s,'rgba(240,246,238,.45)'); ctx.strokeStyle='rgba(236,244,234,.85)'; ctx.lineWidth=1*s;
+  for (let i=0;i<16;i++){ const a=i/16*Math.PI*2; ctx.beginPath(); ctx.moveTo(hx,hy); ctx.lineTo(hx+Math.cos(a)*9*s,hy+Math.sin(a)*9*s); ctx.stroke(); }
+  for (let i=0;i<16;i++){ const a=i/16*Math.PI*2; circ(hx+Math.cos(a)*9*s,hy+Math.sin(a)*9*s,1.3*s,'#fbfdf8'); } }
+function plThistle(x,y,s,c){ ctx.strokeStyle=lit(c,-0.3); ctx.lineWidth=2.4*s; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y-42*s); ctx.stroke();
+  for (const i of [-1,1]){ ctx.beginPath(); ctx.moveTo(x,y-12*s); ctx.lineTo(x+i*15*s,y-18*s); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y-24*s); ctx.lineTo(x+i*11*s,y-32*s); ctx.stroke(); }
+  ell(x,y-46*s,7*s,10*s,lit(c,0.15)); ctx.strokeStyle=lit(c,0.35); ctx.lineWidth=1.4*s;
+  for (let i=-2;i<=2;i++){ ctx.beginPath(); ctx.moveTo(x+i*3*s,y-54*s); ctx.lineTo(x+i*4.5*s,y-61*s); ctx.stroke(); } circ(x,y-58*s,4*s,'#c98fc4'); }
+function plSpike(x,y,s,c){ ctx.strokeStyle=c; ctx.lineWidth=4*s; ctx.lineCap='round'; for (let i=-3;i<=3;i++){ ctx.beginPath(); ctx.moveTo(x+i*4*s,y); ctx.quadraticCurveTo(x+i*5*s,y-32*s,x+i*7*s,y-56*s); ctx.stroke(); } }
+function plFern(x,y,s,c){ ctx.strokeStyle=c; ctx.lineCap='round'; for (let i=-2;i<=2;i++){ if (!i) continue; ctx.lineWidth=3*s; ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x+i*13*s,y-22*s,x+i*26*s,y-15*s); ctx.stroke();
+  ctx.lineWidth=1.4*s; for (let k=1;k<=3;k++){ const t=k/4, px=x+i*26*s*t, py=y-22*s*Math.sin(t*1.9); ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px+i*7*s,py-7*s); ctx.stroke(); } } }
+const PLANT_FNS = [plFan,plBush,plBloom,plThistle,plSpike,plFern];
+// a grassy mound with little arched burrow holes — a nook along the path
+function hNook(x,y,s){ ell(x,y+5,48*s,20*s,'rgba(38,56,34,.2)');
+  ell(x,y,46*s,26*s,'#6f9e55'); ell(x-10*s,y-9*s,30*s,15*s,'#7fae5f'); ell(x+16*s,y-6*s,16*s,8*s,'#86b064');
+  for (let i=-1;i<=1;i++){ const hx=x+i*22*s, hy=y+4*s; ctx.fillStyle='#2b211c'; ctx.beginPath(); ctx.moveTo(hx-9*s,hy); ctx.quadraticCurveTo(hx-9*s,hy-18*s,hx,hy-18*s); ctx.quadraticCurveTo(hx+9*s,hy-18*s,hx+9*s,hy); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(255,246,214,.12)'; ctx.beginPath(); ctx.ellipse(hx,hy-4*s,6*s,8*s,0,0,Math.PI*2); ctx.fill(); }
+  ctx.strokeStyle='#5f9150'; ctx.lineWidth=2.4*s; ctx.lineCap='round'; for (let i=-3;i<=3;i++){ ctx.beginPath(); ctx.moveTo(x+i*9*s,y-16*s); ctx.lineTo(x+i*10*s,y-27*s); ctx.stroke(); } }
+// Dense, varied, depth-sorted foliage over the slope: smaller/paler far up, bigger/darker near the bottom, so
+// the climb reads as a path threading through layered overgrowth with little nooks and crannies.
+function drawHighlandFoliage(){
+  const R = rng(808), spots = [];
+  for (let i=0;i<680;i++){
+    const x = 170 + R()*1360, y = 250 + R()*2210;
+    if (!insidePoly(MOUNTAIN, x, y, 18) || inGorge(x,y)) continue;
+    if (Math.abs(x - fallX(y)) < FALL.w/2 + 34 && y > FALL.lip - 50) continue;   // keep out of the waterfall
+    const nearPath = onTrailPath(x,y) || inClearing(x,y);
+    if (nearPath && R() < 0.9) continue;                                          // path stays mostly clear
+    if (insidePoly(CROWN, x, y, 12) && R() < 0.5) continue;                        // crown a bit more open
+    spots.push([x,y]);
+  }
+  spots.sort((a,b) => a[1]-b[1]);                                                  // far (top) first → near (bottom) on top
+  for (const [x,y] of spots){
+    const depth = Math.max(0, Math.min(1, (y-250)/2210));                          // 0 far .. 1 near
+    const s = 0.45 + depth*0.95 + R()*0.3;
+    let c = H_GREENS[Math.floor(R()*H_GREENS.length)];
+    c = depth > 0.58 ? mixHex(c, '#2c4034', (depth-0.58)*0.75) : mixHex(c, '#cfe0d4', (0.5-depth)*0.5);   // near darker, far hazier
+    PLANT_FNS[Math.floor(R()*PLANT_FNS.length)](x, y, s, c);
+  }
+  // a few burrow nooks tucked beside the path
+  for (const [x,y,s] of [[612,1150,1],[1000,1452,0.9],[560,2150,1.05],[988,860,0.85]]) if (!onTrailPath(x,y)) hNook(x,y,s);
+}
 function drawHighlandStatic(){
   drawHighlandSky();
   const L = LOOK.light;
@@ -229,6 +277,8 @@ function drawHighlandStatic(){
       if (k<0.52) hTuft(x,y); else if (k<0.74) ell(x,y,3+Rf()*3,2.2+Rf()*2,Rf()>0.5?'#b0a890':'#9a927e'); else if (k<0.9) hFern(x,y); else hBloom(x,y); } } }
   // a few tufts around the clearings too
   for (const [cx,cy,r] of H_CLEARINGS){ for (let a=0;a<Math.PI*2;a+=0.5){ if (Rf()>0.6) continue; const x=cx+Math.cos(a)*(r*0.7+Rf()*16), y=cy+Math.sin(a)*(r*0.5+Rf()*12); if (inGorge(x,y)) continue; Rf()<0.6?hTuft(x,y):hFern(x,y); } }
+  // lush, layered overgrowth filling the slope and crowding the path's edges
+  drawHighlandFoliage();
 
   // the gorge: a dark chasm with a rocky rim
   ctx.save(); ctx.beginPath(); ctx.rect(0,GORGE.y0-4,HW,GORGE.y1-GORGE.y0+8); ctx.clip();
