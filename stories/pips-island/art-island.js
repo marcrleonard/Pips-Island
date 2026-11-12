@@ -402,6 +402,24 @@ function marker(x,y,t,kind){
 function npcMarker(n){
   const q = S.quests;
   if (S.ending) return null;
+  if (S.day===5) {
+    if (n.id==='marina') { if (allDone()) return 'ready';
+      const waiting = dayQuests().some(x => x.state==='active') || friendsToday().some(f => S.hinted.has(f.owner) && q[f.id].state==='new');
+      return waiting ? null : 'new'; }
+    if (n.id==='crab') return q.pearls.state==='new' ? (S.hinted.has('crab') ? 'new' : null) : (q.pearls.state==='active' && q.pearls.have>=3 ? 'ready' : null);
+    if (n.id==='seal') return q.jellies.state==='new' ? (S.hinted.has('seal') ? 'new' : null) : (q.jellies.state==='active' && q.jellies.have>=4 ? 'ready' : null);
+    if (n.id==='puffin') return q.anemones.state==='new' ? (S.hinted.has('puffin') ? 'new' : null) : (q.anemones.state==='active' && q.anemones.have>=3 ? 'ready' : null);
+    return null;
+  }
+  if (S.day===4) {
+    if (n.id==='willow') { if (allDone()) return 'ready';
+      const waiting = dayQuests().some(x => x.state==='active') || friendsToday().some(f => S.hinted.has(f.owner) && q[f.id].state==='new');
+      return waiting ? null : 'new'; }
+    if (n.id==='juniper') return q.trail.state==='new' ? (S.hinted.has('juniper') ? 'new' : null) : (q.trail.state==='active' && q.trail.lit>=3 ? 'ready' : null);
+    if (n.id==='pine') return q.bridge.state==='new' ? (S.hinted.has('pine') ? 'new' : null) : (q.bridge.state==='active' && q.bridge.have>=3 ? 'ready' : null);
+    if (n.id==='lark') return q.seeds.state==='new' ? (S.hinted.has('lark') ? 'new' : null) : (q.seeds.state==='active' && q.seeds.have>=4 ? 'ready' : null);
+    return null;
+  }
   if (S.day===3) {
     if (n.id==='puffin') return allDone() ? 'ready' : q.sail.state==='new' ? (S.hinted.has('puffin') ? 'new' : null) : null;
     if (n.id==='nana') return q.eels.state==='new' ? (S.hinted.has('nana') ? 'new' : null) : (q.eels.state==='active' && q.eels.have>=4 ? 'ready' : null);

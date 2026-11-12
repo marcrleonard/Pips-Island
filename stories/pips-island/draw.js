@@ -5,7 +5,7 @@ function draw(){
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = S.scene==='cave' ? '#241b18' : (GROUND_EDGE || C.sea); ctx.fillRect(0,0,cvs.width,cvs.height);
   ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,-cam.x*DPR*cam.z,-cam.y*DPR*cam.z);
-  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else drawIsland(t);
+  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else if (S.scene==='highland') drawHighland(t); else if (S.scene==='deep') drawDeep(t); else drawIsland(t);
   drawOverlays(t);
 }
 function drawIsland(t){
@@ -44,6 +44,7 @@ function drawIsland(t){
   S.ducklings.forEach(d => { if (d.state==='swim') styled(d.x, d.y, [-26,-24,26,8], () => drawSwimDuck(d.x,d.y,d.face||1,t, S.day>=2 ? 1.35 : 1), {key:'swim:'+S.ducklings.indexOf(d), fps:12}); });
   if (S.day>=2 && !S.ending) { const m = S.npcs.find(n => n.id==='duck'); styled(m.x, m.y, [-36,-40,36,10], () => drawMamaSwim(m, t), {key:'mamaswim', fps:12}); }
   ents.sort((a,b) => a.y-b.y).forEach(e => e.f());
+  drawNorthPathIsland(t);
   if (S.ending) drawNpcStyled({id:'owl', x:bigTree.x+70, y:bigTree.y+150}, t);
 
   // markers
@@ -77,9 +78,45 @@ function drawPops(){
 function drawTargetRing(){
   if (S.player.goal && !S.ending) { const T=S.player.goal; ctx.strokeStyle='rgba(255,250,240,.8)'; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(T.x,T.y,12,6,0,0,Math.PI*2); ctx.stroke(); }
 }
-const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44 };
+const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44, willow:118, juniper:66, pine:62, lark:42, marina:54 };
 function drawMarkers(t){
   S.npcs.forEach(n => { if (n.scene!==S.scene) return; const k = npcMarker(n); if (k) marker(n.x, n.y - MARK_Y[n.id], t, k); });
+}
+// A near foreground layer — soft, dark foliage framing the bottom corners that drifts a little as the camera
+// moves (parallax). Flat scenes read as a diorama with a sharp near plane and a hazier far one, the depth cue
+// cozy 2.5D exploration games lean on. Kept to the corners so the playfield stays clear.
+const FG_PAL = {
+  highland: { a:'#3c6636', b:'#4e7d44', soft:'rgba(34,58,30,0.5)', kind:'grass' },
+  island:   { a:'#3a5832', b:'#4a6d3e', soft:'rgba(32,50,28,0.46)', kind:'grass' },
+  cove:     { a:'#6a6150', b:'#857a63', soft:'rgba(48,42,32,0.4)',  kind:'grass' },
+  isle:     { a:'#3a5832', b:'#4a6d3e', soft:'rgba(32,50,28,0.44)', kind:'grass' },
+  deep:     { a:'#123247', b:'#1b4a63', soft:'rgba(8,24,38,0.55)',  kind:'kelp' },
+};
+function foliageClump(bx, by, dir, pal, seed){
+  const R = rng(seed), kelp = pal.kind === 'kelp';
+  // a soft shadowy mass so the blades read as one clump of near foliage, not stray strokes
+  const g = ctx.createRadialGradient(bx, by, 10, bx, by, 360); g.addColorStop(0, pal.soft); g.addColorStop(0.6, pal.soft); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(bx, by, 360, 300, 0, 0, Math.PI*2); ctx.fill();
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const n = kelp ? 8 : 24;
+  for (let i=0;i<n;i++){
+    const x = bx + dir*(4 + R()*300), h = (kelp ? 230 : 130) + R()*(kelp?210:200), sway = Math.sin(S.t*0.6 + i*1.3)*(kelp?16:8);
+    const w = (kelp ? 12 : 9) - R()*4;
+    ctx.globalAlpha = 0.86; ctx.strokeStyle = i%3 ? pal.a : pal.b; ctx.lineWidth = w;
+    const tx = x - dir*(kelp?14:30) + sway*1.5;
+    ctx.beginPath(); ctx.moveTo(x, by+30); ctx.quadraticCurveTo(x - dir*(kelp?34:16) + sway, by - h*0.55, tx, by - h); ctx.stroke();
+    if (!kelp && R()<0.4){ ctx.lineWidth = w*0.6; ctx.beginPath(); ctx.moveTo(x, by+30); ctx.quadraticCurveTo(x + dir*10, by - h*0.4, x + dir*18 + sway, by - h*0.7); ctx.stroke(); }
+  }
+  ctx.globalAlpha = 1;
+}
+function drawForeground(t){
+  const pal = FG_PAL[S.scene]; if (!pal || S.trans) return;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  const px = -(cam.x*cam.z) * 0.03, py = -(cam.y*cam.z) * 0.035;   // parallax: the near layer drifts as you move
+  ctx.save(); ctx.translate(px, py);
+  foliageClump(-30, innerHeight + 50, 1, pal, 61);
+  foliageClump(innerWidth + 30, innerHeight + 50, -1, pal, 47);
+  ctx.restore();
 }
 function drawOverlays(t){
   // soft storybook vignette
@@ -87,6 +124,7 @@ function drawOverlays(t){
   const vg = ctx.createRadialGradient(innerWidth/2,innerHeight/2,Math.min(innerWidth,innerHeight)*0.45,innerWidth/2,innerHeight/2,Math.max(innerWidth,innerHeight)*0.75);
   vg.addColorStop(0,'rgba(52,67,58,0)'); vg.addColorStop(1,'rgba(52,67,58,.14)');
   ctx.fillStyle = vg; ctx.fillRect(0,0,innerWidth,innerHeight);
+  drawForeground(t);
   drawMap(t);
   drawTideGauge(t);
   if (S.trans) {

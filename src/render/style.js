@@ -24,8 +24,15 @@ const LOOK_CAVE = {
   sun: { dx:0, dy:0, len:0, alpha:0, color:'#000000' }, ao:0.38,
   grade: [], grain: 0.35,
 };
+// Underwater: lit from the surface above, cool blue ambient, a blue-green grade. Used for the Day 5 deep dive.
+const LOOK_DEEP = {
+  light: { x:-0.3, y:-0.95 }, key:'#cfeeff', keyAmt:0.34, shade:'#17364f', shadeAmt:0.5,
+  sun: { dx:0.35, dy:0.9, len:0.4, alpha:0.1, color:'#07182a' }, ao:0.3,
+  grade: [{ m:'multiply', c:'#2f6f8f', a:0.28 }, { m:'soft-light', c:'#143a58', a:0.22 }], grain: 0.3,
+};
 let LOOK = LOOK_DAY;
-const lookFor = scene => scene === 'cave' ? LOOK_CAVE : LOOK_DAY;
+const lookFor = scene => scene === 'cave' ? LOOK_CAVE : scene === 'deep' ? LOOK_DEEP : LOOK_DAY;
+const lookKey = () => LOOK === LOOK_CAVE ? 'c' : LOOK === LOOK_DEEP ? 'q' : 'd';
 
 // ---------- color helpers ----------
 const hexRGB = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
@@ -115,7 +122,7 @@ function styled(x, y, box, fn, opt = {}){
   if (opt.shadow) shadow(x, y + (opt.shy ?? 2), opt.shadow, opt.h);
   const scale = renderScale();
   if (!opt.key) { const m = bake(scx, x, y, box, fn, scale); ctx.drawImage(scratch, 0,0,m.pw,m.ph, m.dx,m.dy,m.w,m.h); return; }
-  const tick = Math.floor(S.t * (opt.fps || 15)), lk = LOOK === LOOK_CAVE ? 'c' : 'd', fx = Math.round(x*4)/4, fy = Math.round(y*4)/4;
+  const tick = Math.floor(S.t * (opt.fps || 15)), lk = lookKey(), fx = Math.round(x*4)/4, fy = Math.round(y*4)/4;
   let c = poseCache.get(opt.key);
   if (!c || c.tick !== tick || c.scale !== scale || c.lk !== lk || c.fx !== fx || c.fy !== fy || opt.always) {
     // a moving character is re-drawn at its new spot; a still one keeps its image
@@ -132,7 +139,7 @@ function styled(x, y, box, fn, opt = {}){
 const spriteCache = new Map();
 function cached(key, x, y, box, fn, opt = {}){
   if (!onScreen(x,y,shadowReach(box,opt))) return;
-  const scale = renderScale(), lk = LOOK === LOOK_CAVE ? 'c' : 'd';
+  const scale = renderScale(), lk = lookKey();
   let c = spriteCache.get(key);
   if (!c || c.scale !== scale || c.lk !== lk) {
     const m = bake(scx, x, y, box, fn, scale);

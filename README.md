@@ -14,16 +14,22 @@ blueberries for a pie, a shell that went missing. Wander, explore, chat, and hel
 no timers and no way to fail, just a gentle, cozy world to poke around in. Every line is read aloud, so the game
 works for players who are still learning to read.
 
-## Three days on the island
+## Five days on the island
 
 - **Day 1:** help friends around the island, then light up Digby Mole's burrow.
 - **Day 2:** follow Digby's new tunnel to Seagrass Cove and play with the tide.
 - **Day 3:** sail with Captain Puff to Puffin Isle.
+- **Day 4:** the north wind clears the mist — climb the North Path up into the Cloudtop Highlands, above the clouds.
+- **Day 5:** dive from the cove into the Deep — a sunlit kelp lagoon that drops into a glowing trench, with Marina the sea turtle.
 
 <p align="center">
   <img src="docs/screenshots/cove.jpg" alt="Seagrass Cove at low tide, with Pearl the seal pup and tide pools" width="49%">
   <img src="docs/screenshots/isle.jpg" alt="Puffin Isle, with puffins, their burrows and Nana Puff's red door" width="49%">
 </p>
+
+<p align="center"><img src="docs/screenshots/highland.jpg" alt="The Cloudtop Highlands: Pip on the grassy crown above the clouds with Willow the stag, Juniper the fawn, Pine the squirrel and Lark the skylark, a rope bridge crossing the gorge below" width="820"></p>
+
+<p align="center"><img src="docs/screenshots/deep.jpg" alt="The Deep: Pip diving through a sunlit kelp forest with Marina the sea turtle, Pearl the seal, Captain Puff and Grandpa Crab, glow-jellies and anemones lighting the water" width="820"></p>
 
 ## What makes it nice
 
@@ -41,7 +47,7 @@ python3 tools/build.py          # writes dist/pips-island.html (open it in a bro
 python3 tools/watch.py          # rebuild on every save + serve at http://localhost:8000/pips-island.html
 ```
 
-Open the game with `#day2` or `#day3` at the end of the URL to skip straight to that day.
+Open the game with `#day2`, `#day3`, `#day4` or `#day5` at the end of the URL to skip straight to that day.
 
 Progress saves automatically in the browser (`localStorage`) as a small JSON document; see AGENTS.md for its shape.
 

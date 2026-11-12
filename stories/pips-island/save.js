@@ -19,8 +19,9 @@ function saveSnapshot(){
       quests,
       flags: {
         metOwl: S.metOwl, hinted: [...S.hinted], early: { ...S.early },
-        visitedCave: S.visitedCave, visitedCove: S.visitedCove,
+        visitedCave: S.visitedCave, visitedCove: S.visitedCove, visitedHighland: !!S.visitedHighland, visitedDeep: !!S.visitedDeep,
         hasLantern: S.hasLantern, moleLantern: S.moleLantern, boat: S.boat, boatAt: S.boatAt || null, fed: !!S.fed,
+        bridge: !!S.bridge, northWondered: !!S.northWondered,
       },
       world: {
         ducklings: S.ducklings.map(d => ({ state: d.state, x: Math.round(d.x), y: Math.round(d.y), a: d.a || 0 })),
@@ -32,6 +33,12 @@ function saveSnapshot(){
         wood: S.wood.map(w => w.state),
         tide: +S.tideT.toFixed(2),
         eels: (S.eels || []).map(e => e.caught),
+        hlit: (S.hLanterns || []).map(L => L.lit),
+        planks: (S.hPlanks || []).map(p => p.taken),
+        seeds: (S.seeds || []).map(s => s.caught),
+        pearls: (S.pearls || []).map(p => p.taken),
+        jellies: (S.jellies || []).map(j => j.caught),
+        anems: (S.anems || []).map(a => a.lit),
       },
       npcs: Object.fromEntries(S.npcs.map(n => {
         const at = n.walk || n;   // a friend mid-walk is saved where they were heading
@@ -43,7 +50,7 @@ function saveSnapshot(){
 
 function restoreSave(d){
   init();
-  if (d.day >= 3) startDay3(true); else if (d.day >= 2) startDay2(true);
+  if (d.day >= 5) startDay5(true); else if (d.day >= 4) startDay4(true); else if (d.day >= 3) startDay3(true); else if (d.day >= 2) startDay2(true);
   const p = d.progress;
   if (!p) return;
   const P = S.player, f = p.flags, w = p.world;
@@ -51,6 +58,8 @@ function restoreSave(d){
   S.metOwl = f.metOwl; S.hinted = new Set(f.hinted); S.early = f.early;
   S.visitedCave = f.visitedCave; S.visitedCove = f.visitedCove;
   S.hasLantern = f.hasLantern; S.moleLantern = f.moleLantern; S.boat = f.boat; S.boatAt = f.boatAt || S.boatAt; S.fed = !!f.fed;
+  S.visitedHighland = !!f.visitedHighland; S.bridge = !!f.bridge; S.northWondered = !!f.northWondered;
+  S.visitedDeep = !!f.visitedDeep;
   w.ducklings.forEach((s, i) => Object.assign(S.ducklings[i], s));
   w.berries.forEach((b, i) => { S.bushes[i].berry = b; });
   S.shell.taken = w.shellTaken;
@@ -61,6 +70,12 @@ function restoreSave(d){
   w.wood.forEach((st, i) => { if (S.wood[i]) S.wood[i].state = st; });
   S.tideT = w.tide;
   (w.eels || []).forEach((c, i) => { if (S.eels && S.eels[i]) S.eels[i].caught = c; });
+  (w.hlit || []).forEach((on, i) => { if (S.hLanterns && S.hLanterns[i]) { S.hLanterns[i].lit = on; S.hLit[i] = on; } });
+  (w.planks || []).forEach((tk, i) => { if (S.hPlanks && S.hPlanks[i]) S.hPlanks[i].taken = tk; });
+  (w.seeds || []).forEach((c, i) => { if (S.seeds && S.seeds[i]) S.seeds[i].caught = c; });
+  (w.pearls || []).forEach((tk, i) => { if (S.pearls && S.pearls[i]) S.pearls[i].taken = tk; });
+  (w.jellies || []).forEach((c, i) => { if (S.jellies && S.jellies[i]) S.jellies[i].caught = c; });
+  (w.anems || []).forEach((on, i) => { if (S.anems && S.anems[i]) S.anems[i].lit = on; });
   for (const n of S.npcs) {
     const s = p.npcs[n.id]; if (!s) continue;
     n.x = s.x; n.y = s.y; n.scene = s.scene; n.digging = s.digging; if ('hiding' in s) n.hiding = s.hiding;

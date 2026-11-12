@@ -1,0 +1,168 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0c0a12}canvas{display:block}</style>
+</head><body><canvas id="c"></canvas>
+<script>
+// Concept mockup for Day 4: "Above the Clouds" — the Cloudtop Highlands.
+// A vertical climb rendered with the game's shaded cut-paper technique so the look is faithful.
+// Environment-first; friends shown as cozy placeholders with labels. Not final art.
+const W = 1200, H = 1900, K = 2;
+const cv = document.getElementById('c'); cv.width = W*K; cv.height = H*K;
+const g = cv.getContext('2d'); g.scale(K,K);
+
+// ---- shaded-paper kit (ported from src/render/style.js) ----
+const LIGHT = { x:-0.72, y:-0.69 };
+const hexRGB = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+const mixHex = (a,b,t)=>{const A=hexRGB(a),B=hexRGB(b);t=Math.max(0,Math.min(1,t));return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+const KEY='#ffe2a6', SHADE='#4a4c86';
+const lit=(base,t)=> t>=0 ? mixHex(base,KEY,t*0.5) : mixHex(base,SHADE,-t*0.42);
+let SPRITE=false;
+function volume(x,y,rx,ry,base){ const r=Math.max(rx,ry);
+  const gr=g.createRadialGradient(x+LIGHT.x*rx*0.42,y+LIGHT.y*ry*0.42-ry*0.1,r*0.04,x-LIGHT.x*rx*0.18,y-LIGHT.y*ry*0.18+ry*0.08,r*1.15);
+  gr.addColorStop(0,lit(base,1)); gr.addColorStop(0.5,base); gr.addColorStop(1,lit(base,-1)); return gr; }
+const isHex=c=>typeof c==='string'&&c.length===7&&c[0]==='#';
+function circ(x,y,r,fill){ g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fillStyle=(SPRITE&&isHex(fill)&&r>=2.5)?volume(x,y,r,r,fill):fill; g.fill(); }
+function ell(x,y,rx,ry,fill){ g.beginPath(); g.ellipse(x,y,rx,ry,0,0,Math.PI*2); g.fillStyle=(SPRITE&&isHex(fill)&&Math.min(rx,ry)>=2.5)?volume(x,y,rx,ry,fill):fill; g.fill(); }
+function shadow(x,y,rx,h=rx*2.2){ g.save(); g.globalAlpha=0.3; let gr=g.createRadialGradient(x,y,0,x,y,rx*1.4); gr.addColorStop(0,'rgba(26,31,23,.9)'); gr.addColorStop(1,'rgba(26,31,23,0)'); g.fillStyle=gr; g.beginPath(); g.ellipse(x,y,rx*1.4,rx*0.6,0,0,Math.PI*2); g.fill();
+  const len=h*0.9; g.globalAlpha=0.24; g.translate(x+0.95*len*0.5,y+0.31*len*0.5); g.rotate(0.31); gr=g.createRadialGradient(0,0,0,0,0,len*0.6); gr.addColorStop(0,'rgba(43,36,82,.9)'); gr.addColorStop(1,'rgba(43,36,82,0)'); g.fillStyle=gr; g.beginPath(); g.ellipse(0,0,(len+rx*2.4)/2,rx*0.62,0,0,Math.PI*2); g.fill(); g.restore(); }
+function sprite(fn){ SPRITE=true; fn(); SPRITE=false; }
+const smoothPts=(pts,steps=10)=>{const n=pts.length,out=[],mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];for(let i=0;i<n;i++){const p0=mid(pts[(i-1+n)%n],pts[i]),c=pts[i],p1=mid(pts[i],pts[(i+1)%n]);for(let k=0;k<steps;k++){const t=k/steps,u=1-t;out.push([u*u*p0[0]+2*u*t*c[0]+t*t*p1[0],u*u*p0[1]+2*u*t*c[1]+t*t*p1[1]]);}}return out;};
+function polyPath(poly,dx=0,dy=0){ g.beginPath(); poly.forEach(([x,y],i)=> i?g.lineTo(x+dx,y+dy):g.moveTo(x+dx,y+dy)); g.closePath(); }
+function rng(seed){ return ()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const curve=(pts,w,col)=>{ g.strokeStyle=col; g.lineWidth=w; g.lineJoin='round'; g.lineCap='round'; g.beginPath(); pts.forEach(([x,y],i)=>{const p=pts[i-1]; i?g.quadraticCurveTo((p[0]+x)/2,(p[1]+y)/2,x,y):g.moveTo(x,y);}); g.stroke(); };
+
+// ============ SKY: golden at the crown, cooler toward the misty base ============
+let gr=g.createLinearGradient(0,0,0,H);
+gr.addColorStop(0,'#bfe0ea'); gr.addColorStop(0.2,'#d8ead0'); gr.addColorStop(0.4,'#f1e6c4'); gr.addColorStop(0.62,'#e4dcc8'); gr.addColorStop(0.82,'#cdd6d2'); gr.addColorStop(1,'#b7c6c6');
+g.fillStyle=gr; g.fillRect(0,0,W,H);
+gr=g.createRadialGradient(280,220,20,280,220,560); gr.addColorStop(0,'rgba(255,246,214,.85)'); gr.addColorStop(1,'rgba(255,246,214,0)'); g.fillStyle=gr; g.fillRect(0,0,W,900);
+
+// ============ THE ISLAND FACE (fills the frame; you climb up it) ============
+// A tall massif whose base sinks into the sea of clouds. Rock shelves (tiers) read as climbable ledges.
+const MASSIF = smoothPts([[60,1760],[70,1360],[120,1020],[220,720],[380,470],[560,330],[760,320],[940,430],[1070,650],[1130,980],[1150,1360],[1150,1760]]);
+polyPath(MASSIF); g.fillStyle='#9a9184'; g.fill();
+// facets + horizontal shelf shading so it reads as stacked ledges
+(function face(){ const R=rng(31); g.save(); polyPath(MASSIF); g.clip();
+  const tones=['#a29989','#968d80','#8b8276','#9a9184','#7e766a'];
+  for(let i=0;i<80;i++){ const cx=40+R()*1080, cy=360+R()*1380, w=80+R()*110, h=52+R()*64;
+    g.fillStyle=tones[i%tones.length]; g.beginPath(); g.moveTo(cx-w*0.5,cy+h*0.2); g.lineTo(cx-w*0.1,cy-h*0.5); g.lineTo(cx+w*0.5,cy-h*0.1); g.lineTo(cx+w*0.2,cy+h*0.5); g.closePath(); g.fill(); }
+  // ledge shelves: soft horizontal shadow bands
+  g.strokeStyle='rgba(60,52,44,.28)'; g.lineWidth=20; g.lineCap='round';
+  [980,1240,1500].forEach(y=>{ g.beginPath(); for(let x=80;x<1140;x+=40) g.lineTo(x, y+Math.sin(x*0.01+y)*18); g.stroke(); });
+  // moss patches so rock isn't muddy
+  for(let i=0;i<22;i++){ const x=120+R()*960,y=640+R()*900; g.fillStyle=R()>0.5?'rgba(120,160,86,.5)':'rgba(150,175,100,.4)'; g.beginPath(); g.ellipse(x,y,36+R()*40,16+R()*14,0,0,Math.PI*2); g.fill(); }
+  g.restore(); })();
+
+// grassy crown cap
+const CROWN = smoothPts([[230,660],[330,470],[500,340],[700,320],[880,420],[980,620],[940,760],[720,740],[460,730],[300,720]]);
+polyPath(CROWN,0,12); g.fillStyle='#7aa35a'; g.fill();
+polyPath(CROWN); g.fillStyle='#9ec775'; g.fill();
+g.save(); polyPath(CROWN); g.clip();
+gr=g.createRadialGradient(520,430,20,540,470,420); gr.addColorStop(0,'rgba(255,246,196,.45)'); gr.addColorStop(1,'rgba(255,246,196,0)'); g.fillStyle=gr; g.fillRect(180,300,860,480);
+const Rg=rng(7); g.lineCap='round';
+for(let i=0;i<300;i++){ const x=260+Rg()*700,y=360+Rg()*360; g.strokeStyle=Rg()>0.5?'#8fbf68':'#a7cf7e'; g.lineWidth=2.4; g.beginPath(); g.moveTo(x,y); g.lineTo(x-3,y-9); g.moveTo(x+4,y); g.lineTo(x+6,y-8); g.stroke(); }
+g.restore();
+// grass fringe tufts along the crown's lower edge
+g.strokeStyle='#86b064'; g.lineWidth=3; g.lineCap='round';
+CROWN.forEach(([x,y],i)=>{ if(y>640 && i%2===0){ g.beginPath(); g.moveTo(x,y+8); g.lineTo(x-4,y-6); g.moveTo(x+5,y+8); g.lineTo(x+8,y-4); g.stroke(); } });
+
+// ============ WATERFALL spilling off a crown ledge into the clouds ============
+(function waterfall(){ const path=[[930,620],[948,780],[980,980],[1010,1220],[1030,1430]];
+  g.save(); g.fillStyle='rgba(120,160,170,.5)'; g.lineJoin='round';
+  curve(path,54,'rgba(126,164,174,.55)');
+  g.strokeStyle='rgba(255,255,255,.8)'; g.lineWidth=3;
+  for(let s=-2;s<=2;s++){ g.beginPath(); path.forEach(([x,y],i)=>{const p=path[i-1]; const xx=x+s*12; i?g.quadraticCurveTo((p[0]+xx)/2,(p[1]+y)/2,xx,y):g.moveTo(xx,y);}); g.stroke(); }
+  gr=g.createRadialGradient(1030,1430,4,1030,1430,90); gr.addColorStop(0,'rgba(255,255,255,.95)'); gr.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle=gr; g.beginPath(); g.ellipse(1030,1430,90,42,0,0,Math.PI*2); g.fill();
+  g.restore(); })();
+
+// ============ CLIMB PATH (switchbacks up the whole face) ============
+const PATH=[[340,1680],[480,1560],[360,1440],[520,1340],[400,1220],[560,1120],[440,1000],[600,900],[520,800],[600,700]];
+curve(PATH,40,'#7d6e52'); curve(PATH,28,'#d8c08a'); curve(PATH,12,'rgba(255,246,214,.5)');
+
+// ============ ROPE BRIDGE across a gorge near the top ============
+(function bridge(){ const ax=600,ay=700,bx=820,by=680,sag=36;
+  g.strokeStyle='#6e4630'; g.lineWidth=4;
+  for(const off of [-16,16]){ g.beginPath(); for(let i=0;i<=20;i++){ const t=i/20,x=ax+(bx-ax)*t,y=ay+(by-ay)*t+Math.sin(t*Math.PI)*sag; i?g.lineTo(x,y+off):g.moveTo(x,y+off);} g.stroke(); }
+  g.strokeStyle='#b89a72'; g.lineWidth=14; g.lineCap='round';
+  for(let i=1;i<20;i++){ const t=i/20,x=ax+(bx-ax)*t,y=ay+(by-ay)*t+Math.sin(t*Math.PI)*sag; g.beginPath(); g.moveTo(x,y-14); g.lineTo(x,y+14); g.stroke(); }
+  g.strokeStyle='#5e4636'; g.lineWidth=7; g.beginPath(); g.moveTo(ax,ay-34); g.lineTo(ax,ay+22); g.moveTo(bx,by-34); g.lineTo(bx,by+22); g.stroke(); })();
+
+// ============ PINES on the switchbacks ============
+function pine(x,y,s,fade){ g.save(); if(fade) g.globalAlpha=fade; shadow(x,y+4,26*s); sprite(()=>{ g.fillStyle='#8c6a4d'; g.fillRect(x-5*s,y-18*s,10*s,20*s);
+  [['#4f8250',0,46,34],['#5d8f5a',-26,38,28],['#6c9c62',-50,28,22]].forEach(([c,dy,w,h])=>{ g.fillStyle=c; g.beginPath(); g.moveTo(x-w*s,y+(dy-12)*s); g.quadraticCurveTo(x,y+(dy-4)*s,x+w*s,y+(dy-12)*s); g.lineTo(x,y+(dy-12-h*1.6)*s); g.closePath(); g.fill(); }); }); g.restore(); }
+[[250,1560,1.1],[180,1400,1],[320,1460,0.8],[220,1240,0.95],[700,1180,1],[760,980,0.9],[300,1640,1.05],[160,1180,0.85],[840,840,0.8]].forEach(([x,y,s])=>pine(x,y,s));
+
+// ============ TRAIL LANTERNS ============
+function lantern(x,y,onK){ g.strokeStyle='#5e4636'; g.lineWidth=4; g.lineCap='round'; g.beginPath(); g.moveTo(x,y); g.lineTo(x,y-40); g.lineTo(x+10,y-40); g.stroke();
+  if(onK){ gr=g.createRadialGradient(x+5,y-30,2,x+5,y-30,50); gr.addColorStop(0,`rgba(255,214,120,${0.55*onK})`); gr.addColorStop(1,'rgba(255,214,120,0)'); g.fillStyle=gr; g.beginPath(); g.arc(x+5,y-30,50,0,Math.PI*2); g.fill(); }
+  g.fillStyle=onK?'#ffe08a':'#4a4038'; g.beginPath(); g.roundRect(x,y-36,13,16,3); g.fill(); g.strokeStyle='#3a2a22'; g.lineWidth=2; g.strokeRect(x,y-36,13,16); if(onK) circ(x+6,y-28,3,'#7ff0dc'); }
+lantern(500,1540,1); lantern(430,1230,1); lantern(560,1110,0.5); lantern(600,890,0);
+
+// ============ FLOWERS / sea-thrift on the crown ============
+function thrift(x,y,s){ sprite(()=>{ g.fillStyle='#6f9e55'; g.beginPath(); g.ellipse(x,y,30*s,12*s,0,Math.PI,0); g.fill(); }); const R=rng(Math.round(x*7+y)); g.strokeStyle='#5f8a4c'; g.lineWidth=1.6;
+  for(let i=0;i<8;i++){ const px=x+(R()-0.5)*48*s,py=y-10*s-R()*20*s; g.beginPath(); g.moveTo(px,py+4); g.lineTo(x+(px-x)*0.4,y); g.stroke(); circ(px,py,5*s,i%3?'#f2a3c4':'#e886b0'); } }
+[[360,620,0.9],[460,680,0.8],[660,660,0.9],[560,600,1],[720,700,0.7],[300,560,0.8],[820,600,0.75]].forEach(([x,y,s])=>thrift(x,y,s));
+// lookout cairn
+(function cairn(){ const x=430,y=470; shadow(x,y+6,28); sprite(()=>{ ell(x,y-6,24,15,'#a39a8a'); ell(x-2,y-20,19,12,'#b1a898'); ell(x,y-33,13,9,'#968d7f'); ell(x+1,y-44,8,6,'#a39a8a'); }); })();
+
+// ============ characters (cozy placeholders; labelled) ============
+function pip(x,y){ shadow(x,y+2,20); sprite(()=>{ g.save(); g.translate(x,y);
+  g.fillStyle='#8a5a3c'; g.beginPath(); g.moveTo(-14,-8); g.quadraticCurveTo(-34,-4,-32,6); g.quadraticCurveTo(-24,0,-10,0); g.fill();
+  ell(0,-16,16,18,'#9b6845'); ell(3,-14,9,12,'#e9cfa8'); circ(6,-40,14,'#9b6845'); ell(13,-36,8,6,'#e9cfa8');
+  circ(-4,-50,4,'#9b6845'); circ(13,-52,4,'#9b6845'); circ(-4,-50,1.8,'#6e4630'); circ(13,-52,1.8,'#6e4630');
+  circ(9,-43,2.5,'#34433a'); circ(18,-38,2.4,'#3b2a22');
+  g.fillStyle='#f4b85a'; g.beginPath(); g.roundRect(-8,-30,22,6,3); g.fill(); g.beginPath(); g.moveTo(-6,-27); g.lineTo(-14,-17); g.lineTo(-8,-17); g.closePath(); g.fill(); g.restore(); }); }
+function fawn(x,y){ shadow(x,y+2,22); sprite(()=>{ g.save(); g.translate(x,y);
+  g.strokeStyle='#c79a63'; g.lineWidth=5; g.lineCap='round'; [[-12],[-6],[6],[12]].forEach(([dx])=>{g.beginPath();g.moveTo(dx,-18);g.lineTo(dx,0);g.stroke();});
+  ell(0,-26,22,14,'#c79a63'); ell(-4,-24,12,8,'#e4cba0'); circ(18,-40,11,'#c79a63'); ell(22,-38,6,5,'#f0ddba');
+  circ(-6,-30,2,'#eaddc4'); circ(4,-24,2,'#eaddc4'); circ(-12,-26,1.6,'#eaddc4');
+  ell(13,-50,4,7,'#c79a63'); ell(24,-50,4,7,'#c79a63'); circ(21,-42,2,'#34433a'); circ(26,-37,1.6,'#3b2a22'); g.restore(); }); }
+function squirrel(x,y){ shadow(x,y+2,14); sprite(()=>{ g.save(); g.translate(x,y);
+  g.fillStyle='#c25f36'; g.beginPath(); g.moveTo(-6,-6); g.quadraticCurveTo(-30,-18,-20,-44); g.quadraticCurveTo(-8,-34,-6,-16); g.fill();
+  ell(0,-14,11,13,'#cf6b40'); ell(2,-12,6,8,'#f0e0cf'); circ(5,-30,9,'#cf6b40'); ell(1,-40,4,6,'#c25f36'); ell(9,-40,4,6,'#c25f36');
+  circ(8,-31,2.2,'#34433a'); circ(13,-28,1.6,'#3b2a22'); g.restore(); }); }
+function lark(x,y){ sprite(()=>{ g.save(); g.translate(x,y);
+  ell(0,0,11,8,'#b79a6e'); ell(2,2,6,5,'#efe3cf'); circ(9,-5,6,'#b79a6e');
+  g.fillStyle='#8a6c48'; g.beginPath(); g.moveTo(14,-5); g.lineTo(21,-3); g.lineTo(14,-1); g.fill();
+  g.fillStyle='#a88a5e'; g.beginPath(); g.moveTo(-2,-4); g.quadraticCurveTo(-16,-16,-22,-8); g.quadraticCurveTo(-12,-4,-4,-2); g.fill();
+  circ(10,-6,1.4,'#34433a'); g.restore(); }); }
+function stag(x,y){ shadow(x,y+2,30); sprite(()=>{ g.save(); g.translate(x,y);
+  g.strokeStyle='#b58a5a'; g.lineWidth=7; g.lineCap='round'; [[-16],[-7],[7],[16]].forEach(([dx])=>{g.beginPath();g.moveTo(dx,-30);g.lineTo(dx,0);g.stroke();});
+  ell(0,-40,30,19,'#b58a5a'); ell(-6,-38,16,11,'#e0c79e'); circ(26,-62,15,'#b58a5a'); ell(31,-59,8,6,'#efdcc0');
+  g.strokeStyle='#d8c9a8'; g.lineWidth=4; g.beginPath(); g.moveTo(20,-74); g.lineTo(12,-96); g.moveTo(16,-84); g.lineTo(4,-90); g.moveTo(32,-74); g.lineTo(40,-98); g.moveTo(36,-84); g.lineTo(48,-90); g.stroke();
+  ell(18,-76,4,7,'#b58a5a'); ell(34,-76,4,7,'#b58a5a'); circ(29,-64,2.4,'#34433a'); circ(35,-58,2,'#3b2a22'); g.restore(); }); }
+stag(560,700); lark(700,560); squirrel(820,660);
+fawn(520,1510); pip(470,1600);
+
+// ============ SEA OF CLOUDS at the base, with far isles poking through ============
+function farIsle(x,y,s,col){ polyPath(smoothPts([[x-150*s,y+10],[x-80*s,y-30*s],[x+10*s,y-44*s],[x+90*s,y-28*s],[x+150*s,y+10]])); g.fillStyle=col; g.fill(); }
+farIsle(900,1700,0.9,'#a7bcbd'); farIsle(240,1720,0.8,'#aec1c1');
+function cloudBank(cy,scale,col,a){ const R=rng(Math.round(cy)); g.save(); g.globalAlpha=a;
+  for(let i=0;i<24;i++){ const x=R()*W, y=cy+(R()-0.5)*70*scale, w=(80+R()*160)*scale, h=w*(0.36+R()*0.18);
+    g.fillStyle=col; g.beginPath(); g.ellipse(x,y,w,h,0,0,Math.PI*2); g.fill(); } g.restore(); }
+cloudBank(1730,1.1,'#eef3f0',0.9); cloudBank(1780,1.5,'#ffffff',0.96); cloudBank(1850,1.8,'#f6f8f6',1);
+
+// ============ LOCAL MIST drifting across the lower switchbacks (thin — you can see through) ============
+(function mist(){ const R=rng(55); g.save();
+  for(let i=0;i<20;i++){ const x=R()*W, y=1280+R()*420, w=130+R()*210, h=w*0.26;
+    gr=g.createRadialGradient(x,y,4,x,y,w); gr.addColorStop(0,`rgba(238,244,242,${0.34+R()*0.22})`); gr.addColorStop(1,'rgba(238,244,242,0)');
+    g.fillStyle=gr; g.beginPath(); g.ellipse(x,y,w,h,0,0,Math.PI*2); g.fill(); } g.restore(); })();
+
+// paper grain approximation: golden grade + vignette
+g.save(); g.globalCompositeOperation='soft-light'; g.globalAlpha=0.26; g.fillStyle='#ff9a48'; g.fillRect(0,0,W,H);
+g.globalCompositeOperation='multiply'; g.globalAlpha=0.16; g.fillStyle='#fbe0c0'; g.fillRect(0,0,W,H); g.restore();
+gr=g.createRadialGradient(W/2,H/2,H*0.32,W/2,H/2,H*0.72); gr.addColorStop(0,'rgba(52,67,58,0)'); gr.addColorStop(1,'rgba(52,67,58,.2)'); g.fillStyle=gr; g.fillRect(0,0,W,H);
+
+// ============ labels ============
+function label(x,y,text,tail){ g.font='700 20px system-ui,sans-serif'; const w=g.measureText(text).width+24;
+  g.fillStyle='rgba(255,250,240,.95)'; g.beginPath(); g.roundRect(x-w/2,y-16,w,30,15); g.fill();
+  if(tail){ g.beginPath(); g.moveTo(x-6,y+13); g.lineTo(x,y+22); g.lineTo(x+6,y+13); g.fill(); }
+  g.fillStyle='#34433a'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,x,y); }
+label(600,250,'THE CROWN — a cloud meadow at the top');
+label(560,760,'Willow the stag — your guide up here',1);
+label(720,520,'Lark',1); label(860,620,'Pine',1);
+label(770,700,'rope bridge'); label(1030,1120,'waterfall');
+label(620,1500,'Juniper the fawn — relight the trail lanterns',1);
+label(600,1810,'the sea of clouds (the cove & Puffin Isle poke through, far below)');
+label(600,110,'Day 4 · Above the Clouds — concept look (environment final-ish, friends are placeholders)');
+</script></body></html>

@@ -3,7 +3,7 @@
 // Each quest belongs to a day. Day 1: the island and the burrow. Day 2: Digby's new tunnel and Seagrass Cove.
 const QUEST_DAY = Object.fromEntries(STORY.quests.map(q => [q.id, q.day]));
 const dayQuests = () => Object.entries(S.quests).filter(([k]) => QUEST_DAY[k] === S.day).map(([,v]) => v);
-const sceneDims = sc => sc==='cave' ? [CW,CH] : sc==='cove' ? [VW,VH] : sc==='isle' ? [IW,IH] : [W,H];
+const sceneDims = sc => sc==='cave' ? [CW,CH] : sc==='cove' ? [VW,VH] : sc==='isle' ? [IW,IH] : sc==='highland' ? [HW,HH] : sc==='deep' ? [DW,DH] : [W,H];
 
 // Pip notices something before anyone has asked: she wonders aloud, and whoever it belongs to gets a "!".
 function earlyFind(qid, friendId, convoId){
@@ -85,6 +85,7 @@ function coveWalkable(x,y){
 function swimDepth(x,y){
   if (S.scene==='cove') { if (x > DOCK.x0 && y > DOCK.y0 && y < DOCK.y1) return 0; return Math.max(0, Math.min(1, (y - waterline(x) + 4) / 40)); }
   if (S.scene==='isle') return isleDepth(x,y);
+  if (S.scene==='deep') return 1;   // fully underwater: Pip always swims
   return 0;
 }
 const isSwimming = (x,y) => swimDepth(x,y) > 0.6;
@@ -416,6 +417,7 @@ function drawCove(t){
   g.addColorStop(0,'rgba(24,18,22,.4)'); g.addColorStop(1,'rgba(24,18,22,0)');
   ctx.fillStyle = g; ctx.fillRect(0,80,560,700);
   for (const gl of S.gulls) drawGull(gl,t);
+  drawDiveSpot(t);
   drawMarkers(t);
   drawPops();
   drawTargetRing();

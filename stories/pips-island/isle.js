@@ -317,4 +317,4 @@ function startDay3(quiet){
   clearGround(); renderQuests();
   if (!quiet) setTimeout(() => speak('pip.day3.start'), 400);
 }
-const startDay = n => n >= 3 ? startDay3() : startDay2();
+const startDay = n => n >= 5 ? startDay5() : n >= 4 ? startDay4() : n >= 3 ? startDay3() : startDay2();

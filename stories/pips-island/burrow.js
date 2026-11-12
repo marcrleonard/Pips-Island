@@ -9,7 +9,11 @@ const TW = 46;
 const cpool = { x:800, y:300, rx:72, ry:44 };
 const shaft = { x:800, y:1062 };
 const STALAGS = [ {x:675,y:905,r:18},{x:935,y:1035,r:16},{x:455,y:520,r:20},{x:290,y:775,r:16},{x:690,y:395,r:16},{x:760,y:440,r:16} ];
-const GLOWCAP_SPOTS = [[240,520],[420,760],[175,680],[705,235],[1035,440]];
+// Glowcaps sit in open floor you can walk straight to. The Pool Room one used to be tucked behind the pool
+// (705,235), which meant threading a narrow corridor around the water — fiddly with a tap and a trap when
+// dragging on a phone (the drag path crosses the pool and Pip stops at its edge). It now sits below the pool,
+// on the approach from the tunnels, so no one has to round the water.
+const GLOWCAP_SPOTS = [[240,520],[420,760],[175,680],[800,410],[1035,440]];
 const NOTES = [523.25, 587.33, 659.25, 783.99, 880.0];
 const CRYSTAL_COLS = [['#f6a8c4','#e48aae','246,168,196'],['#ffe08a','#efc65e','255,224,138'],['#9fe6c8','#74cfa9','159,230,200'],['#9cc9ff','#77abeb','156,201,255'],['#c9b4f4','#a98fe0','201,180,244']];
 const CRYSTALS = [-100,-50,0,50,100].map((deg,i) => { const a = deg*Math.PI/180; return { x: 1270 + Math.cos(a)*150, y: 560 + Math.sin(a)*150, i, col: CRYSTAL_COLS[i] }; });
@@ -51,15 +55,21 @@ function updateTrans(dt){
     if (T.to==='cave' && T.from==='cove') { P.x = CAVE_LADDER2.x - 34; P.y = CAVE_LADDER2.y + 70; S.ladder2Armed = false; }
     else if (T.to==='cave') { P.x = shaft.x; P.y = shaft.y - 75; S.shaftArmed = false; }
     else if (T.to==='cove') { P.x = 255; P.y = 470; S.coveLadderArmed = false; }
+    else if (T.to==='highland') { P.x = HILL_ENTRY.x; P.y = HILL_ENTRY.y; S.hExitArmed = false; }
+    else if (T.from==='highland') { P.x = NORTH_PATH.x; P.y = NORTH_PATH.y + 70; S.northArmed = false; }
+    else if (T.to==='deep') { P.x = SURFACE.x; P.y = SURFACE.y + 70; S.surfaceArmed = false; }
+    else if (T.from==='deep') { P.x = DIVE_SPOT.x; P.y = DIVE_SPOT.y + 30; S.diveArmed = false; }
     else { P.x = burrow.x; P.y = burrow.y + 115; S.doorArmed = false; }
     S.ducklings.forEach(d => { if (d.state==='follow') { d.x = P.x; d.y = P.y; } });
-    chime(T.to==='cave' ? [392,330,262] : T.to==='cove' ? [523,659,784,1047] : [523,659,784], 0.12);
+    chime(T.to==='cave' ? [392,330,262] : T.to==='deep' ? [659,523,392,330] : (T.to==='cove' || T.to==='highland') ? [523,659,784,1047] : [523,659,784], 0.12);
   }
   if (T.t >= 2*half) {
     S.trans = null;
     if (T.sail) return arrived(T);
     if (S.scene==='cave' && !S.visitedCave) { S.visitedCave = true; speak('pip.cave.first'); }
     if (S.scene==='cove' && !S.visitedCove) { S.visitedCove = true; speak('pip.cove.first'); }
+    if (S.scene==='highland' && !S.visitedHighland) { S.visitedHighland = true; speak('pip.highland.first'); }
+    if (S.scene==='deep' && !S.visitedDeep) { S.visitedDeep = true; speak('pip.deep.first'); }
   }
 }
 function updateDoor(){

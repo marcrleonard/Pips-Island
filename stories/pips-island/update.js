@@ -19,7 +19,7 @@ function update(dt){
   P.moving = !!(vx||vy);
   if (P.moving) {
     const nx=P.x+vx*speed*dt, ny=P.y+vy*speed*dt;
-    const canWalk = S.scene==='cave' ? caveWalkable : S.scene==='cove' ? coveWalkable : S.scene==='isle' ? isleWalkable : walkable;
+    const canWalk = S.scene==='cave' ? caveWalkable : S.scene==='cove' ? coveWalkable : S.scene==='isle' ? isleWalkable : S.scene==='highland' ? highlandWalkable : S.scene==='deep' ? deepWalkable : walkable;
     const step = speed*dt;
     let moved = false;
     if (canWalk(nx,ny)) { P.x=nx; P.y=ny; moved = true; }
@@ -92,7 +92,7 @@ function update(dt){
     setTimeout(() => !S.dialog && speak('pip.shell.found'), 600);
   }
 
-  if (S.scene==='cave') updateCave(dt); else if (S.scene==='cove') updateCove(dt); else if (S.scene==='isle') updateIsle(dt); else updateDoor();
+  if (S.scene==='cave') updateCave(dt); else if (S.scene==='cove') { updateCove(dt); updateCoveDive(); } else if (S.scene==='isle') updateIsle(dt); else if (S.scene==='highland') updateHighland(dt); else if (S.scene==='deep') updateDeep(dt); else { updateDoor(); updateNorthPath(); }
   updateTrans(dt);
 
   // ending walk
@@ -122,7 +122,9 @@ function update(dt){
   const [SW, SH] = sceneDims(S.scene);
   const showing = !!S.show && S.show.t < 5.0;
   const fitZ = Math.min(innerWidth/(CW*0.95), (innerHeight-90)/(CH*0.95));
-  const zT = showing ? Math.min(cam.baseZ, fitZ) : cam.baseZ;
+  // the climb is framed tighter so there's less in the frame and it feels like a path, not a map
+  const sceneZoom = S.scene==='highland' ? 1.5 : 1;
+  const zT = (showing ? Math.min(cam.baseZ, fitZ) : cam.baseZ) * sceneZoom;
   if (Math.abs(cam.z - zT) > 0.0005) { cam.z += (zT - cam.z)*Math.min(1, dt*2.4); cam.vw = innerWidth/cam.z; cam.vh = innerHeight/cam.z; }
   // When a dialog is open, frame Pip in the space between the top HUD and the dialog card.
   const topPad = S.dialog ? 70 : 0;

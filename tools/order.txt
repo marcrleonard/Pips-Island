@@ -14,6 +14,8 @@ stories/pips-island/art-island.js
 stories/pips-island/burrow.js
 stories/pips-island/cove.js
 stories/pips-island/isle.js
+stories/pips-island/highland.js
+stories/pips-island/deep.js
 stories/pips-island/minimap.js
 stories/pips-island/draw.js
 stories/pips-island/save.js
