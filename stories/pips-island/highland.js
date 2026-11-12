@@ -26,15 +26,25 @@ const BRIDGE = { x0: 770, x1: 940, y0: GORGE.y0 - 40, y1: GORGE.y1 + 40 };
 // The waterfall pours off a rock lip on the crown's east side, down past the gorge and into the clouds.
 const FALL = { x: 1240, w: 64, lip: 980, y1: 2060 };
 const fallX = y => FALL.x + 10 * ((y - FALL.lip) / (FALL.y1 - FALL.lip));   // drifts gently right as it falls
-// The trail winds gently up the slope with two hairpin landings, straight through the gorge (the bridge).
-const TRAIL = [[855,2400],[812,2288],[735,2168],[720,2030],[792,1910],[888,1788],[905,1662],[832,1556],
-  [712,1452],[690,1332],[772,1240],[850,1150],[855,1040],[855,930],[812,812],[732,694],[712,576],[762,468]];
-const TRAIL_W = 58;                                      // how wide the walkable path is
-const TRAIL_LANDINGS = [[905,1662],[690,1332]];          // the two hairpin turns (flat dirt landings)
-// Walkable clearings: the trailhead you arrive at, the two hairpin landings, and the bridge's south landing.
-const H_CLEARINGS = [[855,2330,128],[905,1662,76],[690,1332,76],[855,1216,98]];
-const H_LANTERNS = [[905,1662],[690,1332],[735,2030]];   // the three trail lanterns (two on the hairpins)
-const H_PLANKS = [[836,1552],[708,1452],[772,1240]];     // bridge planks, along the path as you climb
+// The trail is a smooth winding curve (Catmull-Rom through control points): it meanders up the slope in flowing
+// bends, running straight only through the gorge (the bridge). Everything else hangs off this one curve.
+function catmullRom(pts, steps){
+  const out = [], n = pts.length, P = i => pts[Math.max(0, Math.min(n-1, i))];
+  for (let i=0;i<n-1;i++){ const p0=P(i-1), p1=P(i), p2=P(i+1), p3=P(i+2);
+    for (let k=0;k<steps;k++){ const t=k/steps, t2=t*t, t3=t2*t;
+      out.push([0.5*(2*p1[0] + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+                0.5*(2*p1[1] + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)]); } }
+  out.push(pts[n-1]); return out;
+}
+const TRAIL_CTRL = [[855,2440],[728,2290],[716,2096],[884,1958],[930,1766],[786,1620],[648,1468],[702,1300],
+  [852,1198],[855,1066],[855,952],[792,792],[688,616],[760,484]];
+const TRAIL = catmullRom(TRAIL_CTRL, 10);
+const TRAIL_W = 60;                                       // how wide the walkable path is
+const trailPt = f => TRAIL[Math.max(0, Math.min(TRAIL.length-1, Math.round(f*(TRAIL.length-1))))];
+const TRAIL_LANDINGS = [[930,1766],[648,1468]];           // the two bends (flat dirt landings)
+const H_CLEARINGS = [[855,2350,136],[930,1766,80],[648,1468,80],[855,1210,100]];
+const H_LANTERNS = [[930,1766],[648,1468], trailPt(0.11)];   // two on the bends, one lower on the curve
+const H_PLANKS = [[884,1958],[786,1620],[702,1300]];      // bridge planks, along the curve as you climb
 const SEED_SPOTS = [[560,560],[980,520],[760,760],[1140,680]];  // where thistle seeds drift on the crown
 const CAIRN = { x: 1160, y: 452 };
 // rocky outcrops that frame the path and wall the slope (off-path; decoration)
@@ -272,31 +282,28 @@ function drawHighlandStatic(){
   // baked thrift clusters on the crown (small; the pickable things stand out as entities elsewhere)
   for (const [x,y,s] of H_THRIFT) drawThrift(x,y,s);
 
-  // the trail: a worn dirt path, carved slightly into the slope (soft edges, dirt tones, gravel — no hard ribbon)
+  // the trail: a worn dirt path, a smooth curve carved into the slope (soft edges, dirt tones, gravel)
   ctx.lineJoin='round'; ctx.lineCap='round';
   const trail = (w,col,a=1) => { ctx.globalAlpha=a; ctx.strokeStyle=col; ctx.lineWidth=w;
-    ctx.beginPath(); TRAIL.forEach(([x,y],i)=>{const p=TRAIL[i-1]; i?ctx.quadraticCurveTo((p[0]+x)/2,(p[1]+y)/2,x,y):ctx.moveTo(x,y);}); ctx.stroke(); ctx.globalAlpha=1; };
-  // flat dirt landings at the hairpins, so the turns read as resting places rather than kinks
+    ctx.beginPath(); TRAIL.forEach(([x,y],i)=> i?ctx.lineTo(x,y):ctx.moveTo(x,y)); ctx.stroke(); ctx.globalAlpha=1; };
+  // flat dirt landings at the bends, so the turns read as resting places
   for (const [lx,ly] of TRAIL_LANDINGS) { ell(lx, ly+2, 48, 27, 'rgba(60,50,40,.22)'); ell(lx, ly, 42, 23, '#c3a878'); ell(lx-6, ly-4, 24, 12, '#d2bb8a'); }
   trail(46, 'rgba(60,50,40,.2)');      // soft recess
   trail(36, 'rgba(92,74,56,.5)');      // dirt shade
   trail(28, '#c3a878');                // dirt body
   trail(21, '#d2bb8a');                // lighter trodden dirt
   trail(7,  'rgba(255,246,214,.28)');  // worn centre
-  // gravel and dirt flecks scattered along the path (seeded so the bake stays stable)
+  // gravel flecks sampled along the curve (seeded so the bake stays stable)
   const Rt = rng(3140);
-  for (let i=0;i<TRAIL.length-1;i++){ const a=TRAIL[i], bq=TRAIL[i+1];
-    for (let t=0;t<1;t+=0.07){ if (Rt()>0.42) continue;
-      const x=a[0]+(bq[0]-a[0])*t, y=a[1]+(bq[1]-a[1])*t, ox=(Rt()-0.5)*24, oy=(Rt()-0.5)*14;
-      ell(x+ox, y+oy, 2.4+Rt()*3, 1.8+Rt()*2, Rt()>0.5?'#b4a68e':'#9c9078'); } }
-  // line both edges of the path with grass tufts, stones, ferns and the odd flower, so the way reads clearly
+  for (let i=2;i<TRAIL.length-2;i++){ if (Rt()>0.5) continue; const [x,y]=TRAIL[i], ox=(Rt()-0.5)*20, oy=(Rt()-0.5)*12;
+    ell(x+ox, y+oy, 2.4+Rt()*3, 1.8+Rt()*2, Rt()>0.5?'#b4a68e':'#9c9078'); }
+  // line both edges of the curve with grass tufts, stones, ferns and the odd flower (normals from the curve)
   const Rf = rng(515);
-  for (let i=0;i<TRAIL.length-1;i++){ const a=TRAIL[i], bq=TRAIL[i+1];
-    const dx=bq[0]-a[0], dy=bq[1]-a[1], len=Math.hypot(dx,dy)||1, nx=-dy/len, ny=dx/len;
-    for (let t=0;t<1;t+=0.1){ for (const side of [-1,1]){ if (Rf()>0.72) continue;
-      const off = TRAIL_W - 6 + Rf()*18, x=a[0]+dx*t+nx*off*side, y=a[1]+dy*t+ny*off*side, k=Rf();
+  for (let i=1;i<TRAIL.length-1;i++){ const a=TRAIL[i-1], bq=TRAIL[i+1], dx=bq[0]-a[0], dy=bq[1]-a[1], len=Math.hypot(dx,dy)||1, nx=-dy/len, ny=dx/len;
+    for (const side of [-1,1]){ if (Rf()>0.78) continue;
+      const off = TRAIL_W - 6 + Rf()*18, x=TRAIL[i][0]+nx*off*side, y=TRAIL[i][1]+ny*off*side, k=Rf();
       if (inGorge(x,y)) continue;
-      if (k<0.52) hTuft(x,y); else if (k<0.74) ell(x,y,3+Rf()*3,2.2+Rf()*2,Rf()>0.5?'#b0a890':'#9a927e'); else if (k<0.9) hFern(x,y); else hBloom(x,y); } } }
+      if (k<0.52) hTuft(x,y); else if (k<0.74) ell(x,y,3+Rf()*3,2.2+Rf()*2,Rf()>0.5?'#b0a890':'#9a927e'); else if (k<0.9) hFern(x,y); else hBloom(x,y); } }
   // a few tufts around the clearings too
   for (const [cx,cy,r] of H_CLEARINGS){ for (let a=0;a<Math.PI*2;a+=0.5){ if (Rf()>0.6) continue; const x=cx+Math.cos(a)*(r*0.7+Rf()*16), y=cy+Math.sin(a)*(r*0.5+Rf()*12); if (inGorge(x,y)) continue; Rf()<0.6?hTuft(x,y):hFern(x,y); } }
   // lush, layered overgrowth filling the slope and crowding the path's edges
@@ -583,7 +590,7 @@ function drawHighlandMap(t, w){
   mctx.fillStyle='#241d18'; mctx.fillRect(190, GORGE.y0, 1330, GORGE.y1-GORGE.y0);
   if (S.bridge) { mctx.fillStyle='#b89a72'; mctx.fillRect(BRIDGE.x0, GORGE.y0, BRIDGE.x1-BRIDGE.x0, GORGE.y1-GORGE.y0); }
   mctx.strokeStyle='#e3d3a6'; mctx.lineWidth=30; mctx.lineCap='round'; mctx.lineJoin='round';
-  mctx.beginPath(); TRAIL.forEach(([x,y],i)=>{const p=TRAIL[i-1]; i?mctx.quadraticCurveTo((p[0]+x)/2,(p[1]+y)/2,x,y):mctx.moveTo(x,y);}); mctx.stroke();
+  mctx.beginPath(); TRAIL.forEach(([x,y],i)=> i?mctx.lineTo(x,y):mctx.moveTo(x,y)); mctx.stroke();
   S.hLanterns.forEach(L => c(L.x, L.y, R*0.7, L.lit ? '#ffe08a' : '#6b6456'));
   const NC = { willow:'#b58a5a', juniper:'#cb9f67', pine:'#cf6b40', lark:'#b79a6e' };
   S.npcs.forEach(n => {
@@ -706,7 +713,8 @@ function startDay4(quiet){
   S.seeds = SEED_SPOTS.map(([x,y],i) => ({ x, y, i, a:i*1.7, sp:0.5+i*0.12, rx:70+i*14, ry:40+(i%2)*20, px:x, py:y, caught:false }));
   // the new friends live on the highland
   S.npcs.push({ id:'willow', name:'Willow', x:WILLOW_SPOT.x, y:WILLOW_SPOT.y, near:false, scene:'highland' });
-  S.npcs.push({ id:'juniper', name:'Juniper', x:778, y:1952, near:false, scene:'highland' });
+  const jp = trailPt(0.24);
+  S.npcs.push({ id:'juniper', name:'Juniper', x:jp[0], y:jp[1], near:false, scene:'highland' });
   S.npcs.push({ id:'pine', name:'Pine', x:855, y:1238, near:false, scene:'highland' });
   S.npcs.push({ id:'lark', name:'Lark', x:900, y:600, near:false, scene:'highland', gliding:true });
   for (const k in grids) delete grids[k];
