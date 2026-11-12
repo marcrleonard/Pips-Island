@@ -208,6 +208,19 @@
     "voice": "PLACEHOLDER: reusing Mama Duck's bright playful voice (Kaia). Recast for a distinct, airy skylark.",
     "speed": 1.05
    }
+  },
+  "marina": {
+   "name": "Marina",
+   "description": "An ancient, gentle sea turtle. Unhurried, serene, wise. The elder of the deep. Speaks slowly, like the tide.",
+   "voice": {
+    "pitch": 0.95,
+    "rate": 0.78
+   },
+   "fish": {
+    "reference_id": "08032f52a3674456acb058484485f70f",
+    "voice": "PLACEHOLDER: reusing Dorothy (warm storyteller in her seventies). Recast for a distinct, serene sea turtle elder.",
+    "speed": 0.88
+   }
   }
  },
  "about": "Speakers. 'voice' tunes the browser fallback voice. 'fish.reference_id' is the Fish Audio voice model to use for this character (pick or clone one on fish.audio and paste its id). 'description' is acting direction for humans. 'fish.voice' is a note naming the chosen voice; browse others at https://fish.audio/discovery."

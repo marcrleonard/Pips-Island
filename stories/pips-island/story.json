@@ -106,6 +106,27 @@
    "owner": "lark",
    "label": "Thistle seeds",
    "goal": 4
+  },
+  {
+   "id": "pearls",
+   "day": 5,
+   "owner": "crab",
+   "label": "Pearls",
+   "goal": 3
+  },
+  {
+   "id": "jellies",
+   "day": 5,
+   "owner": "seal",
+   "label": "Glow-jellies",
+   "goal": 4
+  },
+  {
+   "id": "anemones",
+   "day": 5,
+   "owner": "puffin",
+   "label": "Sea lanterns",
+   "goal": 3
   }
  ],
  "endCards": {
@@ -128,6 +149,11 @@
    "title": "Goodnight, Pip",
    "text": "The mist lifted and you climbed all the way up! Juniper's lanterns, Pine's bridge, Lark's thistle seeds, and a picnic above the clouds with Willow. What a view!",
    "voice": "pip.end.d4"
+  },
+  "5": {
+   "title": "Goodnight, Pip",
+   "text": "Down in the deep with Marina! Grandpa Crab's pearls, Pearl's glow-jellies, and Captain Puff's sea lanterns lighting the trench. The whole sea was glowing. Sweet dreams!",
+   "voice": "pip.end.d5"
   }
  },
  "items": {
@@ -145,7 +171,10 @@
   "lantern": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"36\" r=\"22\" fill=\"rgba(255,224,138,.35)\"/><path d=\"M32 6v8\" stroke=\"#5e4636\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M24 14h16\" stroke=\"#5e4636\" stroke-width=\"3\" stroke-linecap=\"round\"/><rect x=\"20\" y=\"16\" width=\"24\" height=\"32\" rx=\"6\" fill=\"#ffe08a\" stroke=\"#5e4636\" stroke-width=\"3\"/><circle cx=\"32\" cy=\"32\" r=\"6\" fill=\"#7ff0dc\"/><path d=\"M22 48h20\" stroke=\"#5e4636\" stroke-width=\"4\" stroke-linecap=\"round\"/></svg>",
   "eel": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"32\" r=\"26\" fill=\"#e7f3f5\"/><path d=\"M10 40c8-10 18-14 30-12 6 1 10 4 14 2\" stroke=\"#9fb0b8\" stroke-width=\"9\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M10 40c8-10 18-14 30-12 6 1 10 4 14 2\" stroke=\"#d9e2e6\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M54 30l6-6v12z\" fill=\"#9fb0b8\"/><circle cx=\"16\" cy=\"36\" r=\"2\" fill=\"#34433a\"/></svg>",
   "plank": "<svg viewBox=\"0 0 64 64\"><ellipse cx=\"32\" cy=\"52\" rx=\"22\" ry=\"4\" fill=\"rgba(52,67,58,.15)\"/><g transform=\"rotate(-10 32 34)\"><rect x=\"8\" y=\"26\" width=\"48\" height=\"16\" rx=\"5\" fill=\"#b89a72\"/><path d=\"M15 32h30M20 37h28\" stroke=\"#9a7c56\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"44\" cy=\"31\" r=\"2.2\" fill=\"#8a6c48\"/><circle cx=\"18\" cy=\"37\" r=\"2.2\" fill=\"#8a6c48\"/></g></svg>",
-  "seed": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"30\" r=\"24\" fill=\"rgba(255,255,255,.3)\"/><g stroke=\"#f3ead6\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M32 30l-14-12M32 30l-2-18M32 30l12-14M32 30l17-6M32 30l-18-4M32 30l16 8M32 30l-10 15M32 30l6 17\"/></g><circle cx=\"18\" cy=\"18\" r=\"3\" fill=\"#fffdf6\"/><circle cx=\"30\" cy=\"12\" r=\"3\" fill=\"#fffdf6\"/><circle cx=\"44\" cy=\"16\" r=\"3\" fill=\"#fffdf6\"/><circle cx=\"49\" cy=\"24\" r=\"2.6\" fill=\"#fffdf6\"/><circle cx=\"14\" cy=\"26\" r=\"2.6\" fill=\"#fffdf6\"/><path d=\"M32 30l2 24\" stroke=\"#c9b48e\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"30\" r=\"3.4\" fill=\"#c9a05a\"/></svg>"
+  "seed": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"30\" r=\"24\" fill=\"rgba(255,255,255,.3)\"/><g stroke=\"#f3ead6\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M32 30l-14-12M32 30l-2-18M32 30l12-14M32 30l17-6M32 30l-18-4M32 30l16 8M32 30l-10 15M32 30l6 17\"/></g><circle cx=\"18\" cy=\"18\" r=\"3\" fill=\"#fffdf6\"/><circle cx=\"30\" cy=\"12\" r=\"3\" fill=\"#fffdf6\"/><circle cx=\"44\" cy=\"16\" r=\"3\" fill=\"#fffdf6\"/><circle cx=\"49\" cy=\"24\" r=\"2.6\" fill=\"#fffdf6\"/><circle cx=\"14\" cy=\"26\" r=\"2.6\" fill=\"#fffdf6\"/><path d=\"M32 30l2 24\" stroke=\"#c9b48e\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"30\" r=\"3.4\" fill=\"#c9a05a\"/></svg>",
+  "pearl": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"34\" r=\"26\" fill=\"rgba(180,230,235,.3)\"/><circle cx=\"32\" cy=\"32\" r=\"17\" fill=\"#eef2f0\"/><circle cx=\"32\" cy=\"32\" r=\"17\" fill=\"none\" stroke=\"#cfe0dc\" stroke-width=\"1.5\"/><circle cx=\"26\" cy=\"26\" r=\"5\" fill=\"#ffffff\"/><circle cx=\"38\" cy=\"38\" r=\"3\" fill=\"rgba(150,200,205,.5)\"/></svg>",
+  "jelly": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"30\" r=\"26\" fill=\"rgba(150,220,255,.3)\"/><path d=\"M16 30a16 13 0 0 1 32 0z\" fill=\"#8fd0ff\"/><path d=\"M16 30h32\" stroke=\"#6fb8ea\" stroke-width=\"2\"/><g stroke=\"#8fd0ff\" stroke-width=\"3\" stroke-linecap=\"round\" fill=\"none\"><path d=\"M20 31q-3 12 0 22M28 31q-2 13 1 24M36 31q2 13-1 24M44 31q3 12 0 22\"/></g><circle cx=\"25\" cy=\"22\" r=\"2.2\" fill=\"#e6faff\"/><circle cx=\"38\" cy=\"20\" r=\"2\" fill=\"#e6faff\"/></svg>",
+  "sealantern": "<svg viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"34\" r=\"26\" fill=\"rgba(255,214,140,.3)\"/><g stroke=\"#f4b85a\" stroke-width=\"4\" stroke-linecap=\"round\"><path d=\"M32 34l-16-8M32 34l-10-16M32 34l2-18M32 34l14-14M32 34l17-4M32 34l-18 2M32 34l16 10M32 34l-8 16M32 34l6 17\"/></g><circle cx=\"32\" cy=\"34\" r=\"8\" fill=\"#ffe3a8\"/><circle cx=\"30\" cy=\"32\" r=\"2.5\" fill=\"#fffdf6\"/></svg>"
  },
  "icons": {
   "duck": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><ellipse cx=\"10\" cy=\"13\" rx=\"7\" ry=\"5\" fill=\"#f6d55c\"/><circle cx=\"13\" cy=\"7\" r=\"4\" fill=\"#f6d55c\"/><path d=\"M16 7l3 1-3 1z\" fill=\"#f09a3e\"/><circle cx=\"14\" cy=\"6\" r=\"1\" fill=\"#34433a\"/></svg>",
@@ -161,6 +190,9 @@
   "hide": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><circle cx=\"10\" cy=\"10\" r=\"8\" fill=\"#2e3138\"/><ellipse cx=\"10\" cy=\"11\" rx=\"6\" ry=\"5\" fill=\"#fbf8ef\"/><circle cx=\"8\" cy=\"10\" r=\"1.2\" fill=\"#2e3138\"/><path d=\"M11 11l6 1.5-6 2z\" fill=\"#f08a3c\"/></svg>",
   "trail": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><rect x=\"7\" y=\"6\" width=\"6\" height=\"9\" rx=\"2\" fill=\"#ffe08a\" stroke=\"#5e4636\" stroke-width=\"1.4\"/><path d=\"M10 3v3M8 6h4\" stroke=\"#5e4636\" stroke-width=\"1.4\" stroke-linecap=\"round\"/><circle cx=\"10\" cy=\"10.5\" r=\"1.8\" fill=\"#7ff0dc\"/></svg>",
   "bridge": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><path d=\"M2 7c4 5 12 5 16 0\" stroke=\"#6e4630\" stroke-width=\"1.4\" fill=\"none\"/><path d=\"M3 8.5c3.5 4 10.5 4 14 0\" stroke=\"#6e4630\" stroke-width=\"1.4\" fill=\"none\"/><g stroke=\"#b89a72\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M5 7.6v3M8 8.6v3M12 8.6v3M15 7.6v3\"/></g><path d=\"M3 7V4M17 7V4\" stroke=\"#5e4636\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>",
-  "seeds": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><g stroke=\"#c8b48e\" stroke-width=\"1.4\" stroke-linecap=\"round\"><path d=\"M10 10l-5-4M10 10l-1-6M10 10l5-5M10 10l6-1M10 10l-6-1M10 10l5 5M10 10l-4 5\"/></g><circle cx=\"5\" cy=\"6\" r=\"1.6\" fill=\"#fffdf6\"/><circle cx=\"9\" cy=\"4\" r=\"1.6\" fill=\"#fffdf6\"/><circle cx=\"15\" cy=\"5\" r=\"1.6\" fill=\"#fffdf6\"/><circle cx=\"16\" cy=\"9\" r=\"1.4\" fill=\"#fffdf6\"/><circle cx=\"4\" cy=\"9\" r=\"1.4\" fill=\"#fffdf6\"/><circle cx=\"10\" cy=\"10\" r=\"2\" fill=\"#c9a05a\"/></svg>"
+  "seeds": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><g stroke=\"#c8b48e\" stroke-width=\"1.4\" stroke-linecap=\"round\"><path d=\"M10 10l-5-4M10 10l-1-6M10 10l5-5M10 10l6-1M10 10l-6-1M10 10l5 5M10 10l-4 5\"/></g><circle cx=\"5\" cy=\"6\" r=\"1.6\" fill=\"#fffdf6\"/><circle cx=\"9\" cy=\"4\" r=\"1.6\" fill=\"#fffdf6\"/><circle cx=\"15\" cy=\"5\" r=\"1.6\" fill=\"#fffdf6\"/><circle cx=\"16\" cy=\"9\" r=\"1.4\" fill=\"#fffdf6\"/><circle cx=\"4\" cy=\"9\" r=\"1.4\" fill=\"#fffdf6\"/><circle cx=\"10\" cy=\"10\" r=\"2\" fill=\"#c9a05a\"/></svg>",
+  "pearls": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><circle cx=\"7\" cy=\"8\" r=\"4\" fill=\"#eef2f0\" stroke=\"#cfe0dc\" stroke-width=\"1\"/><circle cx=\"13\" cy=\"12\" r=\"4.5\" fill=\"#eef2f0\" stroke=\"#cfe0dc\" stroke-width=\"1\"/><circle cx=\"5.5\" cy=\"6.5\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"11.5\" cy=\"10.5\" r=\"1.4\" fill=\"#fff\"/></svg>",
+  "jellies": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><path d=\"M4 9a6 5 0 0 1 12 0z\" fill=\"#8fd0ff\"/><g stroke=\"#8fd0ff\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M6 9q-1 5 0 8M10 9q-.5 5 .5 9M14 9q1 5 0 8\"/></g><circle cx=\"8\" cy=\"5\" r=\"1\" fill=\"#e6faff\"/></svg>",
+  "anemones": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 20 20\"><g stroke=\"#f4b85a\" stroke-width=\"1.8\" stroke-linecap=\"round\"><path d=\"M10 11l-5-3M10 11l-2-6M10 11l3-5M10 11l6-2M10 11l-6 0M10 11l5 4M10 11l-3 5\"/></g><circle cx=\"10\" cy=\"11\" r=\"3\" fill=\"#ffe3a8\"/></svg>"
  }
 }

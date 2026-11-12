@@ -1,0 +1,162 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#06121c}canvas{display:block}</style>
+</head><body><canvas id="c"></canvas>
+<script>
+// Concept mockup for Day 5: "The Deep" — a dive into a sunlit kelp lagoon that drops into a glowing trench.
+// Shaded cut-paper kit + an underwater grade. Friends are reused (Crab, Pearl, Captain Puff) + Marina the turtle.
+const W = 1280, H = 820, K = 2;
+const cv = document.getElementById('c'); cv.width = W*K; cv.height = H*K;
+const g = cv.getContext('2d'); g.scale(K,K);
+const T = 1.3;
+const LIGHT = { x:-0.3, y:-0.95 };
+const hexRGB = h => [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const mixHex=(a,b,t)=>{const A=hexRGB(a),B=hexRGB(b);t=Math.max(0,Math.min(1,t));return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+const lit=(base,t)=> t>=0 ? mixHex(base,'#cfeeff',t*0.4) : mixHex(base,'#17364f',-t*0.5);
+let SP=false;
+function vol(x,y,rx,ry,base){const r=Math.max(rx,ry);const gr=g.createRadialGradient(x+LIGHT.x*rx*0.42,y+LIGHT.y*ry*0.42-ry*0.1,r*0.04,x-LIGHT.x*rx*0.18,y-LIGHT.y*ry*0.18+ry*0.08,r*1.15);gr.addColorStop(0,lit(base,1));gr.addColorStop(0.5,base);gr.addColorStop(1,lit(base,-1));return gr;}
+const isHex=c=>typeof c==='string'&&c.length===7&&c[0]==='#';
+function circ(x,y,r,f){g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=(SP&&isHex(f)&&r>=2.5)?vol(x,y,r,r,f):f;g.fill();}
+function ell(x,y,rx,ry,f){g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fillStyle=(SP&&isHex(f)&&Math.min(rx,ry)>=2.5)?vol(x,y,rx,ry,f):f;g.fill();}
+function sprite(fn){SP=true;fn();SP=false;}
+const smoothPts=(pts,steps=12)=>{const n=pts.length,out=[],mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];for(let i=0;i<n;i++){const p0=mid(pts[(i-1+n)%n],pts[i]),c=pts[i],p1=mid(pts[i],pts[(i+1)%n]);for(let k=0;k<steps;k++){const t=k/steps,u=1-t;out.push([u*u*p0[0]+2*u*t*c[0]+t*t*p1[0],u*u*p0[1]+2*u*t*c[1]+t*t*p1[1]]);}}return out;};
+function polyPath(poly,dx=0,dy=0){g.beginPath();poly.forEach(([x,y],i)=>i?g.lineTo(x+dx,y+dy):g.moveTo(x+dx,y+dy));g.closePath();}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+// ---- water column: bright teal near the surface, deep navy toward the trench ----
+let gr=g.createLinearGradient(0,0,0,H);
+gr.addColorStop(0,'#7fd0d6'); gr.addColorStop(0.28,'#4fa8b8'); gr.addColorStop(0.55,'#2d7f9a'); gr.addColorStop(0.8,'#1b5473'); gr.addColorStop(1,'#123a56');
+g.fillStyle=gr; g.fillRect(0,0,W,H);
+
+// ---- god rays slanting from the surface ----
+g.save(); g.globalCompositeOperation='lighter';
+for(let i=0;i<7;i++){ const x=60+i*200+Math.sin(i)*40, w=40+i*6;
+  gr=g.createLinearGradient(x,0,x-180,H); gr.addColorStop(0,'rgba(220,255,255,.16)'); gr.addColorStop(1,'rgba(220,255,255,0)');
+  g.fillStyle=gr; g.beginPath(); g.moveTo(x,-10); g.lineTo(x+w,-10); g.lineTo(x+w-220,H); g.lineTo(x-220,H); g.closePath(); g.fill(); }
+g.restore();
+
+// ---- the seabed: sandy shelf on the left rising to the surface, a dark trench to the right ----
+const BED = smoothPts([[-40,560],[180,520],[420,560],[640,520],[820,580],[980,640],[1120,760],[1240,900],[1340,1200],[-40,1200]]);
+polyPath(BED); gr=g.createLinearGradient(0,520,0,900); gr.addColorStop(0,'#cdbe8e'); gr.addColorStop(1,'#8a7f62'); g.fillStyle=gr; g.fill();
+// caustic light pools on the sand
+g.save(); polyPath(BED); g.clip(); g.globalCompositeOperation='lighter';
+const Rc=rng(9);
+for(let i=0;i<40;i++){ const x=Rc()*1100, y=520+Rc()*320; const a=0.10*(1-y/900);
+  gr=g.createRadialGradient(x,y,2,x,y,30+Rc()*40); gr.addColorStop(0,`rgba(200,255,250,${a})`); gr.addColorStop(1,'rgba(200,255,250,0)');
+  g.fillStyle=gr; g.beginPath(); g.ellipse(x,y,30+Rc()*40,(30+Rc()*40)*0.5,0,0,Math.PI*2); g.fill(); }
+g.restore();
+// the trench: a dark cleft on the right, dropping into the dark
+(function trench(){ const t=smoothPts([[1120,700],[1240,860],[1300,1100],[1340,1400],[1160,1400],[1080,1120],[1060,860]]);
+  polyPath(t); gr=g.createLinearGradient(0,700,0,1300); gr.addColorStop(0,'rgba(10,28,44,.3)'); gr.addColorStop(1,'rgba(6,16,28,.9)'); g.fillStyle=gr; g.fill(); })();
+
+// ---- rocks + coral on the bed ----
+function rock(x,y,s){ sprite(()=>{ ell(x,y,34*s,20*s,'#6f6a5c'); ell(x-8*s,y-10*s,20*s,11*s,'#847d6c'); }); }
+rock(260,560,1.1); rock(560,560,0.9); rock(820,600,1); rock(140,600,0.8);
+function coral(x,y,s,c){ g.save(); g.translate(x,y); g.scale(s,s); g.strokeStyle=c; g.lineWidth=7; g.lineCap='round';
+  for(let i=-2;i<=2;i++){ g.beginPath(); g.moveTo(0,0); g.quadraticCurveTo(i*10,-22,i*16,-42); g.stroke(); circ(i*16,-42,5,c);} g.restore(); }
+coral(360,560,1,'#e08a9c'); coral(700,580,0.9,'#e6a35c'); coral(480,560,0.8,'#c87fae');
+
+// ---- kelp forest: tall swaying fronds rooted on the bed ----
+function kelp(x,y,h,s){ g.save(); g.strokeStyle='#5f8a4c'; g.lineCap='round';
+  for(const off of [-6,0,6]){ g.lineWidth=7*s; g.beginPath();
+    for(let k=0;k<=10;k++){ const t=k/10, yy=y-t*h, xx=x+off+Math.sin(t*3+T*1.5+x*0.01)*18*t*s; k?g.lineTo(xx,yy):g.moveTo(xx,yy); } g.stroke();
+    // leaves
+    g.lineWidth=2*s; for(let k=2;k<10;k+=2){ const t=k/10, yy=y-t*h, xx=x+off+Math.sin(t*3+T*1.5+x*0.01)*18*t*s; g.beginPath(); g.moveTo(xx,yy); g.quadraticCurveTo(xx+12*s,yy-4,xx+18*s,yy-14); g.stroke(); } }
+  g.restore(); }
+kelp(110,620,420,1.1); kelp(200,600,360,0.9); kelp(330,560,460,1); kelp(60,600,300,0.8);
+kelp(620,560,400,1); kelp(760,600,340,0.9); kelp(900,640,300,0.8);
+
+// ---- bioluminescent glow-jellies (drift in the dark) + anemone lanterns in the trench ----
+g.save(); g.globalCompositeOperation='lighter';
+function jelly(x,y,c){ gr=g.createRadialGradient(x,y,2,x,y,34); gr.addColorStop(0,`rgba(${c},.5)`); gr.addColorStop(1,`rgba(${c},0)`); g.fillStyle=gr; g.beginPath(); g.arc(x,y,34,0,Math.PI*2); g.fill(); }
+jelly(1040,520,'150,220,255'); jelly(1180,760,'190,160,255'); jelly(980,900,'120,230,210'); jelly(1220,1040,'255,180,210');
+g.restore();
+function jellyBody(x,y,c){ g.save(); g.translate(x,y);
+  g.fillStyle=`rgba(${c},.85)`; g.beginPath(); g.ellipse(0,0,15,12,0,Math.PI,0); g.lineTo(13,2); g.lineTo(-13,2); g.closePath(); g.fill();
+  g.strokeStyle=`rgba(${c},.6)`; g.lineWidth=2; g.lineCap='round';
+  for(let i=-2;i<=2;i++){ g.beginPath(); g.moveTo(i*6,2); g.quadraticCurveTo(i*6+Math.sin(T+i)*5,22,i*6,34); g.stroke(); } g.restore(); }
+jellyBody(1040,520,'150,220,255'); jellyBody(1180,760,'190,160,255'); jellyBody(980,900,'120,230,210');
+
+// ---- fish schools ----
+function fish(x,y,s,c,f){ g.save(); g.translate(x,y); g.scale((f||1)*s,s); ell(0,0,8,4,c); g.fillStyle=c; g.beginPath(); g.moveTo(-6,0); g.lineTo(-12,-4); g.lineTo(-12,4); g.fill(); circ(4,-1,1,'#0a2238'); g.restore(); }
+for(let i=0;i<9;i++) fish(300+i*26+Math.sin(i)*10, 300+Math.sin(i*1.3)*30, 1, '#f4c06a', 1);
+for(let i=0;i<7;i++) fish(560+i*24, 420+Math.cos(i)*24, 0.85, '#8fd0e0', 1);
+
+// ---- scattered pearls (Grandpa Crab's quest) ----
+function pearl(x,y){ sprite(()=>{ ell(x,y,8,8,'#eef2f0'); }); g.save(); g.globalCompositeOperation='lighter'; gr=g.createRadialGradient(x,y,1,x,y,16); gr.addColorStop(0,'rgba(220,240,255,.5)'); gr.addColorStop(1,'rgba(220,240,255,0)'); g.fillStyle=gr; g.beginPath(); g.arc(x,y,16,0,Math.PI*2); g.fill(); g.restore(); circ(x-2,y-2,2,'#ffffff'); }
+pearl(420,540); pearl(690,560); pearl(540,548);
+
+// ================= characters =================
+// Pip diving (otter, horizontal, scarf streaming, bubbles)
+function pip(x,y){ sprite(()=>{ g.save(); g.translate(x,y); g.rotate(-0.15);
+  // tail
+  g.fillStyle='#8a5a3c'; g.beginPath(); g.moveTo(-18,2); g.quadraticCurveTo(-42,-2,-44,8); g.quadraticCurveTo(-30,4,-14,6); g.fill();
+  ell(0,0,20,15,'#9b6845'); ell(3,2,11,9,'#e9cfa8');
+  circ(22,-6,14,'#9b6845'); ell(29,-3,8,6,'#e9cfa8');
+  circ(16,-18,4.5,'#9b6845'); circ(30,-20,4.5,'#9b6845'); circ(16,-18,2,'#6e4630'); circ(30,-20,2,'#6e4630');
+  circ(26,-8,2.6,'#34433a'); circ(35,-4,2.4,'#3b2a22');
+  // flipper-paws
+  ell(-2,14,7,4,'#6e4630'); ell(10,16,7,4,'#6e4630');
+  // scarf streaming back
+  g.fillStyle='#f4b85a'; g.beginPath(); g.moveTo(8,-4); g.quadraticCurveTo(-6,2,-18,-6); g.quadraticCurveTo(-6,0,8,2); g.closePath(); g.fill();
+  g.restore(); });
+  // bubbles from the nose
+  g.save(); g.globalCompositeOperation='lighter'; for(let i=0;i<4;i++){ circ(x+40+i*10, y-12-i*12+Math.sin(i+T)*4, 2+i*0.8, 'rgba(230,250,255,.5)'); } g.restore(); }
+// Marina the sea turtle (host)
+function turtle(x,y){ sprite(()=>{ g.save(); g.translate(x,y);
+  // flippers
+  g.fillStyle='#5f8a6c'; g.beginPath(); g.ellipse(-30,6,16,8,-0.5,0,Math.PI*2); g.fill(); g.beginPath(); g.ellipse(28,6,16,8,0.5,0,Math.PI*2); g.fill();
+  g.beginPath(); g.ellipse(-22,24,11,6,-0.3,0,Math.PI*2); g.fill(); g.beginPath(); g.ellipse(22,24,11,6,0.3,0,Math.PI*2); g.fill();
+  // shell
+  ell(0,4,34,26,'#6f9e7a'); ell(0,0,30,21,'#7faa86');
+  g.strokeStyle='#4f7a5c'; g.lineWidth=2; for(let i=-1;i<=1;i++){ g.beginPath(); g.moveTo(i*16,-18); g.lineTo(i*18,24); g.stroke(); } g.beginPath(); g.ellipse(0,2,20,12,0,0,Math.PI*2); g.stroke();
+  for(const [hx,hy] of [[-8,-4],[10,-6],[0,12],[-10,14],[12,12]]) { g.beginPath(); g.moveTo(hx-8,hy); g.lineTo(hx,hy-7); g.lineTo(hx+8,hy); g.lineTo(hx,hy+7); g.closePath(); g.strokeStyle='#4f7a5c'; g.stroke(); }
+  // head
+  circ(0,-30,12,'#6f9e7a'); ell(0,-26,8,6,'#8fbf9a');
+  circ(-4,-33,2,'#2e3138'); circ(5,-33,2,'#2e3138');
+  // little glasses (elder)
+  g.strokeStyle='#3c5a46'; g.lineWidth=1.4; g.beginPath(); g.arc(-4,-33,4,0,Math.PI*2); g.arc(5,-33,4,0,Math.PI*2); g.stroke();
+  g.restore(); }); }
+// Grandpa Crab (reused), Pearl the seal (reused), Captain Puff diving (reused)
+function crab(x,y){ sprite(()=>{ g.save(); g.translate(x,y); g.strokeStyle='#c4583e'; g.lineWidth=3; g.lineCap='round';
+  for(const sd of[-1,1])for(let i=0;i<3;i++){g.beginPath();g.moveTo(sd*12,-6+i*3);g.lineTo(sd*24,0+i*4);g.stroke();}
+  ell(0,-10,20,13,'#e07355'); for(const sd of[-1,1]){g.save();g.translate(sd*22,-20);g.rotate(sd*-0.4);ell(0,-6,8,7,'#e07355');g.restore();}
+  g.strokeStyle='#c4583e';g.lineWidth=2.5;g.beginPath();g.moveTo(-6,-20);g.lineTo(-7,-29);g.moveTo(6,-20);g.lineTo(7,-29);g.stroke();
+  circ(-7,-31,4,'#fff');circ(7,-31,4,'#fff');circ(-6.4,-31,2,'#2e3138');circ(7.6,-31,2,'#2e3138');
+  g.strokeStyle='#fffaf0';g.lineWidth=2;g.beginPath();g.moveTo(-11,-36);g.lineTo(-4,-35);g.moveTo(4,-35);g.lineTo(11,-36);g.stroke(); g.restore(); }); }
+function seal(x,y){ sprite(()=>{ g.save(); g.translate(x,y); g.rotate(0.1);
+  g.fillStyle='#b8b6a8'; g.beginPath(); g.moveTo(-28,0); g.lineTo(-40,-8); g.lineTo(-38,6); g.closePath(); g.fill();
+  ell(-6,-6,24,13,'#cfcdc0'); circ(14,-16,12,'#ebe7dd'); ell(20,-13,6,4.5,'#fff');
+  circ(10,-18,3,'#2e3138'); circ(18,-19,3,'#2e3138'); circ(19,-14,1.6,'#3b2a22');
+  ell(-20,-2,9,6,'#cfcdc0'); g.restore(); }); }
+function puffin(x,y){ sprite(()=>{ g.save(); g.translate(x,y); g.rotate(0.2);
+  // wings as flippers mid-stroke
+  g.fillStyle='#2e3138'; g.beginPath(); g.ellipse(-10,-2,14,6,-0.6,0,Math.PI*2); g.fill(); g.beginPath(); g.ellipse(10,-2,14,6,0.6,0,Math.PI*2); g.fill();
+  ell(0,0,13,16,'#2e3138'); ell(2,3,8,11,'#fbf8ef'); circ(3,-16,10,'#2e3138'); ell(5,-15,7,6.5,'#fbf8ef');
+  g.fillStyle='#f08a3c'; g.beginPath(); g.moveTo(11,-18); g.quadraticCurveTo(22,-14,11,-10); g.closePath(); g.fill();
+  circ(6,-18,1.6,'#2e3138'); g.restore(); }); }
+
+turtle(420,340); pip(560,360); crab(560,548); seal(300,430); puffin(820,300);
+
+// bubbles + drifting plankton everywhere
+g.save(); g.globalCompositeOperation='lighter'; const Rb=rng(21);
+for(let i=0;i<70;i++){ const x=Rb()*W,y=Rb()*H,r=1+Rb()*2.5; circ(x,y-((T*20+i*7)%H), r, `rgba(220,245,255,${0.12+Rb()*0.18})`); }
+g.restore();
+
+// ---- underwater grade wash + vignette ----
+g.save(); g.globalCompositeOperation='multiply'; g.globalAlpha=0.26; g.fillStyle='#2f6f8f'; g.fillRect(0,0,W,H);
+g.globalCompositeOperation='soft-light'; g.globalAlpha=0.22; g.fillStyle='#1a4a6a'; g.fillRect(0,0,W,H); g.restore();
+gr=g.createRadialGradient(W/2,H*0.4,H*0.42,W/2,H/2,H); gr.addColorStop(0,'rgba(6,18,28,0)'); gr.addColorStop(1,'rgba(6,18,28,.5)'); g.fillStyle=gr; g.fillRect(0,0,W,H);
+
+// labels
+function label(x,y,text,tail){ g.font='700 19px system-ui,sans-serif'; const w=g.measureText(text).width+24;
+  g.fillStyle='rgba(255,250,240,.95)'; g.beginPath(); g.roundRect(x-w/2,y-16,w,30,15); g.fill();
+  if(tail){ g.beginPath(); g.moveTo(x-6,y+13); g.lineTo(x,y+22); g.lineTo(x+6,y+13); g.fill(); }
+  g.fillStyle='#17364f'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,x,y); }
+label(640,54,'Day 5 — The Deep (concept look): a dive from the cove into a kelp lagoon');
+label(420,300,'Marina the sea turtle — your guide',1);
+label(560,320,'Pip, diving',1);
+label(300,392,'Pearl',1); label(820,260,'Captain Puff (puffins swim!)',1);
+label(560,588,'Grandpa Crab + scattered pearls',1);
+label(1150,980,'a glowing trench deeper down',0);
+</script></body></html>

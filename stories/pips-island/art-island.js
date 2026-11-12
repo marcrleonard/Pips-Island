@@ -402,6 +402,15 @@ function marker(x,y,t,kind){
 function npcMarker(n){
   const q = S.quests;
   if (S.ending) return null;
+  if (S.day===5) {
+    if (n.id==='marina') { if (allDone()) return 'ready';
+      const waiting = dayQuests().some(x => x.state==='active') || friendsToday().some(f => S.hinted.has(f.owner) && q[f.id].state==='new');
+      return waiting ? null : 'new'; }
+    if (n.id==='crab') return q.pearls.state==='new' ? (S.hinted.has('crab') ? 'new' : null) : (q.pearls.state==='active' && q.pearls.have>=3 ? 'ready' : null);
+    if (n.id==='seal') return q.jellies.state==='new' ? (S.hinted.has('seal') ? 'new' : null) : (q.jellies.state==='active' && q.jellies.have>=4 ? 'ready' : null);
+    if (n.id==='puffin') return q.anemones.state==='new' ? (S.hinted.has('puffin') ? 'new' : null) : (q.anemones.state==='active' && q.anemones.have>=3 ? 'ready' : null);
+    return null;
+  }
   if (S.day===4) {
     if (n.id==='willow') { if (allDone()) return 'ready';
       const waiting = dayQuests().some(x => x.state==='active') || friendsToday().some(f => S.hinted.has(f.owner) && q[f.id].state==='new');

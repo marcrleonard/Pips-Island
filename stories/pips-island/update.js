@@ -19,7 +19,7 @@ function update(dt){
   P.moving = !!(vx||vy);
   if (P.moving) {
     const nx=P.x+vx*speed*dt, ny=P.y+vy*speed*dt;
-    const canWalk = S.scene==='cave' ? caveWalkable : S.scene==='cove' ? coveWalkable : S.scene==='isle' ? isleWalkable : S.scene==='highland' ? highlandWalkable : walkable;
+    const canWalk = S.scene==='cave' ? caveWalkable : S.scene==='cove' ? coveWalkable : S.scene==='isle' ? isleWalkable : S.scene==='highland' ? highlandWalkable : S.scene==='deep' ? deepWalkable : walkable;
     const step = speed*dt;
     let moved = false;
     if (canWalk(nx,ny)) { P.x=nx; P.y=ny; moved = true; }
@@ -92,7 +92,7 @@ function update(dt){
     setTimeout(() => !S.dialog && speak('pip.shell.found'), 600);
   }
 
-  if (S.scene==='cave') updateCave(dt); else if (S.scene==='cove') updateCove(dt); else if (S.scene==='isle') updateIsle(dt); else if (S.scene==='highland') updateHighland(dt); else { updateDoor(); updateNorthPath(); }
+  if (S.scene==='cave') updateCave(dt); else if (S.scene==='cove') { updateCove(dt); updateCoveDive(); } else if (S.scene==='isle') updateIsle(dt); else if (S.scene==='highland') updateHighland(dt); else if (S.scene==='deep') updateDeep(dt); else { updateDoor(); updateNorthPath(); }
   updateTrans(dt);
 
   // ending walk

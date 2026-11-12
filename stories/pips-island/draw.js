@@ -5,7 +5,7 @@ function draw(){
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = S.scene==='cave' ? '#241b18' : (GROUND_EDGE || C.sea); ctx.fillRect(0,0,cvs.width,cvs.height);
   ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,-cam.x*DPR*cam.z,-cam.y*DPR*cam.z);
-  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else if (S.scene==='highland') drawHighland(t); else drawIsland(t);
+  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else if (S.scene==='highland') drawHighland(t); else if (S.scene==='deep') drawDeep(t); else drawIsland(t);
   drawOverlays(t);
 }
 function drawIsland(t){
@@ -78,7 +78,7 @@ function drawPops(){
 function drawTargetRing(){
   if (S.player.goal && !S.ending) { const T=S.player.goal; ctx.strokeStyle='rgba(255,250,240,.8)'; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(T.x,T.y,12,6,0,0,Math.PI*2); ctx.stroke(); }
 }
-const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44, willow:118, juniper:66, pine:62, lark:42 };
+const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44, willow:118, juniper:66, pine:62, lark:42, marina:54 };
 function drawMarkers(t){
   S.npcs.forEach(n => { if (n.scene!==S.scene) return; const k = npcMarker(n); if (k) marker(n.x, n.y - MARK_Y[n.id], t, k); });
 }

@@ -12,6 +12,7 @@ function drawMap(t){
   if (S.scene==='cove') return drawCoveMap(t, w);
   if (S.scene==='isle') return drawIsleMap(t, w);
   if (S.scene==='highland') return drawHighlandMap(t, w);
+  if (S.scene==='deep') return drawDeepMap(t, w);
   const k = w / W;
   mctx.setTransform(DPR*k,0,0,DPR*k,0,0);
   mctx.fillStyle = C.sea; mctx.fillRect(0,0,W,H);

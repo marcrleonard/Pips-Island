@@ -11,7 +11,10 @@ function talk(npc){
   if (S.day===2 && npc.id!=='owl' && talkDay2(npc)) return;
   if (S.day===3 && npc.id!=='owl' && talkDay3(npc)) return;
   if (S.day===4 && npc.id!=='owl' && talkDay4(npc)) return;
+  if (S.day===5 && npc.id!=='owl' && talkDay5(npc)) return;
   if (npc.id === 'owl') {
+    // On Day 5 Bramble points Pip down to the cove, where Marina waits to lead the dive.
+    if (S.day===5) return speak('owl.d5');
     // On Day 4 Bramble just waves Pip toward the newly-open North Path; Willow hosts up in the highlands.
     if (S.day===4) return speak('owl.d4');
     if (allDone()) return speak(`owl.end.d${S.day}`, startEnding);
@@ -101,6 +104,18 @@ function startEnding(){
       n.x = PICNIC.x + (spots[n.id][0] < PICNIC.x ? -160 : 160); n.y = PICNIC.y + 150;
       n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'highland'); } });
     setGoal(PICNIC.x-30, PICNIC.y+80);
+    chime([392,523,659,784,1046],0.18);
+    S.endTimer = setTimeout(() => { S.finished = true; showEndCard(); }, 7000);
+    return;
+  }
+  if (S.day===5) {
+    // Day 5's gather is down in the deep: the friends drift around Pip over a sunlit patch of seabed.
+    const c = { x: MARINA_SPOT.x, y: MARINA_SPOT.y + 60 };
+    const spots = { marina:[c.x+130,c.y+10], crab:[c.x-110,c.y+60], seal:[c.x-120,c.y-50], puffin:[c.x+90,c.y-70] };
+    S.npcs.forEach(n => { if (spots[n.id]) { n.scene='deep';
+      n.x = c.x + (spots[n.id][0] < c.x ? -170 : 170); n.y = c.y + 140;
+      n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'deep'); } });
+    setGoal(c.x-20, c.y+70);
     chime([392,523,659,784,1046],0.18);
     S.endTimer = setTimeout(() => { S.finished = true; showEndCard(); }, 7000);
     return;

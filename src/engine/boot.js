@@ -20,6 +20,7 @@ document.getElementById('start').addEventListener('click', () => {
   if (location.hash === '#day2') { startDay2(); return; }
   if (location.hash === '#day3') { startDay3(); return; }
   if (location.hash === '#day4') { startDay4(); return; }
+  if (location.hash === '#day5') { startDay5(); return; }
   if (saved) {
     restoreSave(saved);
     if (saved.progress) setTimeout(() => speak('pip.welcome'), 400);

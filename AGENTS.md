@@ -46,10 +46,10 @@ scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for 
 - New state that should survive a reload must be added to both functions.
 - The title shows "Keep playing" plus "Start a new game" when a save exists.
 
-**Scenes.** `S.scene` is `'island'`, `'cave'` (the Burrow), `'cove'` (Seagrass Cove), `'isle'` (Puffin Isle, Day 3) or
-`'highland'` (the Cloudtop Highlands, Day 4).
+**Scenes.** `S.scene` is `'island'`, `'cave'` (the Burrow), `'cove'` (Seagrass Cove), `'isle'` (Puffin Isle, Day 3),
+`'highland'` (the Cloudtop Highlands, Day 4) or `'deep'` (The Deep, Day 5).
 - World sizes: island `W×H` = 2400×1800, cave `CW×CH` = 1600×1200, cove `VW×VH` = 1800×1200, isle `IW×IH` = 1800×1300,
-  highland `HW×HH` = 1700×2600 (tall: you climb up it).
+  highland `HW×HH` = 1700×2600 (tall: you climb up it), deep `DW×DH` = 2200×1500 (wide: you swim it).
 - Day 3 (`stories/pips-island/isle.js`): walking to the end of a dock with the boat there calls `sail(to)`, a longer
   fade with a sailing card. Captain Puff and the boat travel with Pip (`S.boatAt`). On the isle Captain Puff gives the
   one-at-a-time hints (`puffin.hint.<quest>`), and his end conversation sails everyone home to the picnic.
@@ -65,6 +65,16 @@ scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for 
   Lark are physically gated behind Pine's quest. The Day-4 picnic ending is on the crown (`startEnding` branches on
   `S.day===4`). New-character voices in `cast.json` are **placeholders** reusing close existing Fish voices — recast
   (`willow`, `juniper`, `pine`, `lark`).
+- Day 5 (`stories/pips-island/deep.js`): The Deep, an underwater dive, reached by diving at the cove's glowing
+  `DIVE_SPOT` (active on day >= 5). Underwater, the whole lagoon is "walkable" — Pip swims freely in 2D (`deepWalkable`
+  is the lagoon polygon minus rocks/kelp roots; `swimDepth` returns 1 so he always swims, drawn in a dive pose by
+  `drawOtterDive`). It has its own look, `LOOK_DEEP` (cool blue grade, lit from the surface) — the third `LOOK`, so the
+  sprite caches key on `lookKey()` ('q'). Reused friends (moved into the `'deep'` scene by `startDay5`): Grandpa Crab
+  (find 3 **pearls**), Pearl the seal (catch 4 drifting **glow-jellies**), Captain Puff — puffins swim! — (light 3
+  **sea-anemone lanterns** to clear the dark **trench**; `darkLevel()` fades as they light, like the highland's
+  `mistLevel()`). Host is **Marina the sea turtle** (`marina.hint.<quest>`, closing). The dark trench is cosmetic, not a
+  gate — all three quests are reachable from the start. The Day-5 ending gathers everyone over a sunlit patch of seabed
+  (`startEnding` branches on `S.day===5`). Marina's voice is a **placeholder** (reuses Dorothy) — recast.
 - Shapes: coasts, beaches and rock shelves are smooth outlines (`smoothPts`, `polyPath`, `insidePoly`, `offsetPoly`
   in `style.js`). The same outline is drawn and used for walking. The main island's outline is traced once from the
   old layout circles in `island-world.js` (`ISLAND`, `edgeD`).
@@ -196,17 +206,24 @@ move NPCs away or pre-set `near`.
   the "above the clouds" look is painted (a high cloud layer over the summit, a sea of clouds at the base, far isles
   on the horizon), not a global fog grade — keeping Marc's "fog only in the rain mood" rule. Deer-family art is shared
   (Willow the stag ≈ a grown-up Juniper the fawn) to keep the new cast cohesive and the art effort bounded.
+- **Day 5 (The Deep):** the "down" counterpart to Day 4's "up", and the underwater idea Marc floated. Reuses the cast
+  (Marc said to) — Grandpa Crab, Pearl and Captain Puff all have a reason to be underwater (crabs walk the bottom,
+  seals and puffins both swim/dive) — with only one new face, Marina the turtle, as the elder host. Movement is the
+  easy part: a full-water scene is just an open walkable area, so "swimming" reuses the ordinary movement with
+  `swimDepth`-1 speed and a dive pose. The look is carried by `LOOK_DEEP` + painted extras (god rays, caustics,
+  bioluminescence, bubbles), not a new engine feature. Mystery = the dark trench you light up; cozy = sunlit shallows.
 - **Wording:** "what a kind day" was cut as awkward. Keep the writing plain, warm and short. A 7-year-old hears it.
 
 ## What's next (rough priority)
 
 1. **Publish the voices:** every line is recorded (`tools/fish_tts.py`, levelled to -19 LUFS). Publish the audio
    alongside the game, or switch to serving the `dist/` folder.
-2. **Day 4 is built** (the Cloudtop Highlands, above). Polish passes worth considering: recast the four new voices in
-   `cast.json` (they reuse existing Fish voices as placeholders) and record their lines; give Willow/Juniper/Pine/Lark a
-   walk cycle (they currently stand, except Willow's slow amble to the crown at the end); and a **Day 5** is now
-   unteased — Day 4's end card says "What a view!". A natural next hook: something glimpsed *from* the crown (a far
-   isle, a cave behind the waterfall, the lighthouse beam at dusk).
+2. **Days 4 and 5 are built** (the Cloudtop Highlands and The Deep, above). Polish worth considering: recast the five
+   new voices in `cast.json` (Willow, Juniper, Pine, Lark, Marina — all placeholders reusing existing Fish voices) and
+   record every new line; the reused divers (Crab/Pearl/Puff) swim in roughly their land poses — bespoke swim cycles
+   would sell the underwater motion more. **Day 6** is unteased — Day 5's end card says "Sweet dreams!". Hooks left
+   dangling: the far isles seen from the crown and from the cove, a cave behind the highland waterfall, and the
+   still-planned evening/weather looks (dusk grade + fireflies, rain) that would make a lovely night or storm day.
 3. **Evening looks:**
    - dusk grade for each day's picnic ending (a second baked ground with `LOOK_DUSK`, plus the lantern and window
      glows from `tools/art-lab/speed.html`);
