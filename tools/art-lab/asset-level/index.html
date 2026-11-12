@@ -1,0 +1,227 @@
+<title>Puffin Isle Pilot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@700;800&family=Andika:wght@400;700&display=swap">
+<style>
+/* A one-screen game: full-bleed painted island; quiet paper pills top-left, map + mood toggle top-right. Single warm look by choice. */
+:root {
+  --sea: #8fc3c4;
+  --paper: #fbf3e2;
+  --paper-edge: #e2cfa8;
+  --ink: #4a4031;
+  --ink-soft: #8a7652;
+  --moss: #6f8f4a;
+  --display: "Grandstander", "Trebuchet MS", system-ui, sans-serif;
+  --read: "Andika", "Verdana", system-ui, sans-serif;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--sea); color: var(--ink); overflow: hidden; font-family: var(--read);
+  -webkit-user-select: none; user-select: none; touch-action: none; -webkit-tap-highlight-color: transparent; }
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+.hud { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; pointer-events: none; }
+.pill { display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 999px;
+  background: linear-gradient(var(--paper), #f3e6c9); box-shadow: 0 2px 0 rgba(90,70,40,.18), inset 0 0 0 1.5px rgba(255,255,255,.6);
+  outline: 1.5px dashed rgba(176,150,110,.5); outline-offset: -5px; font: 700 17px/1 var(--read); }
+.pill .ico { width: 32px; height: 32px; border-radius: 50%; background: #ecdcb6; display: grid; place-items: center; }
+.pill .ico img { width: 26px; height: 26px; object-fit: contain; }
+.pill .n { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.pill.done { background: linear-gradient(#eef3dc, #dfe8c2); }
+.right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+#map { pointer-events: auto; width: 150px; height: 96px; border-radius: 16px; background: var(--paper); padding: 7px;
+  box-shadow: 0 2px 0 rgba(90,70,40,.18); box-sizing: content-box; }
+.moods { pointer-events: auto; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--paper); box-shadow: 0 2px 0 rgba(90,70,40,.18); }
+.moods button { border: 0; background: transparent; font: 700 13px/1 var(--read); color: var(--ink-soft); padding: 7px 10px; border-radius: 999px; cursor: pointer; }
+.moods button[aria-pressed="true"] { background: #ecdcb6; color: var(--ink); }
+.moods button:focus-visible { outline: 2px solid var(--moss); }
+.note { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--paper); border-radius: 999px; padding: 10px 18px; font: 700 15px/1.2 var(--read); box-shadow: 0 2px 0 rgba(90,70,40,.18);
+  max-width: calc(100% - 32px); text-align: center; transition: opacity .6s; pointer-events: none; }
+@media (max-width: 520px) { #map { width: 110px; height: 70px; } .pill { font-size: 15px; } }
+</style>
+
+<canvas id="game" aria-label="Puffin Isle, a small painted island to explore"></canvas>
+<div class="hud">
+  <div><span class="pill" id="quest"><span class="ico"><img src="assets/starfish.png" alt=""></span>Starfish <span class="n" id="qn">0/3</span></span></div>
+  <div class="right">
+    <canvas id="map" aria-label="Map of Puffin Isle"></canvas>
+    <div class="moods" role="group" aria-label="Time of day">
+      <button id="m-sun" aria-pressed="true">Morning</button><button id="m-mist" aria-pressed="false">Mist</button><button id="m-dusk" aria-pressed="false">Dusk</button>
+    </div>
+  </div>
+</div>
+<div class="note" id="note">Tap to walk. Find three starfish hidden in the grass.</div>
+
+<script>
+(() => {
+const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+const mcv = document.getElementById('map'), mctx = mcv.getContext('2d');
+const IMG = {}, names = ['island_plate.webp','walk.png','pip.png','pip_walk.png','puffin_a.png','puffin_b.png','puffin_c.png','puffin_d.png','puffin_e.png','puffin_f.png','puffin_g.png','puffin_back.png',
+  'fawn.png','fawn_back.png','tree.png','sign.png','bush.png','rock.png','rock_s.png','flowers_pink.png','flowers_pink2.png','flowers_yellow.png','daisy.png','flowers_purple.png','flowers_purple2.png',
+  'flowers_yellow2.png','daisy_s.png','flowers_mix.png','grass_tall.png','reeds.png','tulips.png','flowers_leafy.png','grass_tuft.png','starfish.png','butterfly.png','bee.png'];
+const load = n => new Promise(r => { const i = new Image(); i.onload = () => r(); i.onerror = () => r(); i.src = 'assets/' + n; IMG[n.replace(/\.\w+$/,'')] = i; });
+
+let WW = 2146, WH = 1268, walk = null, MW = 0, MH = 0;
+const walkable = (x, y) => { const mx = x >> 1, my = y >> 1; return mx >= 0 && my >= 0 && mx < MW && my < MH && walk[my*MW + mx] > 0; };
+
+// ---------- pathfinding: A* on a 12px grid, then string-pulled ----------
+const G = 12; let GW, GH, grid;
+function buildGrid(){ GW = Math.ceil(WW/G); GH = Math.ceil(WH/G); grid = new Uint8Array(GW*GH);
+  for (let j=0;j<GH;j++) for (let i=0;i<GW;i++) grid[j*GW+i] = walkable(i*G+G/2, j*G+G/2) ? 1 : 0; }
+function nearestOpen(i,j){ for (let r=0;r<40;r++) for (let dj=-r;dj<=r;dj++) for (let di=-r;di<=r;di++){ if (Math.max(Math.abs(di),Math.abs(dj))!==r) continue;
+  const a=i+di,b=j+dj; if (a>=0&&b>=0&&a<GW&&b<GH&&grid[b*GW+a]) return [a,b]; } return null; }
+function los(ax,ay,bx,by){ const d = Math.hypot(bx-ax,by-ay), n = Math.ceil(d/6); for (let k=1;k<=n;k++){ const x=ax+(bx-ax)*k/n, y=ay+(by-ay)*k/n; if (!walkable(x|0,y|0)) return false; } return true; }
+function findPath(sx,sy,tx,ty){
+  let s = nearestOpen((sx/G)|0,(sy/G)|0), t = nearestOpen((tx/G)|0,(ty/G)|0); if (!s||!t) return null;
+  const N=GW*GH, gS=new Float32Array(N).fill(1e9), from=new Int32Array(N).fill(-1), closed=new Uint8Array(N), heap=[];
+  const si=s[1]*GW+s[0], ti=t[1]*GW+t[0], h=i=>Math.hypot(i%GW-t[0],((i/GW)|0)-t[1]);
+  const push=(f,i)=>{heap.push([f,i]); let c=heap.length-1; while(c>0){const p=(c-1)>>1; if(heap[p][0]<=heap[c][0])break; [heap[p],heap[c]]=[heap[c],heap[p]]; c=p;}};
+  const pop=()=>{const top=heap[0], last=heap.pop(); if(heap.length){heap[0]=last; let c=0; for(;;){const l=2*c+1,r=l+1; let m=c; if(l<heap.length&&heap[l][0]<heap[m][0])m=l; if(r<heap.length&&heap[r][0]<heap[m][0])m=r; if(m===c)break; [heap[m],heap[c]]=[heap[c],heap[m]]; c=m;}} return top;};
+  gS[si]=0; push(h(si),si);
+  while(heap.length){ const [,i]=pop(); if(closed[i]) continue; closed[i]=1; if(i===ti) break; const x=i%GW, y=(i/GW)|0;
+    for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++){ if(!dx&&!dy) continue; const nx=x+dx, ny=y+dy; if(nx<0||ny<0||nx>=GW||ny>=GH) continue; const ni=ny*GW+nx;
+      if(!grid[ni]||closed[ni]) continue; if(dx&&dy&&(!grid[y*GW+nx]||!grid[ny*GW+x])) continue; const c=gS[i]+(dx&&dy?1.414:1); if(c<gS[ni]){gS[ni]=c; from[ni]=i; push(c+h(ni),ni);} } }
+  if (from[ti]<0 && si!==ti) return null;
+  const pts=[]; for (let i=ti;i!==-1;i=from[i]) pts.push([(i%GW)*G+G/2, ((i/GW)|0)*G+G/2]); pts.reverse();
+  if (walkable(tx|0,ty|0)) pts[pts.length-1]=[tx,ty];
+  const out=[]; let ax=sx, ay=sy, k=0; while(k<pts.length){ let far=k; for (let m=pts.length-1;m>k;m--) if (los(ax,ay,pts[m][0],pts[m][1])) { far=m; break; } out.push(pts[far]); [ax,ay]=pts[far]; k=far+1; }
+  return out;
+}
+
+// ---------- the island's contents (world coordinates on the 2x plate) ----------
+const pip = { x: 1120, y: 760, face: 1, route: null, moving: 0, step: 0 };
+const puffins = [
+  [640,520,'puffin_a',1],[1080,430,'puffin_c',-1],[1430,470,'puffin_e',1],[1640,560,'puffin_b',-1],[860,880,'puffin_d',1],[1850,800,'puffin_f',-1],[420,700,'puffin_g',1],[1290,960,'puffin_back',1]
+].map(([x,y,k,f],i) => ({ x, y, k, face:f, hop:0, heart:0, t:i*1.7, cool:0 }));
+const fawn = { x: 300, y: 520, k:'fawn', face: 1 };
+const props = [ // static sprites standing on the plate (y-sorted with the characters)
+  ['flowers_pink',1150,740,0.9],['grass_tall',1228,800,0.75],['tulips',1270,790,0.7],['grass_tuft',1090,790,0.9],     // a little bed of flowers by Pip's start
+  ['sign',830,1150,0.7],['flowers_purple',700,1080,0.8],['daisy',1640,980,0.8],['flowers_yellow2',1960,860,0.7],
+  ['bush',360,960,0.7],['flowers_leafy',1010,620,0.7],['rock_s',1500,690,0.8],['flowers_mix',540,860,0.8]
+];
+const stars = [[460,600],[1760,700],[1180,1060]].map(([x,y]) => ({ x, y, got:false }));
+let found = 0;
+const flyers = [{k:'butterfly',x:900,y:600,a:0,r:110,s:0.5},{k:'butterfly',x:1500,y:820,a:2,r:80,s:0.7},{k:'bee',x:1220,y:700,a:1,r:60,s:1.2}];
+
+// ---------- camera, input ----------
+let DPR = 1, Z = 1, cam = { x: 0, y: 0 };
+function resize(){ DPR = Math.min(2, devicePixelRatio || 1); cvs.width = innerWidth*DPR; cvs.height = innerHeight*DPR; Z = Math.max(0.5, Math.min(0.9, innerHeight/980, innerWidth/560)); }
+addEventListener('resize', resize);
+cvs.addEventListener('pointerdown', e => { const x = e.clientX/Z + cam.x, y = e.clientY/Z + cam.y; const r = findPath(pip.x, pip.y, x, y); if (r) { pip.route = r; ring = { x, y, t: 0 }; } hideNote(); });
+const keys = {}; addEventListener('keydown', e => { keys[e.key] = 1; hideNote(); }); addEventListener('keyup', e => { keys[e.key] = 0; });
+let ring = null, noteT = 0;
+function hideNote(){ if (!noteT) noteT = 0.01; }
+
+// ---------- moods: one cheap overlay per frame, no blend modes ----------
+let mood = 'sun';
+for (const m of ['sun','mist','dusk']) document.getElementById('m-'+m).onclick = () => { mood = m; for (const n of ['sun','mist','dusk']) document.getElementById('m-'+n).setAttribute('aria-pressed', n===m); };
+
+function update(dt){
+  // walking
+  let kx = (keys.ArrowRight||keys.d?1:0) - (keys.ArrowLeft||keys.a?1:0), ky = (keys.ArrowDown||keys.s?1:0) - (keys.ArrowUp||keys.w?1:0);
+  const sp = 190;
+  if (kx || ky) { pip.route = null; const l = Math.hypot(kx,ky); const nx = pip.x + kx/l*sp*dt, ny = pip.y + ky/l*sp*dt;
+    if (walkable(nx|0,ny|0)) { pip.x = nx; pip.y = ny; } else if (walkable(nx|0,pip.y|0)) pip.x = nx; else if (walkable(pip.x|0,ny|0)) pip.y = ny;
+    if (kx) pip.face = kx; pip.moving = 1; }
+  else if (pip.route && pip.route.length) { const [tx,ty] = pip.route[0], dx = tx-pip.x, dy = ty-pip.y, d = Math.hypot(dx,dy);
+    if (d < 4) pip.route.shift(); else { pip.x += dx/d*Math.min(d, sp*dt); pip.y += dy/d*Math.min(d, sp*dt); if (Math.abs(dx) > 2) pip.face = Math.sign(dx); } pip.moving = 1; }
+  else pip.moving = Math.max(0, pip.moving - dt*6);
+  if (pip.moving > 0.5) pip.step += dt*9;
+  // puffins: idle bob, turn now and then, hop and show a heart when Pip comes close
+  for (const p of puffins) { p.t += dt; p.cool = Math.max(0, p.cool - dt); p.hop = Math.max(0, p.hop - dt*2.2); p.heart = Math.max(0, p.heart - dt*0.7);
+    const d = Math.hypot(p.x-pip.x, p.y-pip.y);
+    if (d < 120 && !p.cool) { p.hop = 1; p.heart = 1; p.cool = 4; if (p.k !== 'puffin_back') p.face = pip.x > p.x ? 1 : -1; }
+    if (Math.sin(p.t*0.37) > 0.995 && !p.cool) p.face *= -1; }
+  for (const s of stars) if (!s.got && Math.hypot(s.x-pip.x, s.y-pip.y) < 50) { s.got = true; found++; sparkle(s.x, s.y-20);
+    document.getElementById('qn').textContent = `${found}/3`; if (found===3) document.getElementById('quest').classList.add('done'); }
+  for (const f of flyers) f.a += dt*f.s;
+  sparks.forEach(p => { p.t += dt; p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 40*dt; }); sparks = sparks.filter(p => p.t < 1);
+  if (ring) { ring.t += dt; if (ring.t > 0.8) ring = null; }
+  if (noteT) { noteT += dt; document.getElementById('note').style.opacity = String(Math.max(0, 1 - noteT)); }
+  // camera eases toward Pip, clamped to the plate
+  const vw = innerWidth/Z, vh = innerHeight/Z;
+  const tx = Math.max(-40, Math.min(WW - vw + 40, pip.x - vw/2)), ty = Math.max(-60, Math.min(WH - vh + 40, pip.y - vh*0.55));
+  cam.x += (tx - cam.x) * Math.min(1, dt*4); cam.y += (ty - cam.y) * Math.min(1, dt*4);
+}
+let sparks = [];
+function sparkle(x,y){ for (let i=0;i<16;i++){ const a = i/16*Math.PI*2; sparks.push({ x, y, vx: Math.cos(a)*90, vy: Math.sin(a)*90-50, t: 0 }); } }
+
+// sprite with a soft contact shadow, drawn standing on its feet at (x,y)
+function sprite(k, x, y, s=1, face=1, lift=0, sq=0){
+  const im = IMG[k]; if (!im || !im.width) return; const w = im.width*s, h = im.height*s;
+  ctx.fillStyle = 'rgba(52,58,30,.22)'; ctx.beginPath(); ctx.ellipse(x + w*0.12, y - 2, w*0.42*(1 - lift*0.004), w*0.13, 0, 0, Math.PI*2); ctx.fill();
+  ctx.save(); ctx.translate(x, y - lift); ctx.scale(face*(1+sq), 1-sq); ctx.drawImage(im, -w/2, -h + 4*s, w, h); ctx.restore();
+}
+function draw(t){
+  ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle = mood==='dusk' ? '#6f7aa0' : mood==='mist' ? '#a9bfbf' : '#8fc3c4'; ctx.fillRect(0,0,cvs.width,cvs.height);
+  ctx.setTransform(DPR*Z,0,0,DPR*Z,-cam.x*DPR*Z,-cam.y*DPR*Z);
+  ctx.imageSmoothingQuality = 'high';
+  // background + playable ground: the painted plate (sea, beach, lighthouse isle and meadow in one image)
+  if (IMG.island_plate.width) ctx.drawImage(IMG.island_plate, 0, 0, WW, WH);
+  // starfish lie flat in the grass, with a slow twinkle so a child can spot them
+  for (const s of stars) if (!s.got) { const tw = 0.5 + 0.5*Math.sin(t*3 + s.x);
+    ctx.fillStyle = `rgba(255,240,180,${0.25+0.3*tw})`; ctx.beginPath(); ctx.ellipse(s.x, s.y, 30, 14, 0, 0, Math.PI*2); ctx.fill();
+    ctx.drawImage(IMG.starfish, s.x-20, s.y-24, 40, 36); }
+  if (ring) { ctx.strokeStyle = `rgba(255,250,235,${1-ring.t/0.8})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(ring.x, ring.y, 14+ring.t*10, 7+ring.t*5, 0, 0, Math.PI*2); ctx.stroke(); }
+  // playable world: y-sorted characters and props
+  const ents = [];
+  for (const [k,x,y,s] of props) ents.push({ y, f: () => sprite(k, x, y, s) });
+  ents.push({ y: fawn.y, f: () => sprite('fawn', fawn.x, fawn.y, 0.82, fawn.face, Math.abs(Math.sin(t*1.3))*1.5) });
+  for (const p of puffins) ents.push({ y: p.y, f: () => {
+    const lift = Math.sin(p.hop*Math.PI)*22, bob = Math.sin(p.t*2.2)*0.025;
+    sprite(p.k, p.x, p.y, 0.82, p.face, lift, bob);
+    if (p.heart > 0) { ctx.globalAlpha = Math.min(1, p.heart*2); heart(p.x, p.y - 96 - (1-p.heart)*24); ctx.globalAlpha = 1; } } });
+  ents.push({ y: pip.y, f: () => {
+    const walking = pip.moving > 0.5, k = walking ? 'pip_walk' : 'pip', face = walking ? -pip.face : pip.face;
+    sprite(k, pip.x, pip.y, walking ? 0.86 : 0.8, face, walking ? Math.abs(Math.sin(pip.step))*5 : 0, walking ? 0 : Math.sin(t*2)*0.015); } });
+  ents.sort((a,b) => a.y - b.y).forEach(e => e.f());
+  for (const f of flyers) { const x = f.x + Math.cos(f.a)*f.r, y = f.y + Math.sin(f.a*1.3)*f.r*0.5 - 60; const im = IMG[f.k]; if (!im.width) continue;
+    const fl = f.k==='butterfly' ? 0.55 + 0.45*Math.abs(Math.sin(t*12 + f.x)) : 1; ctx.save(); ctx.translate(x,y); ctx.scale(fl*(Math.cos(f.a)>0?-1:1),1); ctx.drawImage(im, -im.width*0.35, -im.height*0.35, im.width*0.7, im.height*0.7); ctx.restore(); }
+  for (const p of sparks) { ctx.fillStyle = `rgba(255,236,150,${1-p.t})`; ctx.beginPath(); ctx.arc(p.x,p.y,3.5*(1-p.t)+1,0,Math.PI*2); ctx.fill(); }
+  // light: mood overlay (one fill), plus lantern glows and fireflies at dusk
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  const w = innerWidth, h = innerHeight;
+  // foreground: tall plants at the bottom corners of the frame, drifting a little faster than the world (depth)
+  const fx = -cam.x*Z*0.12, fs = Math.min(1.1, h/720);
+  for (const [k,x,s,flip] of [['reeds',-24,1.0,1],['grass_tall',40,0.8,-1],['reeds',w-60,0.95,-1],['grass_tall',w-120,0.75,1]]) {
+    const im = IMG[k]; if (!im.width) continue; const ww = im.width*s*fs, hh = im.height*s*fs, xx = x + fx % 40;
+    ctx.save(); ctx.translate(xx + ww/2, h + 8); ctx.rotate(Math.sin(t*0.8 + x)*0.02); ctx.scale(flip,1); ctx.filter = 'none';
+    ctx.globalAlpha = 0.96; ctx.drawImage(im, -ww/2, -hh, ww, hh); ctx.restore(); }
+  ctx.globalAlpha = 1;
+  if (mood==='sun') { const g = ctx.createRadialGradient(w*0.08,-h*0.1,20,w*0.08,-h*0.1,Math.max(w,h)*1.1); g.addColorStop(0,'rgba(255,224,150,.32)'); g.addColorStop(0.5,'rgba(255,224,150,.06)'); g.addColorStop(1,'rgba(255,224,150,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); }
+  if (mood==='mist') { ctx.fillStyle='rgba(226,234,232,.38)'; ctx.fillRect(0,0,w,h);
+    for (let i=0;i<7;i++){ const x = ((i*260 + t*14 - cam.x*Z*0.3) % (w+500)) - 250, y = h*(0.2+0.11*i); ctx.save(); ctx.translate(x,y); ctx.scale(1,0.25);
+      const g = ctx.createRadialGradient(0,0,4,0,0,260); g.addColorStop(0,'rgba(244,247,245,.55)'); g.addColorStop(1,'rgba(244,247,245,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,260,0,Math.PI*2); ctx.fill(); ctx.restore(); } }
+  if (mood==='dusk') { const g = ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(250,150,100,.30)'); g.addColorStop(1,'rgba(52,48,120,.46)'); ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    for (let i=0;i<26;i++){ const x = ((i*173 + Math.sin(t*0.5+i)*40 - cam.x*Z) % w + w) % w, y = ((i*97 + Math.cos(t*0.4+i*2)*30 - cam.y*Z*0.6) % h + h) % h, a = 0.4 + 0.6*Math.abs(Math.sin(t*2+i));
+      const fg = ctx.createRadialGradient(x,y,0,x,y,9); fg.addColorStop(0,`rgba(255,236,150,${a})`); fg.addColorStop(1,'rgba(255,236,150,0)'); ctx.fillStyle=fg; ctx.fillRect(x-9,y-9,18,18); }
+    const px = (pip.x-cam.x)*Z, py = (pip.y-cam.y-40)*Z, pg = ctx.createRadialGradient(px,py,4,px,py,160*Z); pg.addColorStop(0,'rgba(255,214,150,.28)'); pg.addColorStop(1,'rgba(255,214,150,0)'); ctx.fillStyle=pg; ctx.fillRect(px-170*Z,py-170*Z,340*Z,340*Z); }
+  // soft vignette
+  const vg = ctx.createRadialGradient(w/2,h*0.55,Math.min(w,h)*0.45,w/2,h*0.55,Math.max(w,h)*0.75); vg.addColorStop(0,'rgba(60,50,30,0)'); vg.addColorStop(1,'rgba(60,50,30,.18)'); ctx.fillStyle=vg; ctx.fillRect(0,0,w,h);
+  drawMap();
+}
+function heart(x,y){ ctx.fillStyle='#ef8a8a'; ctx.beginPath(); ctx.moveTo(x,y+8); ctx.bezierCurveTo(x-14,y-2,x-8,y-14,x,y-6); ctx.bezierCurveTo(x+8,y-14,x+14,y-2,x,y+8); ctx.fill(); }
+function drawMap(){
+  const r = mcv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio||1), cw = Math.round((r.width-14)*d), ch = Math.round((r.height-14)*d);
+  if (mcv.width !== cw || mcv.height !== ch) { mcv.width = cw; mcv.height = ch; }
+  mctx.fillStyle = '#9cc9c9'; mctx.fillRect(0,0,cw,ch);
+  if (IMG.island_plate.width) mctx.drawImage(IMG.island_plate, 0, 0, cw, ch);
+  const k = cw/WW;
+  for (const s of stars) if (!s.got) { mctx.fillStyle = '#f0a050'; mctx.beginPath(); mctx.arc(s.x*k, s.y*k*(ch/cw)/(WH/WW), 2.6*d, 0, 7); mctx.fill(); }
+  mctx.strokeStyle = 'rgba(255,250,235,.95)'; mctx.lineWidth = 1.5*d; mctx.strokeRect(cam.x*k, cam.y*ch/WH, innerWidth/Z*k, innerHeight/Z*ch/WH);
+  mctx.fillStyle = '#f0a23a'; mctx.strokeStyle = '#fffaf0'; mctx.lineWidth = 2*d; mctx.beginPath(); mctx.arc(pip.x*k, pip.y*ch/WH, 4.5*d, 0, 7); mctx.fill(); mctx.stroke();
+}
+
+let last = 0, T = 0;
+function frame(now){ const dt = Math.min(0.05, (now - last)/1000 || 0); last = now; T += dt; update(dt); draw(T); requestAnimationFrame(frame); }
+resize();
+Promise.all(names.map(load)).then(() => {
+  const wc = document.createElement('canvas'), wi = IMG.walk; MW = wc.width = wi.width; MH = wc.height = wi.height; const wx = wc.getContext('2d'); wx.drawImage(wi,0,0);
+  const px = wx.getImageData(0,0,MW,MH).data; walk = new Uint8Array(MW*MH); for (let i=0;i<MW*MH;i++) walk[i] = px[i*4] > 127 ? 1 : 0;
+  buildGrid();
+  cam.x = pip.x - innerWidth/Z/2; cam.y = pip.y - innerHeight/Z*0.55;
+  window.__pilot = { pip, stars, puffins, findPath, walkable, setMood: m => document.getElementById('m-'+m).click() };
+  requestAnimationFrame(frame);
+});
+})();
+</script>
