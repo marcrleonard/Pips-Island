@@ -99,8 +99,9 @@ function updateHighland(dt){
       if (q.seeds.have===4 && q.seeds.state!=='done') setTimeout(() => { if (!S.dialog) speak(q.seeds.state==='new' ? 'pip.seeds.all.early' : 'pip.seeds.all'); }, 600);
     }
   }
-  // the little pufflings... no. Willow ambles up to the crown once the day is nearly done (cosmetic)
-  S.npcs.forEach(n => { if (n.scene==='highland' && n.route) stepNpc(n, dt, 70); });
+  // friends that have somewhere to be amble there (the ending walk is driven by update.js's ending loop instead,
+  // so don't double-step them here)
+  if (!S.ending) S.npcs.forEach(n => { if (n.scene==='highland' && n.route) stepNpc(n, dt, 70); });
   S.sparks.forEach(p => { p.t += dt; p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 50*dt; });
   S.sparks = S.sparks.filter(p => p.t < p.life);
   if (S.bridgeDrop > 0) S.bridgeDrop = Math.max(0, S.bridgeDrop - dt);
@@ -373,9 +374,11 @@ function drawSkylark(n,t){
   ctx.restore();
 }
 function drawHNpc(n,t){
-  if (n.id==='stag' || n.id==='willow') return styled(n.x, n.y, [-40,-120,46,8], () => drawStag(n,t), { shadow:30, h:70, key:'npc:willow', fps:12 });
-  if (n.id==='juniper') return styled(n.x, n.y, [-28,-66,30,6], () => drawFawn(n,t), { shadow:20, h:48, key:'npc:juniper', fps:12 });
-  if (n.id==='pine') return styled(n.x, n.y, [-34,-60,30,6], () => drawSquirrel(n,t), { shadow:14, h:40, key:'npc:pine', fps:12 });
+  // a friend on the move bobs a little with each step (matches drawNpcStyled)
+  const walk = fn => n.moving ? () => { ctx.save(); ctx.translate(0, -Math.abs(Math.sin(n.walkT||0))*3); fn(); ctx.restore(); } : fn;
+  if (n.id==='stag' || n.id==='willow') return styled(n.x, n.y, [-40,-120,46,8], walk(() => drawStag(n,t)), { shadow:30, h:70, key:'npc:willow', fps:12 });
+  if (n.id==='juniper') return styled(n.x, n.y, [-28,-66,30,6], walk(() => drawFawn(n,t)), { shadow:20, h:48, key:'npc:juniper', fps:12 });
+  if (n.id==='pine') return styled(n.x, n.y, [-34,-60,30,6], walk(() => drawSquirrel(n,t)), { shadow:14, h:40, key:'npc:pine', fps:12 });
   if (n.id==='lark') return styled(n.x, n.y, [-30,-40,26,8], () => drawSkylark(n,t), n.gliding ? { key:'npc:lark', fps:14 } : { shadow:10, h:24, key:'npc:lark', fps:12 });
 }
 

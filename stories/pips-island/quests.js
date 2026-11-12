@@ -94,10 +94,13 @@ function pop(x,y,text){ S.pops.push({x,y,text,t:0,scene:S.scene}); }
 function startEnding(){
   S.ending = 0.001;
   if (S.day===4) {
-    // Day 4's picnic is up on the cloud meadow: the highland friends gather around Pip above the clouds.
+    // Day 4's picnic is up on the cloud meadow. Bring the friends onto the crown (some were far down the
+    // climb) so they gather around Pip in time, then walk the last few steps to their spots.
     const spots = { willow:[PICNIC.x+120,PICNIC.y+40], juniper:[PICNIC.x-110,PICNIC.y+30], pine:[PICNIC.x+30,PICNIC.y-70], lark:[PICNIC.x-50,PICNIC.y-90] };
-    S.npcs.forEach(n => { if (spots[n.id]) { n.scene='highland'; n.gliding=false; n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'highland'); } });
-    setGoal(PICNIC.x-30, PICNIC.y+70);
+    S.npcs.forEach(n => { if (spots[n.id]) { n.scene='highland'; n.gliding=false;
+      n.x = PICNIC.x + (spots[n.id][0] < PICNIC.x ? -160 : 160); n.y = PICNIC.y + 150;
+      n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'highland'); } });
+    setGoal(PICNIC.x-30, PICNIC.y+80);
     chime([392,523,659,784,1046],0.18);
     S.endTimer = setTimeout(() => { S.finished = true; showEndCard(); }, 7000);
     return;
