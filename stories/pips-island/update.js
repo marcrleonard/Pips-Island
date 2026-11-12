@@ -122,8 +122,8 @@ function update(dt){
   const [SW, SH] = sceneDims(S.scene);
   const showing = !!S.show && S.show.t < 5.0;
   const fitZ = Math.min(innerWidth/(CW*0.95), (innerHeight-90)/(CH*0.95));
-  // the climb is framed a little tighter so the path and its edges read, and it feels like a path, not a map
-  const sceneZoom = S.scene==='highland' ? 1.25 : 1;
+  // the climb is framed tighter so there's less in the frame and it feels like a path, not a map
+  const sceneZoom = S.scene==='highland' ? 1.5 : 1;
   const zT = (showing ? Math.min(cam.baseZ, fitZ) : cam.baseZ) * sceneZoom;
   if (Math.abs(cam.z - zT) > 0.0005) { cam.z += (zT - cam.z)*Math.min(1, dt*2.4); cam.vw = innerWidth/cam.z; cam.vh = innerHeight/cam.z; }
   // When a dialog is open, frame Pip in the space between the top HUD and the dialog card.

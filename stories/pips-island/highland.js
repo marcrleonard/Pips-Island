@@ -183,29 +183,36 @@ function hNook(x,y,s){ ell(x,y+5,48*s,20*s,'rgba(38,56,34,.2)');
   for (let i=-1;i<=1;i++){ const hx=x+i*22*s, hy=y+4*s; ctx.fillStyle='#2b211c'; ctx.beginPath(); ctx.moveTo(hx-9*s,hy); ctx.quadraticCurveTo(hx-9*s,hy-18*s,hx,hy-18*s); ctx.quadraticCurveTo(hx+9*s,hy-18*s,hx+9*s,hy); ctx.closePath(); ctx.fill();
     ctx.fillStyle='rgba(255,246,214,.12)'; ctx.beginPath(); ctx.ellipse(hx,hy-4*s,6*s,8*s,0,0,Math.PI*2); ctx.fill(); }
   ctx.strokeStyle='#5f9150'; ctx.lineWidth=2.4*s; ctx.lineCap='round'; for (let i=-3;i<=3;i++){ ctx.beginPath(); ctx.moveTo(x+i*9*s,y-16*s); ctx.lineTo(x+i*10*s,y-27*s); ctx.stroke(); } }
-// Dense, varied, depth-sorted foliage over the slope: smaller/paler far up, bigger/darker near the bottom, so
-// the climb reads as a path threading through layered overgrowth with little nooks and crannies.
+// Foliage grows in patches of a single type with open ground between (so the styles ease in and out instead of
+// a different random plant every few pixels), depth-sorted so far patches are small/pale and near ones big/dark.
 function drawHighlandFoliage(){
-  const R = rng(808), spots = [];
-  for (let i=0;i<680;i++){
-    const x = 170 + R()*1360, y = 250 + R()*2210;
-    if (!insidePoly(MOUNTAIN, x, y, 18) || inGorge(x,y)) continue;
-    if (Math.abs(x - fallX(y)) < FALL.w/2 + 34 && y > FALL.lip - 50) continue;   // keep out of the waterfall
-    const nearPath = onTrailPath(x,y) || inClearing(x,y);
-    if (nearPath && R() < 0.9) continue;                                          // path stays mostly clear
-    if (insidePoly(CROWN, x, y, 12) && R() < 0.5) continue;                        // crown a bit more open
-    spots.push([x,y]);
+  const R = rng(808);
+  const ok = (x,y,m) => insidePoly(MOUNTAIN,x,y,m) && !inGorge(x,y) && !(Math.abs(x-fallX(y)) < FALL.w/2+40 && y>FALL.lip-60);
+  // scatter a modest number of patch centres, each one plant type and one colour
+  const patches = [];
+  for (let i=0;i<46;i++){
+    const x = 190 + R()*1320, y = 280 + R()*2160;
+    if (!ok(x,y,44)) continue;
+    if (onTrailPath(x,y) || inClearing(x,y)) { if (R()<0.75) continue; }     // keep the path mostly clear
+    if (insidePoly(CROWN,x,y,24) && R()<0.55) continue;                       // crown stays more open
+    const type = Math.floor(R()*PLANT_FNS.length), green = H_GREENS[(type + (R()<0.5?0:3)) % H_GREENS.length];
+    patches.push({ x, y, type, green, r: 34+R()*58, n: 3+Math.floor(R()*4) });
   }
-  spots.sort((a,b) => a[1]-b[1]);                                                  // far (top) first → near (bottom) on top
-  for (const [x,y] of spots){
-    const depth = Math.max(0, Math.min(1, (y-250)/2210));                          // 0 far .. 1 near
-    const s = 0.45 + depth*0.95 + R()*0.3;
-    let c = H_GREENS[Math.floor(R()*H_GREENS.length)];
-    c = depth > 0.58 ? mixHex(c, '#2c4034', (depth-0.58)*0.75) : mixHex(c, '#cfe0d4', (0.5-depth)*0.5);   // near darker, far hazier
-    PLANT_FNS[Math.floor(R()*PLANT_FNS.length)](x, y, s, c);
+  // grow each patch, collect plants, then draw back-to-front
+  const plants = [];
+  for (const p of patches) for (let k=0;k<p.n;k++){
+    const a=R()*6.28, rr=Math.sqrt(R())*p.r, x=p.x+Math.cos(a)*rr, y=p.y+Math.sin(a)*rr*0.7;
+    if (!ok(x,y,16) || onTrailPath(x,y)) continue;
+    plants.push({ x, y, type:p.type, green:p.green });
   }
-  // a few burrow nooks tucked beside the path
-  for (const [x,y,s] of [[612,1150,1],[1000,1452,0.9],[560,2150,1.05],[988,860,0.85]]) if (!onTrailPath(x,y)) hNook(x,y,s);
+  plants.sort((a,b)=>a.y-b.y);
+  for (const pl of plants){
+    const depth = Math.max(0, Math.min(1, (pl.y-280)/2160)), s = 0.5 + depth*0.85 + R()*0.22;
+    const c = depth > 0.58 ? mixHex(pl.green, '#2c4034', (depth-0.58)*0.7) : mixHex(pl.green, '#cfe0d4', (0.5-depth)*0.5);
+    PLANT_FNS[pl.type](pl.x, pl.y, s, c);
+  }
+  // a couple of burrow nooks tucked beside the path
+  for (const [x,y,s] of [[1004,1452,0.9],[560,2150,1.05]]) if (!onTrailPath(x,y)) hNook(x,y,s);
 }
 // The slope as overlapping rolling-hill bands that recede into haze (Old Man's Journey): each is a flat green
 // plane with a lit crest and a soft shadow where the hill in front of it tucks over — far ones paler and cooler,
