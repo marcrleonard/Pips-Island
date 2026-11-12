@@ -6,7 +6,7 @@ function getGrid(scene){
   const key = scene==='cave' ? 'cave'+digStage() : scene;
   if (grids[key]) return grids[key];
   const [SW,SH] = sceneDims(scene);
-  const fn = scene==='cave' ? caveWalkable : scene==='cove' ? coveWalkable : scene==='isle' ? isleWalkable : walkable;
+  const fn = scene==='cave' ? caveWalkable : scene==='cove' ? coveWalkable : scene==='isle' ? isleWalkable : scene==='highland' ? highlandWalkable : walkable;
   const gw = Math.ceil(SW/GRID), gh = Math.ceil(SH/GRID), ok = new Uint8Array(gw*gh);
   const m = 9; // keep a little clearance so paths don't scrape obstacles
   for (let y=0;y<gh;y++) for (let x=0;x<gw;x++) {

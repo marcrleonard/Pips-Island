@@ -10,7 +10,10 @@ function talk(npc){
   const q = S.quests;
   if (S.day===2 && npc.id!=='owl' && talkDay2(npc)) return;
   if (S.day===3 && npc.id!=='owl' && talkDay3(npc)) return;
+  if (S.day===4 && npc.id!=='owl' && talkDay4(npc)) return;
   if (npc.id === 'owl') {
+    // On Day 4 Bramble just waves Pip toward the newly-open North Path; Willow hosts up in the highlands.
+    if (S.day===4) return speak('owl.d4');
     if (allDone()) return speak(`owl.end.d${S.day}`, startEnding);
     // Bramble drip-feeds: one new friend at a time, or a gentle reminder about one already started.
     const first = !S.metOwl;
@@ -90,6 +93,15 @@ function pop(x,y,text){ S.pops.push({x,y,text,t:0,scene:S.scene}); }
 
 function startEnding(){
   S.ending = 0.001;
+  if (S.day===4) {
+    // Day 4's picnic is up on the cloud meadow: the highland friends gather around Pip above the clouds.
+    const spots = { willow:[PICNIC.x+120,PICNIC.y+40], juniper:[PICNIC.x-110,PICNIC.y+30], pine:[PICNIC.x+30,PICNIC.y-70], lark:[PICNIC.x-50,PICNIC.y-90] };
+    S.npcs.forEach(n => { if (spots[n.id]) { n.scene='highland'; n.gliding=false; n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'highland'); } });
+    setGoal(PICNIC.x-30, PICNIC.y+70);
+    chime([392,523,659,784,1046],0.18);
+    S.endTimer = setTimeout(() => { S.finished = true; showEndCard(); }, 7000);
+    return;
+  }
   const spots = { duck:[bigTree.x-120,bigTree.y+110], hog:[bigTree.x+20,bigTree.y+150], crab:[bigTree.x+130,bigTree.y+100], mole:[bigTree.x+200,bigTree.y+40], mouse:[bigTree.x-190,bigTree.y+50], puffin:[bigTree.x+90,bigTree.y+200] };
   S.npcs.forEach(n => { if (n.scene==='cave') { n.scene='island'; n.x = burrow.x; n.y = burrow.y+70; } });
   S.npcs.forEach(n => { if (spots[n.id]) { n.goal = spots[n.id]; sendNpc(n, n.goal[0], n.goal[1], 'island'); } });

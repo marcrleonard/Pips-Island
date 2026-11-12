@@ -24,6 +24,9 @@ const house = { x: 590, y: 990 };
 const nest = { x: 1505, y: 805 };
 const sealRock = { x: 2255, y: 560 };
 const burrow = { x: 1820, y: 455 };
+// The North Path: a trail at the island's north edge up into the highlands. Walled by mist on Days 1-3,
+// it opens on Day 4 (see highland.js). The signpost blocks a small circle so Pip walks around it.
+const NORTH_PATH = { x: 1080, y: 232 };
 const PATHS = [
   [[bigTree.x+10,bigTree.y+40],[1330,880],[1430,840]],
   [[bigTree.x-20,bigTree.y+40],[950,1040],[740,1060]],
@@ -36,7 +39,7 @@ PATHS.forEach(([a,c,b]) => { for (let i=0;i<=48;i++){ const t=i/48, u=1-t; pathP
 const nearPath = (x,y,m) => pathPts.some(([px,py]) => d2(x,y,px,py) < m);
 function onSand(x,y){ const e = edgeD(x,y); return e <= -6 && e > -38; }
 const POIS = [[1150,1000],[1820,470],[house.x,house.y],[nest.x,nest.y],[1450,790],[700,1050],[2040,1250],[300,720],[500,1300],[1250,320],[1900,950],bigTree.x?[bigTree.x,bigTree.y]:[0,0],
-  [550,800],[920,520],[1030,1130],[1330,1260],[1800,1500],[620,1460],[pond.x,pond.y]];
+  [550,800],[920,520],[1030,1130],[1330,1260],[1800,1500],[620,1460],[pond.x,pond.y],[NORTH_PATH.x,NORTH_PATH.y]];
 function grassAt(x,y,m=0){ return edgeD(x,y) > m; }
 function walkable(x,y){
   if (edgeD(x,y) < -32) return false;
@@ -44,6 +47,7 @@ function walkable(x,y){
   if (d2(x,y,bigTree.x,bigTree.y+20) < 46) return false;
   if (d2(x,y,house.x,house.y-12) < 52) return false;
   if (d2(x,y,burrow.x,burrow.y) < 52) return false;
+  if (d2(x,y,NORTH_PATH.x+34,NORTH_PATH.y+6) < 16) return false;   // the signpost post
   for (const t of trees) if (d2(x,y,t.x,t.y) < 26) return false;
   for (const r of rocks) if (d2(x,y,r.x,r.y) < r.s*0.8) return false;
   return true;

@@ -156,6 +156,58 @@
     "voice": "Energetic Child (bright, enthusiastic young voice)",
     "speed": 1.05
    }
+  },
+  "willow": {
+   "name": "Willow",
+   "description": "A wise old stag, elder of the highlands. Calm, kind, speaks slowly like a gentle mountain. Guides Pip up above the clouds.",
+   "voice": {
+    "pitch": 0.72,
+    "rate": 0.82
+   },
+   "fish": {
+    "reference_id": "e686ae649ee44f219a108aacba206c1a",
+    "voice": "PLACEHOLDER: reusing Bramble's calm storyteller male. Recast for a distinct, deeper stag elder.",
+    "speed": 0.92
+   }
+  },
+  "juniper": {
+   "name": "Juniper",
+   "description": "A little fawn, shy and sweet, a bit nervous of the mist. Soft, gentle, young.",
+   "voice": {
+    "pitch": 1.5,
+    "rate": 0.9
+   },
+   "fish": {
+    "reference_id": "a2b1bd5223d14144bf330c4656c9dd30",
+    "voice": "PLACEHOLDER: reusing Pearl's gentle young girl (Molly). Recast for a distinct, timid fawn.",
+    "speed": 0.95
+   }
+  },
+  "pine": {
+   "name": "Pine",
+   "description": "A red squirrel, quick and chattery and busy. Bright, cheerful, talks fast.",
+   "voice": {
+    "pitch": 1.3,
+    "rate": 1.02
+   },
+   "fish": {
+    "reference_id": "5beea71587234eb6bc7b05a1ba9017af",
+    "voice": "PLACEHOLDER: reusing Digby's energetic voice (Lachie). Recast for a distinct, chattery squirrel.",
+    "speed": 1.08
+   }
+  },
+  "lark": {
+   "name": "Lark",
+   "description": "A little skylark, learning to glide. Airy, bright, full of wonder. Loves the wind.",
+   "voice": {
+    "pitch": 1.62,
+    "rate": 0.96
+   },
+   "fish": {
+    "reference_id": "333bdc0a320a4cb3aa90d6ed9320e36e",
+    "voice": "PLACEHOLDER: reusing Mama Duck's bright playful voice (Kaia). Recast for a distinct, airy skylark.",
+    "speed": 1.05
+   }
   }
  },
  "about": "Speakers. 'voice' tunes the browser fallback voice. 'fish.reference_id' is the Fish Audio voice model to use for this character (pick or clone one on fish.audio and paste its id). 'description' is acting direction for humans. 'fish.voice' is a note naming the chosen voice; browse others at https://fish.audio/discovery."

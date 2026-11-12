@@ -2270,6 +2270,843 @@
      "direction": "[gentle, sweet]"
     }
    ]
+  },
+  "pip.day4.start": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.day4.start",
+     "text": "The mist is gone from the big hill! Bramble says the high path is open. Let's climb!",
+     "direction": "[excited, bright]"
+    }
+   ]
+  },
+  "pip.highland.first": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.highland.first",
+     "text": "Wow... I'm up in the clouds! It's so soft and quiet up here.",
+     "direction": "[wonder, hushed]"
+    }
+   ]
+  },
+  "pip.north.locked": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.north.locked",
+     "text": "The high path is all misty today. Maybe another day I'll be able to climb up there.",
+     "direction": "[curious, gentle]"
+    }
+   ]
+  },
+  "pip.early.trail": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.trail",
+     "text": "A little lantern, gone dark. I bet someone would love these lit up again.",
+     "direction": "[thinking out loud]"
+    }
+   ]
+  },
+  "pip.trail.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.trail.all",
+     "text": "All three lanterns are glowing! The misty path feels cozy now.",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pip.trail.all.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.trail.all.early",
+     "text": "That's the last dark lantern lit. The whole trail is warm and bright!",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pip.early.plank": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.plank",
+     "text": "An old wooden plank. This looks like a piece of a bridge!",
+     "direction": "[thinking out loud]"
+    }
+   ]
+  },
+  "pip.plank.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.plank.all",
+     "text": "Three planks! Now the bridge can be mended.",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pip.plank.all.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.plank.all.early",
+     "text": "Three bridge planks. I should take these to whoever's fixing the bridge.",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pip.early.seed": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.early.seed",
+     "text": "A fluffy thistle seed, floating right by! It tickles.",
+     "direction": "[giggly]"
+    }
+   ]
+  },
+  "pip.seeds.all": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.seeds.all",
+     "text": "Four thistle seeds caught! Lark will be so happy.",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pip.seeds.all.early": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.seeds.all.early",
+     "text": "Four fluffy seeds! That's all of them.",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pip.end.d4": {
+   "speaker": "pip",
+   "lines": [
+    {
+     "id": "pip.end.d4",
+     "text": "Goodnight, clouds. What a day... all the way up in the sky.",
+     "direction": "[sleepy, content]"
+    }
+   ]
+  },
+  "owl.d4": {
+   "speaker": "owl",
+   "lines": [
+    {
+     "id": "owl.d4.1",
+     "text": "Hoo! Feel that? The north wind blew the mist right off the high hill last night.",
+     "direction": "[warm, unhurried]"
+    },
+    {
+     "id": "owl.d4.2",
+     "text": "The path up is open at last. Climb up and say hello to Willow for me.",
+     "direction": "[warm, unhurried]"
+    }
+   ]
+  },
+  "willow.first": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.first.1",
+     "text": "Welcome, little one. I am Willow. Not many climb all the way up here.",
+     "direction": "[calm, warm]"
+    },
+    {
+     "id": "willow.first.2",
+     "text": "The clouds are our garden today. A couple of friends could use your help.",
+     "direction": "[calm, warm]"
+    }
+   ]
+  },
+  "willow.again.next": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.again.next",
+     "text": "Back again, Pip? Good. There's a little more to do.",
+     "direction": "[calm]"
+    }
+   ]
+  },
+  "willow.again.busy": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.again.busy",
+     "text": "Take your time up here. The clouds aren't going anywhere.",
+     "direction": "[calm, kindly]"
+    }
+   ]
+  },
+  "willow.hint.trail": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.hint.trail",
+     "text": "Juniper the fawn is down on the misty path. She's a little lost — the lanterns have gone dark.",
+     "direction": "[gently suggesting]"
+    }
+   ]
+  },
+  "willow.hint.bridge": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.hint.bridge",
+     "text": "Pine the squirrel is up by the gorge. The rope bridge needs mending before we can cross it.",
+     "direction": "[gently suggesting]"
+    }
+   ]
+  },
+  "willow.hint.seeds": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.hint.seeds",
+     "text": "Lark is out on the meadow, learning to glide. Go and see what she's chasing.",
+     "direction": "[gently suggesting]"
+    }
+   ]
+  },
+  "willow.remind.trail": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.remind.trail",
+     "text": "Juniper is still down in the mist. Light the lanterns and she'll find her way.",
+     "direction": "[gentle]"
+    }
+   ]
+  },
+  "willow.remind.bridge": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.remind.bridge",
+     "text": "Pine is still gathering what he needs for the bridge.",
+     "direction": "[gentle]"
+    }
+   ]
+  },
+  "willow.remind.seeds": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.remind.seeds",
+     "text": "Lark's seeds are still dancing on the wind.",
+     "direction": "[gentle]"
+    }
+   ]
+  },
+  "willow.close.first": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.close.first",
+     "text": "Come back to me whenever you like. I'll be right here, watching the clouds.",
+     "direction": "[warm]"
+    }
+   ]
+  },
+  "willow.close.next": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.close.next",
+     "text": "Off you go. Mind your step.",
+     "direction": "[kindly]"
+    }
+   ]
+  },
+  "willow.end": {
+   "speaker": "willow",
+   "lines": [
+    {
+     "id": "willow.end.1",
+     "text": "You did it, Pip. The path is bright, the bridge is mended, and little Lark can glide.",
+     "direction": "[warm, proud]"
+    },
+    {
+     "id": "willow.end.2",
+     "text": "Come — let's all sit up on the crown and watch the clouds roll by. A picnic above the world.",
+     "direction": "[warm, proud]"
+    }
+   ]
+  },
+  "juniper.ask.open": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.ask.open.1",
+     "text": "Oh! H-hello. I'm Juniper.",
+     "direction": "[shy, soft]"
+    },
+    {
+     "id": "juniper.ask.open.2",
+     "text": "I got lost in the mist... the trail lanterns went dark, and now I can't see the way.",
+     "direction": "[shy, soft]"
+    }
+   ]
+  },
+  "juniper.ask.need": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.ask.need",
+     "text": "Could you light the 3 lanterns along the path? Then the mist won't feel so scary.",
+     "direction": "[hopeful, soft]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "juniper.ask.already.1": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.ask.already.1",
+     "text": "You lit one already? Oh, thank you! Just 2 more to go.",
+     "direction": "[brightening]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "juniper.ask.already.2": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.ask.already.2",
+     "text": "Two are glowing now! Just one more lantern.",
+     "direction": "[brightening]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "juniper.ask.close": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.ask.close",
+     "text": "Walk right up to a dark lantern and it will light. I'll wait here.",
+     "direction": "[soft]"
+    }
+   ]
+  },
+  "juniper.progress.0": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.progress.0",
+     "text": "The path is still so dark. Please light the lanterns?",
+     "direction": "[timid]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "juniper.progress.1": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.progress.1",
+     "text": "One lantern glowing! Two are still dark, though.",
+     "direction": "[hopeful]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "juniper.progress.2": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.progress.2",
+     "text": "Almost there! Just one more lantern to light.",
+     "direction": "[hopeful]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "juniper.thanks": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.thanks.1",
+     "text": "They're all glowing! The mist looks warm and friendly now.",
+     "direction": "[delighted]",
+     "item": {
+      "k": "lantern",
+      "n": 3
+     }
+    },
+    {
+     "id": "juniper.thanks.2",
+     "text": "Thank you, Pip. I'm not scared anymore.",
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "juniper.gotell": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.gotell",
+     "text": "You should go and tell Willow. He'll be so pleased!",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "juniper.after": {
+   "speaker": "juniper",
+   "lines": [
+    {
+     "id": "juniper.after",
+     "text": "The path is so cozy now, all lit up. Thank you, Pip.",
+     "direction": "[content]"
+    }
+   ]
+  },
+  "pine.ask.open": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.ask.open.1",
+     "text": "Hiya, hiya! I'm Pine. Big job here, big job!",
+     "direction": "[fast, chattery]"
+    },
+    {
+     "id": "pine.ask.open.2",
+     "text": "The rope bridge over the gorge is broken — lost its planks in the last big wind!",
+     "direction": "[fast, chattery]"
+    }
+   ]
+  },
+  "pine.ask.need": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.ask.need",
+     "text": "Can you find my 3 bridge planks? They blew all over the ledges.",
+     "direction": "[eager]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "pine.ask.already.1": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.ask.already.1",
+     "text": "One plank already? Speedy! Two more, two more.",
+     "direction": "[eager]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "pine.ask.already.2": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.ask.already.2",
+     "text": "Two planks! Just one more and we're in business.",
+     "direction": "[eager]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "pine.ask.close": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.ask.close",
+     "text": "Walk up to a plank and scoop it up. Off you go, off you go!",
+     "direction": "[chattery]"
+    }
+   ]
+  },
+  "pine.progress.0": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.progress.0",
+     "text": "No planks yet? Have a good look along the ledges!",
+     "direction": "[busy]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "pine.progress.1": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.progress.1",
+     "text": "One plank down, two to go. Quick, quick!",
+     "direction": "[busy]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "pine.progress.2": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.progress.2",
+     "text": "So close! Just one more plank, Pip.",
+     "direction": "[busy]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    }
+   ]
+  },
+  "pine.thanks": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.thanks.1",
+     "text": "Three planks! Perfect, perfect.",
+     "direction": "[delighted]",
+     "item": {
+      "k": "plank",
+      "n": 3
+     }
+    },
+    {
+     "id": "pine.thanks.2",
+     "text": "There — the bridge is down! Now you can cross to the meadow.",
+     "direction": "[delighted]"
+    }
+   ]
+  },
+  "pine.gotell": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.gotell",
+     "text": "Go and tell Willow the bridge is mended!",
+     "direction": "[happy]"
+    }
+   ]
+  },
+  "pine.after": {
+   "speaker": "pine",
+   "lines": [
+    {
+     "id": "pine.after",
+     "text": "Lovely bridge, isn't it? Cross any time, any time!",
+     "direction": "[cheerful]"
+    }
+   ]
+  },
+  "lark.ask.open": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.ask.open.1",
+     "text": "Hello, hello, up here! I'm Lark.",
+     "direction": "[airy, bright]"
+    },
+    {
+     "id": "lark.ask.open.2",
+     "text": "I'm learning to glide on the wind, but the thistle seeds keep floating away from me!",
+     "direction": "[airy, bright]"
+    }
+   ]
+  },
+  "lark.ask.need": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.ask.need",
+     "text": "Would you catch 4 for me? Just run under one as it drifts by!",
+     "direction": "[excited]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.ask.already.1": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.ask.already.1",
+     "text": "You caught one? Wheee! Three more drifting about.",
+     "direction": "[excited]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.ask.already.2": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.ask.already.2",
+     "text": "Two already! Two more seeds to go.",
+     "direction": "[excited]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.ask.already.3": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.ask.already.3",
+     "text": "Three! Oh, just one more fluffy seed!",
+     "direction": "[excited]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.ask.close": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.ask.close",
+     "text": "Chase them on the breeze and catch them in your paws!",
+     "direction": "[airy]"
+    }
+   ]
+  },
+  "lark.progress.0": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.progress.0",
+     "text": "The seeds keep dancing away from me. Catch them, catch them!",
+     "direction": "[hopeful]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.progress.1": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.progress.1",
+     "text": "One caught! Three more on the wind.",
+     "direction": "[hopeful]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.progress.2": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.progress.2",
+     "text": "Two seeds! Halfway there.",
+     "direction": "[hopeful]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.progress.3": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.progress.3",
+     "text": "Just one more seed — I can almost reach it!",
+     "direction": "[hopeful]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    }
+   ]
+  },
+  "lark.thanks": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.thanks.1",
+     "text": "Four seeds! Now watch — I'll ride the wind with them!",
+     "direction": "[joyful]",
+     "item": {
+      "k": "seed",
+      "n": 4
+     }
+    },
+    {
+     "id": "lark.thanks.2",
+     "text": "Wheee! Thank you, Pip!",
+     "direction": "[joyful]"
+    }
+   ]
+  },
+  "lark.gotell": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.gotell",
+     "text": "Go and tell Willow — I did it, I glided!",
+     "direction": "[joyful]"
+    }
+   ]
+  },
+  "lark.after": {
+   "speaker": "lark",
+   "lines": [
+    {
+     "id": "lark.after",
+     "text": "Look at me gliding! The wind is my friend now.",
+     "direction": "[joyful]"
+    }
+   ]
+  },
+  "duck.d4": {
+   "speaker": "duck",
+   "lines": [
+    {
+     "id": "duck.d4",
+     "text": "Off on another adventure, Pip? Mind the clouds up there!",
+     "direction": "[fond]"
+    }
+   ]
+  },
+  "hog.d4": {
+   "speaker": "hog",
+   "lines": [
+    {
+     "id": "hog.d4",
+     "text": "Climbing the high hill? Take a berry muffin for the trip, dear.",
+     "direction": "[warm]"
+    }
+   ]
+  },
+  "crab.d4": {
+   "speaker": "crab",
+   "lines": [
+    {
+     "id": "crab.d4",
+     "text": "Up in the clouds, eh? Click, click. Don't fall off, youngster.",
+     "direction": "[gruff but kind]"
+    }
+   ]
+  },
+  "mouse.d4": {
+   "speaker": "mouse",
+   "lines": [
+    {
+     "id": "mouse.d4",
+     "text": "Hum-de-hum... if you reach the very top, sing the wind a little song for me!",
+     "direction": "[sing-song]"
+    }
+   ]
+  },
+  "mole.d4": {
+   "speaker": "mole",
+   "lines": [
+    {
+     "id": "mole.d4",
+     "text": "The high hill? Oh my, that's a long way up from my cosy tunnels!",
+     "direction": "[amazed]"
+    }
+   ]
+  },
+  "seal.d4": {
+   "speaker": "seal",
+   "lines": [
+    {
+     "id": "seal.d4",
+     "text": "Arf! Say hello to the clouds for me, Pip!",
+     "direction": "[playful]"
+    }
+   ]
+  },
+  "puffin.d4": {
+   "speaker": "puffin",
+   "lines": [
+    {
+     "id": "puffin.d4",
+     "text": "Ahoy! The high path, is it? Even I don't sail that high. Good luck, matey!",
+     "direction": "[jolly]"
+    }
+   ]
+  },
+  "nana.d4": {
+   "speaker": "nana",
+   "lines": [
+    {
+     "id": "nana.d4",
+     "text": "All the way up the hill, dearie? Wrap up warm in the mist.",
+     "direction": "[warm]"
+    }
+   ]
+  },
+  "pebble.d4": {
+   "speaker": "pebble",
+   "lines": [
+    {
+     "id": "pebble.d4",
+     "text": "You're climbing SO high! Can you touch a cloud? Can you?!",
+     "direction": "[excited]"
+    }
+   ]
   }
  }
 }

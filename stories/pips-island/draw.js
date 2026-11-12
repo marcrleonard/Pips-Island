@@ -5,7 +5,7 @@ function draw(){
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle = S.scene==='cave' ? '#241b18' : (GROUND_EDGE || C.sea); ctx.fillRect(0,0,cvs.width,cvs.height);
   ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,-cam.x*DPR*cam.z,-cam.y*DPR*cam.z);
-  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else drawIsland(t);
+  if (S.scene==='cave') drawCave(t); else if (S.scene==='cove') drawCove(t); else if (S.scene==='isle') drawIsle(t); else if (S.scene==='highland') drawHighland(t); else drawIsland(t);
   drawOverlays(t);
 }
 function drawIsland(t){
@@ -44,6 +44,7 @@ function drawIsland(t){
   S.ducklings.forEach(d => { if (d.state==='swim') styled(d.x, d.y, [-26,-24,26,8], () => drawSwimDuck(d.x,d.y,d.face||1,t, S.day>=2 ? 1.35 : 1), {key:'swim:'+S.ducklings.indexOf(d), fps:12}); });
   if (S.day>=2 && !S.ending) { const m = S.npcs.find(n => n.id==='duck'); styled(m.x, m.y, [-36,-40,36,10], () => drawMamaSwim(m, t), {key:'mamaswim', fps:12}); }
   ents.sort((a,b) => a.y-b.y).forEach(e => e.f());
+  drawNorthPathIsland(t);
   if (S.ending) drawNpcStyled({id:'owl', x:bigTree.x+70, y:bigTree.y+150}, t);
 
   // markers
@@ -77,7 +78,7 @@ function drawPops(){
 function drawTargetRing(){
   if (S.player.goal && !S.ending) { const T=S.player.goal; ctx.strokeStyle='rgba(255,250,240,.8)'; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(T.x,T.y,12,6,0,0,Math.PI*2); ctx.stroke(); }
 }
-const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44 };
+const MARK_Y = { owl:55, duck:48, hog:52, crab:52, mole:62, mouse:56, seal:50, puffin:70, nana:72, pebble:44, willow:118, juniper:66, pine:62, lark:42 };
 function drawMarkers(t){
   S.npcs.forEach(n => { if (n.scene!==S.scene) return; const k = npcMarker(n); if (k) marker(n.x, n.y - MARK_Y[n.id], t, k); });
 }

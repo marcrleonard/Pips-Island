@@ -26,7 +26,7 @@ python3 tools/watch.py      # rebuild on save + serve http://localhost:8000/pips
   what it uses, so keep the order.
 - The build embeds `story.json`, `script.json`, `cast.json` and `audio/manifest.json` as the constants `STORY`,
   `SCRIPT`, `CAST` and `AUDIO_MANIFEST`.
-- `#day2` or `#day3` on the URL starts on that day (testing shortcut, handled in `src/engine/boot.js`).
+- `#day2`, `#day3` or `#day4` on the URL starts on that day (testing shortcut, handled in `src/engine/boot.js`).
 - The game is published to GitHub Pages on every push to `main` (`.github/workflows/pages.yml`), with the recorded
   voices: https://marcrleonard.github.io/Pips-Island/. The older claude.ai artifact has no audio files, so it uses
   browser voices.
@@ -46,11 +46,25 @@ scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for 
 - New state that should survive a reload must be added to both functions.
 - The title shows "Keep playing" plus "Start a new game" when a save exists.
 
-**Scenes.** `S.scene` is `'island'`, `'cave'` (the Burrow), `'cove'` (Seagrass Cove) or `'isle'` (Puffin Isle, Day 3).
-- World sizes: island `W×H` = 2400×1800, cave `CW×CH` = 1600×1200, cove `VW×VH` = 1800×1200, isle `IW×IH` = 1800×1300.
+**Scenes.** `S.scene` is `'island'`, `'cave'` (the Burrow), `'cove'` (Seagrass Cove), `'isle'` (Puffin Isle, Day 3) or
+`'highland'` (the Cloudtop Highlands, Day 4).
+- World sizes: island `W×H` = 2400×1800, cave `CW×CH` = 1600×1200, cove `VW×VH` = 1800×1200, isle `IW×IH` = 1800×1300,
+  highland `HW×HH` = 1700×2600 (tall: you climb up it).
 - Day 3 (`stories/pips-island/isle.js`): walking to the end of a dock with the boat there calls `sail(to)`, a longer
   fade with a sailing card. Captain Puff and the boat travel with Pip (`S.boatAt`). On the isle Captain Puff gives the
   one-at-a-time hints (`puffin.hint.<quest>`), and his end conversation sails everyone home to the picnic.
+- Day 4 (`stories/pips-island/highland.js`): the Cloudtop Highlands, a tall vertical climb above the clouds. Reached
+  from the island's **North Path** (`NORTH_PATH` in `island-world.js`), which is walled by a mist bank on Days 1-3 (a
+  "too misty to climb" beat) and opens on Day 4. Walking into it calls `goTo('highland')`; the base of the highland
+  trail returns to the island. The scene has three tiers bottom-to-top: misty pine switchbacks, a gorge crossed by a
+  **rope bridge**, and a grassy **crown** meadow above the clouds. New friends, hosted by **Willow the stag** (who
+  gives one-at-a-time hints `willow.hint.<quest>` and the closing, like Bramble / Captain Puff): **Juniper** the fawn
+  (relight 3 trail lanterns — clears the low mist, `mistLevel()`), **Pine** the squirrel (gather 3 bridge planks, then
+  `dropBridge()` drops the bridge and the crown becomes reachable), **Lark** the skylark (catch 4 thistle seeds drifting
+  on the wind, up on the crown). The gorge (`GORGE`) blocks the full width, so the bridge is the only way up — seeds and
+  Lark are physically gated behind Pine's quest. The Day-4 picnic ending is on the crown (`startEnding` branches on
+  `S.day===4`). New-character voices in `cast.json` are **placeholders** reusing close existing Fish voices — recast
+  (`willow`, `juniper`, `pine`, `lark`).
 - Shapes: coasts, beaches and rock shelves are smooth outlines (`smoothPts`, `polyPath`, `insidePoly`, `offsetPoly`
   in `style.js`). The same outline is drawn and used for walking. The main island's outline is traced once from the
   old layout circles in `island-world.js` (`ISLAND`, `edgeD`).
@@ -174,13 +188,25 @@ move NPCs away or pre-set `near`.
   on the cove cliff.
 - **Day 3:** Bramble hints the boat trip, Captain Puff sails Pip over, Nana Puff wants 4 sand eels (they leap in the
   shallows), Pebble plays hide and seek 3 times, then Captain Puff sails everyone home for the picnic.
+- **Day 4 (the Highlands):** the mystery is seeded from Day 1 — a misty, roped-off North Path you can walk up to but
+  not through. It opens two ways at once (both were on the table): the north wind lifts the mist overnight (region
+  unlocks on Day 4), and you actively clear it as you climb (lanterns relight the low fog, planks drop the bridge).
+  Vertical traversal is the point — it's one tall scene you ascend, not a flat map. The climb is gated once (the
+  bridge → the crown) so it's a little longer/harder than earlier days without adding fail states. Cozy, not epic:
+  the "above the clouds" look is painted (a high cloud layer over the summit, a sea of clouds at the base, far isles
+  on the horizon), not a global fog grade — keeping Marc's "fog only in the rain mood" rule. Deer-family art is shared
+  (Willow the stag ≈ a grown-up Juniper the fawn) to keep the new cast cohesive and the art effort bounded.
 - **Wording:** "what a kind day" was cut as awkward. Keep the writing plain, warm and short. A 7-year-old hears it.
 
 ## What's next (rough priority)
 
 1. **Publish the voices:** every line is recorded (`tools/fish_tts.py`, levelled to -19 LUFS). Publish the audio
    alongside the game, or switch to serving the `dist/` folder.
-2. **Day 4:** nothing is teased yet. Day 3's end card says "What an adventure!".
+2. **Day 4 is built** (the Cloudtop Highlands, above). Polish passes worth considering: recast the four new voices in
+   `cast.json` (they reuse existing Fish voices as placeholders) and record their lines; give Willow/Juniper/Pine/Lark a
+   walk cycle (they currently stand, except Willow's slow amble to the crown at the end); and a **Day 5** is now
+   unteased — Day 4's end card says "What a view!". A natural next hook: something glimpsed *from* the crown (a far
+   isle, a cave behind the waterfall, the lighthouse beam at dusk).
 3. **Evening looks:**
    - dusk grade for each day's picnic ending (a second baked ground with `LOOK_DUSK`, plus the lantern and window
      glows from `tools/art-lab/speed.html`);

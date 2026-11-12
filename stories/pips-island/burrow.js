@@ -51,15 +51,18 @@ function updateTrans(dt){
     if (T.to==='cave' && T.from==='cove') { P.x = CAVE_LADDER2.x - 34; P.y = CAVE_LADDER2.y + 70; S.ladder2Armed = false; }
     else if (T.to==='cave') { P.x = shaft.x; P.y = shaft.y - 75; S.shaftArmed = false; }
     else if (T.to==='cove') { P.x = 255; P.y = 470; S.coveLadderArmed = false; }
+    else if (T.to==='highland') { P.x = HILL_ENTRY.x; P.y = HILL_ENTRY.y; S.hExitArmed = false; }
+    else if (T.from==='highland') { P.x = NORTH_PATH.x; P.y = NORTH_PATH.y + 70; S.northArmed = false; }
     else { P.x = burrow.x; P.y = burrow.y + 115; S.doorArmed = false; }
     S.ducklings.forEach(d => { if (d.state==='follow') { d.x = P.x; d.y = P.y; } });
-    chime(T.to==='cave' ? [392,330,262] : T.to==='cove' ? [523,659,784,1047] : [523,659,784], 0.12);
+    chime(T.to==='cave' ? [392,330,262] : T.to==='cove' ? [523,659,784,1047] : T.to==='highland' ? [523,659,784,1047] : [523,659,784], 0.12);
   }
   if (T.t >= 2*half) {
     S.trans = null;
     if (T.sail) return arrived(T);
     if (S.scene==='cave' && !S.visitedCave) { S.visitedCave = true; speak('pip.cave.first'); }
     if (S.scene==='cove' && !S.visitedCove) { S.visitedCove = true; speak('pip.cove.first'); }
+    if (S.scene==='highland' && !S.visitedHighland) { S.visitedHighland = true; speak('pip.highland.first'); }
   }
 }
 function updateDoor(){

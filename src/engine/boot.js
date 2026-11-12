@@ -19,6 +19,7 @@ document.getElementById('start').addEventListener('click', () => {
   // Testing shortcut: open the game with #day2 at the end of the link to start on Day 2
   if (location.hash === '#day2') { startDay2(); return; }
   if (location.hash === '#day3') { startDay3(); return; }
+  if (location.hash === '#day4') { startDay4(); return; }
   if (saved) {
     restoreSave(saved);
     if (saved.progress) setTimeout(() => speak('pip.welcome'), 400);

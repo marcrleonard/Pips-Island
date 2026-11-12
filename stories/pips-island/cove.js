@@ -3,7 +3,7 @@
 // Each quest belongs to a day. Day 1: the island and the burrow. Day 2: Digby's new tunnel and Seagrass Cove.
 const QUEST_DAY = Object.fromEntries(STORY.quests.map(q => [q.id, q.day]));
 const dayQuests = () => Object.entries(S.quests).filter(([k]) => QUEST_DAY[k] === S.day).map(([,v]) => v);
-const sceneDims = sc => sc==='cave' ? [CW,CH] : sc==='cove' ? [VW,VH] : sc==='isle' ? [IW,IH] : [W,H];
+const sceneDims = sc => sc==='cave' ? [CW,CH] : sc==='cove' ? [VW,VH] : sc==='isle' ? [IW,IH] : sc==='highland' ? [HW,HH] : [W,H];
 
 // Pip notices something before anyone has asked: she wonders aloud, and whoever it belongs to gets a "!".
 function earlyFind(qid, friendId, convoId){
