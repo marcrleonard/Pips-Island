@@ -47,7 +47,7 @@ function walkable(x,y){
   if (d2(x,y,bigTree.x,bigTree.y+20) < 46) return false;
   if (d2(x,y,house.x,house.y-12) < 52) return false;
   if (d2(x,y,burrow.x,burrow.y) < 52) return false;
-  if (d2(x,y,NORTH_PATH.x+34,NORTH_PATH.y+6) < 16) return false;   // the signpost post
+  if (northPathBlocked(x,y)) return false;   // the trailhead mounds and signpost
   for (const t of trees) if (d2(x,y,t.x,t.y) < 26) return false;
   for (const r of rocks) if (d2(x,y,r.x,r.y) < r.s*0.8) return false;
   return true;

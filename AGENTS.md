@@ -62,7 +62,9 @@ scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for 
   (relight 3 trail lanterns — clears the low mist, `mistLevel()`), **Pine** the squirrel (gather 3 bridge planks, then
   `dropBridge()` drops the bridge and the crown becomes reachable), **Lark** the skylark (catch 4 thistle seeds drifting
   on the wind, up on the crown). The gorge (`GORGE`) blocks the full width, so the bridge is the only way up — seeds and
-  Lark are physically gated behind Pine's quest. The Day-4 picnic ending is on the crown (`startEnding` branches on
+  Lark are physically gated behind Pine's quest. The slope is open to walk anywhere (the trail is a guide, not a wall);
+  only rocks, pines, nooks, the gorge and the waterfall block. The bridge runs north-south across the gorge. There is no
+  foreground foliage layer (Marc disliked it: it hid characters). The Day-4 picnic ending is on the crown (`startEnding` branches on
   `S.day===4`). New-character voices in `cast.json` are **placeholders** reusing close existing Fish voices — recast
   (`willow`, `juniper`, `pine`, `lark`).
 - Day 5 (`stories/pips-island/deep.js`): The Deep, an underwater dive, reached by diving at the cove's glowing
@@ -75,6 +77,9 @@ scene, day, dialog and effects. `startDay2(quiet)` in `cove.js` rewrites it for 
   `mistLevel()`). Host is **Marina the sea turtle** (`marina.hint.<quest>`, closing). The dark trench is cosmetic, not a
   gate — all three quests are reachable from the start. The Day-5 ending gathers everyone over a sunlit patch of seabed
   (`startEnding` branches on `S.day===5`). Marina's voice is a **placeholder** (reuses Dorothy) — recast.
+- Way-finding: on Days 4 and 5, until Pip reaches the new place, `guideTarget()`/`drawGuide()` (in `deep.js`) float a
+  beacon over the next doorway on the route (North Path; burrow door → tunnel → dive spot), or an edge arrow when it is
+  off screen. Marc found Day 5's route unclear without it.
 - Shapes: coasts, beaches and rock shelves are smooth outlines (`smoothPts`, `polyPath`, `insidePoly`, `offsetPoly`
   in `style.js`). The same outline is drawn and used for walking. The main island's outline is traced once from the
   old layout circles in `island-world.js` (`ISLAND`, `edgeD`).
