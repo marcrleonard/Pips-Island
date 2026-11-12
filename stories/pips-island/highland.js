@@ -25,10 +25,12 @@ const GORGE = { y0: 1010, y1: 1170 };
 const BRIDGE = { x0: 770, x1: 940, y0: GORGE.y0 - 6, y1: GORGE.y1 + 6 };
 // Where the waterfall spills off the crown's east ledge, down past the gorge and into the clouds.
 const FALL = { x: 1230, y0: 980, y1: 2050 };
-// The worn switchback trail (visual + a gentle guide). Also where lanterns sit.
-const TRAIL = [[850,2380],[650,2240],[900,2120],[640,1980],[920,1840],[640,1700],[900,1560],[700,1420],
-  [860,1290],[855,1200],[855,1050],[855,900],[760,720],[640,560],[760,440]];
-const H_LANTERNS = [[905,2118],[636,1978],[855,1292]];   // the three trail lanterns Juniper asks about
+// The trail winds gently up the slope with two hairpin landings, running straight through the gorge (where
+// the bridge is). Lower amplitude + rounded turns so it reads as a worn path, not a zig-zag ribbon.
+const TRAIL = [[855,2400],[812,2288],[735,2168],[720,2030],[792,1910],[888,1788],[905,1662],[832,1556],
+  [712,1452],[690,1332],[772,1240],[850,1150],[855,1040],[855,930],[812,812],[732,694],[712,576],[762,468]];
+const TRAIL_LANDINGS = [[905,1662],[690,1332]];          // the two hairpin turns (flat dirt landings)
+const H_LANTERNS = [[905,1662],[690,1332],[735,2030]];   // the three trail lanterns (two on the hairpins)
 const H_PLANKS = [[430,1640],[1140,1520],[600,1360]];     // bridge planks scattered on the lower ledges
 const SEED_SPOTS = [[560,560],[980,520],[760,760],[1140,680]];  // where thistle seeds drift on the crown
 const CAIRN = { x: 1180, y: 470 };
@@ -180,11 +182,23 @@ function drawHighlandStatic(){
   // baked thrift clusters on the crown (small; the pickable things stand out as entities elsewhere)
   for (const [x,y,s] of H_THRIFT) drawThrift(x,y,s);
 
-  // the worn switchback trail
+  // the trail: a worn dirt path, carved slightly into the slope (soft edges, dirt tones, gravel — no hard ribbon)
   ctx.lineJoin='round'; ctx.lineCap='round';
-  const trail = (w,col) => { ctx.strokeStyle=col; ctx.lineWidth=w; ctx.beginPath(); TRAIL.forEach(([x,y],i)=>{const p=TRAIL[i-1]; i?ctx.quadraticCurveTo((p[0]+x)/2,(p[1]+y)/2,x,y):ctx.moveTo(x,y);}); ctx.stroke(); };
-  trail(42, lit(C.grass,-0.7)); trail(34,'#d8c08a'); trail(14,'rgba(255,246,214,.5)');
-  for (let i=0;i<TRAIL.length-1;i++){ const [x,y]=TRAIL[i]; circ(x+((i*7)%12)-6, y+((i*11)%10)-5, 2.4, '#c7b386'); }
+  const trail = (w,col,a=1) => { ctx.globalAlpha=a; ctx.strokeStyle=col; ctx.lineWidth=w;
+    ctx.beginPath(); TRAIL.forEach(([x,y],i)=>{const p=TRAIL[i-1]; i?ctx.quadraticCurveTo((p[0]+x)/2,(p[1]+y)/2,x,y):ctx.moveTo(x,y);}); ctx.stroke(); ctx.globalAlpha=1; };
+  // flat dirt landings at the hairpins, so the turns read as resting places rather than kinks
+  for (const [lx,ly] of TRAIL_LANDINGS) { ell(lx, ly+2, 48, 27, 'rgba(60,50,40,.22)'); ell(lx, ly, 42, 23, '#c3a878'); ell(lx-6, ly-4, 24, 12, '#d2bb8a'); }
+  trail(46, 'rgba(60,50,40,.2)');      // soft recess
+  trail(36, 'rgba(92,74,56,.5)');      // dirt shade
+  trail(28, '#c3a878');                // dirt body
+  trail(21, '#d2bb8a');                // lighter trodden dirt
+  trail(7,  'rgba(255,246,214,.28)');  // worn centre
+  // gravel and dirt flecks scattered along the path (seeded so the bake stays stable)
+  const Rt = rng(3140);
+  for (let i=0;i<TRAIL.length-1;i++){ const a=TRAIL[i], bq=TRAIL[i+1];
+    for (let t=0;t<1;t+=0.07){ if (Rt()>0.42) continue;
+      const x=a[0]+(bq[0]-a[0])*t, y=a[1]+(bq[1]-a[1])*t, ox=(Rt()-0.5)*32, oy=(Rt()-0.5)*18;
+      ell(x+ox, y+oy, 2.4+Rt()*3, 1.8+Rt()*2, Rt()>0.5?'#b4a68e':'#9c9078'); } }
 
   // the gorge: a dark chasm with a rocky rim
   ctx.save(); ctx.beginPath(); ctx.rect(0,GORGE.y0-4,HW,GORGE.y1-GORGE.y0+8); ctx.clip();
